@@ -139,7 +139,90 @@ export default [
                 parentPath:'/system/overallPlanningArea',
                 component: overallPlanningAreaEdit
             }
-
+        ]
+    },
+    {
+        path: '/rehabilitation',
+        name: '康复',
+        icon: (
+            <svg className={style.icon} aria-hidden="true">
+                <use xlinkHref="#icon-xitongshezhi"></use>
+            </svg>
+        ),
+        authority: ['admin'],
+        hidden: false,
+        routes: [
+            {
+                path: '/rehabilitation/initiate',
+                name: '发起流程',
+                authority: ['admin'],
+                hidden: false,
+                component: require('@pages/Rehabilitation/initiate').default
+            },
+            {
+                path: '/rehabilitation/initiate/applicationForAdmission',
+                name: '康复入院申请',
+                authority: ['admin'],
+                hidden: true,
+                parentPath:'/rehabilitation/initiate',
+                component: require('@pages/Rehabilitation/initiate/Operate/applicationForAdmission').default
+            },
+            {
+                path: '/rehabilitation/initiate/dischargeAssessment',
+                name: '康复出院评估',
+                authority: ['admin'],
+                hidden: true,
+                parentPath:'/rehabilitation/initiate',
+                component: require('@pages/Rehabilitation/initiate/Operate/dischargeAssessment').default
+            },
+            {
+                path: '/rehabilitation/agent',
+                name: '流程代办',
+                authority: ['admin'],
+                hidden: false,
+                component: require('@pages/Rehabilitation/agent').default
+            },
+            {
+                path: '/rehabilitation/search',
+                name: '查询',
+                authority: ['admin'],
+                hidden: false,
+                component: require('@pages/Rehabilitation/search').default
+            },
+        ]
+    },
+    {
+        path: '/nursing',
+        name: '护理',
+        icon: (
+            <svg className={style.icon} aria-hidden="true">
+                <use xlinkHref="#icon-xitongshezhi"></use>
+            </svg>
+        ),
+        authority: ['admin'],
+        hidden: false,
+        routes: [
+            {
+                path: '/nursing/initiate',
+                name: '发起流程',
+                authority: ['admin'],
+                hidden: false,
+                component: require('@pages/Rehabilitation/search').default
+            },
+            {
+                path: '/nursing/agent',
+                name: '流程代办',
+                authority: ['admin'],
+                hidden: false,
+                component: require('@pages/Rehabilitation/search').default
+            },
+            {
+                path: '/nursing/search',
+                name: '查询',
+                authority: ['admin'],
+                hidden: false,
+                component: require('@pages/Rehabilitation/search').default
+            },
         ]
     },
     {
@@ -356,7 +439,7 @@ export default [
                 authority: ['admin'],
                 // hidden: false,
                 component: require('@pages/Basics/ErrorPage/ErrorPage').default
-            },
+            }
         ]
     }
 ];

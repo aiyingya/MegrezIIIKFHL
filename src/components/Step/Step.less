@@ -1,0 +1,150 @@
+// - - - - - - - - - - - 步骤条样式 - - - - - - - - - - -
+.speBody{
+  @step-width:188px;
+  @step-arrow-width:16px;
+  @step-color-default:#CFD7E3;
+
+  position: relative;
+  font-size:12px;
+  font-family:MicrosoftYaHei;
+  color:rgba(102,102,102,1);
+  line-height:16px;
+
+  em{
+    margin: 0;
+    padding: 0;
+    font-style: normal;
+  }
+  :global {
+    .ant-steps{
+      width: 100%;
+      padding: 35px 20px 51px 20px;
+      background-color: #FFFFFF;
+    }
+    .winning-spread{
+      position: absolute;
+      bottom: 16px;
+      width: 100%;
+      text-align: center;
+      color: #15A4FA;
+      cursor: pointer;
+    }
+    .ant-steps-item-icon{
+      position: relative;
+    }
+    .ant-steps-horizontal:not(.ant-steps-label-vertical) .ant-steps-item{
+      margin-right: 0;
+    }
+    .ant-steps-item-icon:before {
+      position: absolute;
+      top: 16px;
+      right: 32px;
+      display: block;
+      width: 99px;
+      height: 1px;
+      background: #e8e8e8;
+      content: '';
+    }
+
+    .ant-steps-item-icon:after {
+      position: absolute;
+      top: 16px;
+      left: 32px;
+      display: block;
+      width: 9999px;
+      height: 1px;
+      background: #e8e8e8;
+      content: '';
+    }
+    .ant-steps-item:last-child .ant-steps-item-icon:after,.ant-steps-item:first-child .ant-steps-item-icon:before{
+      content: none;
+    }
+    .ant-steps-item-title{
+      margin-top: 8px;
+      font-size: 12px;
+      font-family: MicrosoftYaHei;
+      color: rgba(102,102,102,1);
+      line-height: 16px;
+    }
+    .ant-steps-item-title::after{
+      content: none;
+    }
+    .ant-steps-item-container{
+      display: flex;
+      flex-flow: column;
+    }
+
+    .winning-style-div,.ant-steps-item-content{
+      width: @step-width;
+      text-align: center;
+    }
+     .ant-steps-item-icon {
+      background-color: @step-color-default;
+      border-color: @step-color-default;
+    }
+     .ant-steps-item-icon > .ant-steps-icon{
+      color: @step-color-default;
+    }
+    .ant-steps-item-icon.select{
+      background-color: #1890ff;
+      border-color: #fff;
+    }
+     .ant-steps-item-icon.select > .ant-steps-icon{
+      color: #fff;
+    }
+    .ant-steps-item-icon{
+      width: 30px;
+      height: 30px;
+    }
+    .ant-steps-horizontal:not(.ant-steps-label-vertical) .ant-steps-item-description{
+      max-width: 200px;
+    }
+    .ant-steps-item-description{
+      position: relative;
+      display: flex;
+      margin-top: 16px;
+      border: 1px solid #D6D6D5;
+      padding: 14px 10px;
+      border-radius: 2px 0px 0px 0px;
+      width: @step-width;
+      flex-flow: column;
+      text-align: left;
+      .winning-style-arrow{
+        position: absolute;
+        width: @step-arrow-width;
+        height: @step-arrow-width;
+        top: -@step-arrow-width;
+        left: 40%;
+        em,span{
+          display: block;
+          border-width: calc(@step-arrow-width / 2);
+          position: absolute;
+          border-style: solid dashed dashed dashed;
+          font-size: 0;
+          line-height: 0;
+          border-color: transparent transparent #D6D6D6;
+        }
+        span{
+          border-color: transparent transparent #FFF;
+          top: 1px;
+        }
+      }
+      >span{
+        font-size:12px;
+        font-family:MicrosoftYaHei;
+        color:rgba(102,102,102,1);
+        line-height:18px;
+        em{
+          font-size:12px;
+          font-family:MicrosoftYaHei;
+          color:rgba(51,51,51,1);
+          line-height:18px;
+        }
+      }
+    }
+
+
+
+  }
+}
+// - - - - - - - - - - - 步骤条样式 - - - - - - - - - - -

@@ -28,6 +28,12 @@ const buttonItemLayout ={
         sm: {span: 12,offset:5}
     }
 }
+
+const config ={
+    theme :"light"//light dark
+}
+
+
 module.exports={
     _content,
     _header,
@@ -42,5 +48,6 @@ module.exports={
     _iconfont,
     _iconfontjs,
     formItemLayout,
-    buttonItemLayout
+    buttonItemLayout,
+    config
 }

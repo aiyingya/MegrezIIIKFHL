@@ -1,0 +1,111 @@
+import React from 'react';
+import {Global,Uc} from 'winning-megreziii-utils';
+import {Badge} from 'antd';
+import style from './common.less';
+
+export default (self)=>{
+    const {initiate,state}=self.props;
+    return [
+        {
+            title: '序号',
+            dataIndex: 'inHospTableId',
+            render:(text,record,index)=>`${index+1}`,
+            width: '8%',
+        }, {
+            title: '标题',
+            dataIndex: 'titile',
+        }, {
+            title: '患者',
+            dataIndex: 'personName',
+            render: (text, record) => (
+                <div>{Global.nullText(text)}</div>
+            )
+        },{
+            title: '节点',
+            dataIndex: 'node',
+            render: (texts, record) => {
+                let _node = state.staticStatus.node || [];
+                const objct = _node.find(res=>res.value == texts) || {};
+                return <span>{objct.name}</span>
+            }
+        }, {
+            title: '发起人',
+            dataIndex: 'initPerson'
+        } ,{
+            title: '发起日期',
+            dataIndex:'initDate'
+        },
+        {
+            title: '审核日期',
+            dataIndex:'auditDate'
+        },
+        {
+            title: '状态',
+            dataIndex:'flowStatus',
+            render:(texts, record, index) =>{
+                let _flowStatus = state.staticStatus.flowStatus || [];
+                const objct = _flowStatus.find(res=>res.value == texts) || {};
+                let color = '';
+                switch (Number(objct.value)){
+                    case 0:
+                        color ="green"
+                        break;
+                    case 1:
+                        color ="red"
+                        break;
+                    case 2:
+                        color ="blue"
+                        break;
+                    default:
+                        color ="error"
+                        break;
+                }
+
+                return <span className={style[color]}>{objct.name}</span>
+            }
+        },
+        {
+            title: '类型',
+            dataIndex:'flowType',render:(texts, record, index) =>{
+                let _flowType = state.staticStatus.flowType || [];
+                const objct = _flowType.find(res=>res.value == texts) || {};
+                //dict_flowType 内的字典
+                let badge = '';
+                switch (Number(objct.value)){
+                    case 0:
+                        badge ="processing"
+                        break;
+                    case 1:
+                        badge ="success"
+                        break;
+                    default:
+                        badge ="error"
+                        break;
+                }
+                return <span><Badge status={badge} />{objct.name}</span>
+            }
+
+        }
+        ,
+        {
+            title: '历史流程',
+            dataIndex:'inHospTableId',
+            render: (texts, record, index) =>{
+                return <div onClick={()=>{self.goEditApplicationForAdmission(record)}} className={style.jumpSelect}>查看</div>
+            }
+        }
+        /*{
+            title: '备注',
+            dataIndex:'flowStatus',
+            render: async (texts, record, index) =>{
+                //dict_flowStatus 内的 {"name": "不通过","value": "1"}
+                if(texts == 1){
+                    return <span onClick={()=>{self.goEditRole(record)}} className={style.textColor}>退回原因</span>
+                }
+                return <div></div>
+
+            }
+        },*/
+
+    ]
+}

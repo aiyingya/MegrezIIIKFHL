@@ -7,6 +7,44 @@
         "value": "5"
       }
     ],
+    "dict_flowStatus": [
+      {
+        "name": "通过",
+        "value": "0"
+      },
+      {
+        "name": "不通过",
+        "value": "1"
+      },
+      {
+        "name": "待审核",
+        "value": "2"
+      }
+    ],
+    "dict_flowType": [
+      {
+        "name": "入院评估 ",
+        "value": "0"
+      },
+      {
+        "name": "出院评估",
+        "value": "1"
+      }
+    ],
+    "dict_node": [
+      {
+      "name": "医生提交 ",
+      "value": "0"
+      },
+      {
+      "name": "医院审核",
+      "value": "1"
+      },
+      {
+      "name": "社保中心审核",
+      "value": "2"
+      }
+    ],
     "AJLX": [
       {
         "name": "专项立案 ",

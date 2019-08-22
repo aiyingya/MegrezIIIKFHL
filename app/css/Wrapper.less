@@ -28,7 +28,8 @@ body {
     }
   }
   .ant-menu-item-selected {
-    background-color: rgba(0, 135, 255, 0.05) !important;
+    //background-color: rgba(0, 135, 255, 0.05) !important;
+    background-color: @sider-bg-active-color !important;
     a {
       color: rgba(0, 135, 255, 1);
     }
@@ -51,10 +52,18 @@ body {
   .ant-menu {
     box-shadow: none !important;
   }
+
+  // 菜单栏点击效果，不要
+  .ant-menu-item:active,
+  .ant-menu-submenu-title:active {
+    background: none;
+  }
+
   .ant-menu-submenu-title:hover {
     span,
     svg {
-      color: rgba(0, 135, 255, 1);
+      //color: rgba(0, 135, 255, 1);
+      color: @sider-text-active-color !important;
     }
   }
   .ant-menu-item:after{
@@ -67,7 +76,8 @@ body {
 
   .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open,
   .ant-menu-submenu-active {
-    color: @sider-text-color;
+    //color: @sider-text-color;
+    color: @sider-text-active-color;
   }
 
   .ant-menu-inline-collapsed
@@ -82,7 +92,52 @@ body {
     margin-bottom: 0;
   }
 }
+// - - - - - - - - - - - -Sider 缩小之后的主题 - - - - - - - - - - - - - - - - - - - - - - - -
+.ant-menu-submenu > .ant-menu {
+  background-color: @router-main-color;
+  color: @sider-text-color-same;
+}
 
+.ant-menu-submenu-vertical > .ant-menu-submenu-title .ant-menu-submenu-arrow::before, .ant-menu-submenu-vertical-left > .ant-menu-submenu-title .ant-menu-submenu-arrow::before, .ant-menu-submenu-vertical-right > .ant-menu-submenu-title .ant-menu-submenu-arrow::before, .ant-menu-submenu-inline > .ant-menu-submenu-title .ant-menu-submenu-arrow::before, .ant-menu-submenu-vertical > .ant-menu-submenu-title .ant-menu-submenu-arrow::after, .ant-menu-submenu-vertical-left > .ant-menu-submenu-title .ant-menu-submenu-arrow::after, .ant-menu-submenu-vertical-right > .ant-menu-submenu-title .ant-menu-submenu-arrow::after, .ant-menu-submenu-inline > .ant-menu-submenu-title .ant-menu-submenu-arrow::after{  background-image:none;
+  //background: @sider-text-color;
+  //background-color: #BAC1CB;
+  background: @sider-text-color-same;
+}
+.ant-menu-submenu-vertical > .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::after, .ant-menu-submenu-vertical-left > .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::after, .ant-menu-submenu-vertical-right > .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::after, .ant-menu-submenu-inline > .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::after, .ant-menu-submenu-vertical > .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::before, .ant-menu-submenu-vertical-left > .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::before, .ant-menu-submenu-vertical-right > .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::before, .ant-menu-submenu-inline > .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::before{
+  background-color: @sider-text-active-color;
+}
+.ant-menu-submenu-title:hover{
+  color: @sider-text-active-color;
+}
+.ant-menu-submenu-title:active {
+  background: none;
+}
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected{
+  background-color: @sider-bg-active-color;
+}
+.ant-menu-item:hover, .ant-menu-item-active, .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open, .ant-menu-submenu-active, .ant-menu-submenu-title:hover{
+  color: @sider-text-active-color;
+}
+.ant-menu-item-selected{
+  color: @sider-text-active-color;
+}
+.ant-menu-item{
+  padding-left: 48px !important;
+}
+.ant-menu-item.ant-menu-item-active{
+  //padding-left: 30px !important;
+}
+.ant-menu-item:active, .ant-menu-submenu-title:active{
+  background: none;
+}
+.ant-menu-inline{
+  border-right:0px;
+}
+.ant-menu-inline .ant-menu-item, .ant-menu-inline .ant-menu-submenu-title{
+  width: 100%;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //alert
 .ant-alert {
   border-radius: 2px;
@@ -716,6 +771,7 @@ i.anticon.icon-lg {
 /**布局内样式修改*/
 .winning-header{
   align-items: flex-end;
+  background-color: rgba(255, 255, 255, 0.9);
   .winning-tabs{
     display: flex;
     align-items: flex-end;
@@ -795,3 +851,9 @@ i.anticon.icon-lg {
     left: 40px;
   }
 };
+.winning-sider{
+
+};
+.winning-child-table{
+  margin: -5px -5px -6px -5px!important;
+}

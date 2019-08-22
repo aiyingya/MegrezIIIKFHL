@@ -2,7 +2,7 @@
 .open {
   width: calc(100% - @sider-inline-width);
   height: @sider-header-height;
-  background: @header-gradient-color;
+  background: @header-gradient-color1;
   position: fixed;
   top: 0;
   left: @sider-inline-width;
@@ -12,10 +12,12 @@
 .close{
   width: calc(100% - @sider-collapsed-width);
   height: @sider-header-height;
-  background: @header-gradient-color;
+  background: @header-gradient-color1;
   position: fixed;
   top: 0;
-  left: @sider-collapsed-width
+  left: @sider-collapsed-width;
+  display: flex;
+  align-items: center;
 }
 
 

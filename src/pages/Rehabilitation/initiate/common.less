@@ -1,0 +1,182 @@
+
+.tableMain{
+  min-height: auto!important;
+}
+.textColor{
+  color: #15A4FA;
+}
+.jumpSelect{
+  width: 72px;
+  text-align: center;
+  border: 1px solid #25A6F7;
+  color: #15A4FA;
+  cursor:pointer;
+}
+
+.green{
+  color: #38C78C;
+}
+.red{
+  color: #FF7477;
+}
+.blue{
+  color: #15A4FA;
+}
+.error{}
+.raioTab{
+  margin: 33px 57px 16px 57px;
+}
+
+// index.js
+.speTable {
+  background-color:#FFFFFF;
+  :global {
+    .winning-table-spe-nested{
+      .ant-table-thead{
+        background: #5594EB;
+        > tr > th{
+          color: #FFFFFF;
+        }
+      }
+    }
+    .winning-child-table{
+      .ant-table-thead{
+        background: #fafafa;
+         > tr > th{
+           background: rgba(239, 241, 245, 0.6);
+          color: #666666;
+        }
+      }
+    }
+    /*.ant-table-expand-icon-th {
+      width: 100px;
+    }*/
+    tr.ant-table-expanded-row.ant-table-expanded-row-level-1{
+      >td:first-child{
+        position: relative;
+        background-color: white;
+      }
+      >td:first-child:before{
+        content: "";
+        width: 100%;
+        height: 40px;
+        position: absolute;
+        background:rgba(239,241,245,0.7);
+        top: 0;
+        bottom: 0;
+        left: 0;
+      }
+      >td:last-child{
+        padding: 5px 0;
+
+      }
+    }
+  }
+}
+
+// applicationForAdmission.js
+.tabContent{
+  margin: 0 57px;
+  padding-top: 26px;
+  border: 1px solid rgba(159,175,199,1);
+  .descriptions{
+    :global {
+      .ant-descriptions-title {
+        font-size:16px;
+        font-family:MicrosoftYaHei;
+        font-weight:bold;
+        color:rgba(51,51,51,1);
+        line-height:21px;
+        text-align: center;
+      }
+      .ant-descriptions-view{
+        border: 1px solid #e8e8e8;
+        border-radius: 0;
+      }
+      .ant-descriptions-row {
+        border-bottom: 1px solid #e8e8e8;
+        height: 46px;
+      }
+      .ant-descriptions-item-label{
+        width: 136px;
+        background-color: #DFECFF;
+        padding: 7px 16px;
+        border-right: 1px solid #e8e8e8;
+        text-align: right;
+      }
+      .ant-descriptions-item-content{
+        padding: 7px;
+        border-right: 1px solid #e8e8e8;
+      }
+
+      .ant-descriptions-item-label,.ant-descriptions-item-content {
+        font-size:12px;
+        font-family:MicrosoftYaHei;
+        color:rgba(51,51,51,1);
+        line-height:16px;
+      }
+      .ant-descriptions-item-label:last-child, .ant-descriptions-item-content:last-child {
+        border-right: none;
+      }
+
+      .ant-descriptions-row >td:after{
+        content: none;
+      }
+    }
+  }
+  .rowStyle{
+    padding: 15px;
+    border-bottom:1px solid #9FAFC7 ;
+    textarea{
+      margin-top: 9px!important;
+    }
+    .noneBorder{
+      border: 0;
+    }
+    .checkboxFlex{
+      display: flex;
+      flex-flow: column;
+    }
+    .checkboxChild{
+      margin-left: 46px;
+    }
+  }
+  .tableStyle{
+    :global{
+      .ant-table{
+        font-size:12px;
+        font-family:MicrosoftYaHei;
+        color:rgba(51,51,51,1);
+        line-height:16px;
+      }
+      .ant-table-thead > tr > th:not(:last-child):after{
+        content: "";
+        display: table;
+        border-right: 1px solid #e8e8e8;
+        height: 28px;
+        position: absolute;
+        right: 5px;
+        top: 10px;
+      }
+    }
+    .clickText{
+      margin-left: 10px;
+      color:rgba(21,164,250,1);
+      cursor: pointer;
+    }
+    >title{
+      display: block;
+      margin: 10px 0 0 16px;
+    }
+    button{
+      background: rgba(21,164,250,1);
+      border-radius: 4px;
+      color: #FFFFFF;
+      margin: 16px;
+    }
+  }
+}
+
+.buttons{
+  margin: 0 57px;
+}

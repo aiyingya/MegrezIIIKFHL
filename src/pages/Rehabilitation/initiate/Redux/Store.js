@@ -2,7 +2,7 @@ import { createStore } from 'redux';
 import {reducer} from './Reducer';
 import moment from 'moment';
 import {loadingStart,loadingEnd,setDatas,search,getFormItems, setSearchObj,setStaticStatus, setTempSearchObj,setBtnRequestActive, setBtnRequestDisplay,
-    setBtnLoadingActive,setBtnLoadingDisplay,setTypeDatas
+    setBtnLoadingActive,setBtnLoadingDisplay,setTypeDatas,pageTempObj,pageTempObjCY
 } from './Actions';
 import api from "@/api/InitiateApi";
 import {Global,Uc} from 'winning-megreziii-utils';
@@ -41,7 +41,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                         result.onChange = (_page, _pageSize)=>{
                             // 绑定分页按钮点击事件
                             _this.props.dict.initTable(_this,{value:_this.props.state.searchObj,page:_page, pageSize:_pageSize})
-
                         }
                         // 写入查询条件，在上方[看上方代码]分页点击时传入查询条件_this.props.state.searchObj
                         dispatch(setSearchObj(searchObj));
@@ -78,12 +77,46 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 // 写入查询Form，用于显示查询组件内容
                 dispatch(getFormItems(forms));
                 // 显示信息时使用
+                debugger
                 dispatch(setStaticStatus({flowStatus:_flowStatus,flowType:_flowType,node:_node}));
             },
             setTempSearchObj:(_this,searchObj={})=>{
                 let result = {..._this.props.state.searchObj,..._this.props.state.tempSearchObj,...searchObj};
                 dispatch(setTempSearchObj(result));
             },
+        },
+        applicationForAdmission:{
+            setPageTempObj:(_this,objs)=>{
+                let result = {..._this.props.state.pageTempObj,...objs};
+                dispatch(pageTempObj(result));
+            },
+            handleOperate: async (record,fun) => {
+                // 保存
+                dispatch(setBtnLoadingActive());
+                dispatch(setBtnRequestDisplay());
+                let result = await api.in_hosp_apply(record).finally(() => {
+                    // setTimeout(()=>{dispatch(setBtnLoadingDisplay())},Global.AlertTime*1000);
+                    dispatch(setBtnLoadingDisplay());
+                    setTimeout(()=>{dispatch(setBtnRequestActive())},Global.AlertTime*1000);
+                });
+                Global.alert(result,{successFun:fun});
+            },
+        },
+        dischargeAssessment:{
+            setPageTempObjCY:(_this,objs)=>{
+                let result = {..._this.props.state.pageTempObjCY,...objs};
+                dispatch(pageTempObjCY(result));
+            },
+            getUser:async (_this,personName)=>{
+                let result = await api.person_infos({personName});
+                Global.alert(result,{
+                    successFun:()=>{
+                        let personUserList = result.datas || [];
+                        _this.props.dischargeAssessment.setPageTempObjCY(_this,{personUserList});
+                    },
+                    isSuccessAlert:false
+                });
+            }
         }
     }
 }

@@ -26,6 +26,7 @@ export default (self)=>{
             title: '操作',
             dataIndex:'key2',
             render:(texts, record, index) =>{
+                if(record.isTest){return "";}
                 return <div><span className={style.clickText}>下载</span><span className={style.clickText}>删除</span></div>
             }
         }

@@ -79,6 +79,7 @@
   },
   "devDependencies": {
     "happypack": "^5.0.1",
-    "os": "^0.1.1"
+    "os": "^0.1.1",
+    "react-to-print": "^2.3.2"
   }
 }

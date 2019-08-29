@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { Button, Form, Input, Icon ,Spin} from 'antd';
 import style from './Login.less'
 import logo from './img/logo.png'
-import {Uc} from 'winning-megreziii-utils';
+import {Global, Uc} from 'winning-megreziii-utils';
 
 class Login extends Component {
     constructor(props) {
@@ -32,6 +32,7 @@ class Login extends Component {
                 loading:false
             })
         }else{
+            Global.localStorage.set(Global.localStorage.key.userInfo,result.data || "admin");
             window.location.href="/index.html";
         }
     }
@@ -56,7 +57,7 @@ class Login extends Component {
                 <div className={style.coverbg}></div>
                     {!this.state.loading && <div className={style.body}> <div className={style.logo}>
                         <img  src={logo}/>
-                        <p>核心知识库引擎系统</p>
+                        <p>康复护理系统</p>
                     </div>
                     <Form className={style.form} onSubmit={this.handelSubmit}>
                         <Form.Item >

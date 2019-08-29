@@ -23,11 +23,20 @@
   color: #15A4FA;
 }
 .error{}
+
+
 .raioTab{
   margin: 33px 57px 16px 57px;
 }
 
 // index.js
+.winningBody{
+  :global{
+    .winning-body{
+      min-width: 940px;
+    }
+  }
+}
 .speTable {
   background-color:#FFFFFF;
   :global {
@@ -76,12 +85,17 @@
 
 // applicationForAdmission.js
 .tabContent{
+  @lable-padding: 7px 16px;
+  @lable-bg-color:#DFECFF;
+  @content-padding:7px;
+  @border-line-color:1px solid #e8e8e8;
+  @margin-top-div:14px;
   margin: 0 57px;
-  padding-top: 26px;
   border: 1px solid rgba(159,175,199,1);
   .descriptions{
     :global {
       .ant-descriptions-title {
+        margin: 25px 0;
         font-size:16px;
         font-family:MicrosoftYaHei;
         font-weight:bold;
@@ -90,23 +104,27 @@
         text-align: center;
       }
       .ant-descriptions-view{
-        border: 1px solid #e8e8e8;
+        table{
+          width: 100%;
+        }
+        border: @border-line-color;
         border-radius: 0;
       }
       .ant-descriptions-row {
-        border-bottom: 1px solid #e8e8e8;
+        border-bottom: @border-line-color;
         height: 46px;
       }
       .ant-descriptions-item-label{
-        width: 136px;
-        background-color: #DFECFF;
-        padding: 7px 16px;
-        border-right: 1px solid #e8e8e8;
+        width: 15%;
+        background-color: @lable-bg-color;
+        padding: @lable-padding;
+        border-right: @border-line-color;
         text-align: right;
       }
       .ant-descriptions-item-content{
-        padding: 7px;
-        border-right: 1px solid #e8e8e8;
+        width: 35%;
+        padding: @content-padding;
+        border-right: @border-line-color;
       }
 
       .ant-descriptions-item-label,.ant-descriptions-item-content {
@@ -142,6 +160,7 @@
     }
   }
   .tableStyle{
+
     :global{
       .ant-table{
         font-size:12px;
@@ -152,7 +171,7 @@
       .ant-table-thead > tr > th:not(:last-child):after{
         content: "";
         display: table;
-        border-right: 1px solid #e8e8e8;
+        border-right: @border-line-color;
         height: 28px;
         position: absolute;
         right: 5px;
@@ -164,7 +183,7 @@
       color:rgba(21,164,250,1);
       cursor: pointer;
     }
-    >title{
+    >header{
       display: block;
       margin: 10px 0 0 16px;
     }
@@ -175,8 +194,153 @@
       margin: 16px;
     }
   }
+  .heightText{
+    color:#15A4FA;
+  }
+  .propList{
+    margin-top: @margin-top-div;
+    display: flex;
+    flex-flow: column;
+    font-size:12px;
+    font-family:MicrosoftYaHei;
+    color:rgba(51,51,51,1);
+    line-height:16px;
+    header{
+      display: flex;
+      height: 48px;
+      line-height: 48px;
+      text-align: center;
+      background-color: @lable-bg-color;
+      border-top: @border-line-color;
+      border-bottom: @border-line-color;
+      div{
+        border-right: @border-line-color;
+      }
+      div:first-child{
+        width: 15%;
+      }
+      div:last-child{
+        flex: 1;
+        border-right:none;
+      }
+    }
+    >div{
+      display: flex;
+      height: 48px;
+      line-height: 48px;
+      border-bottom: @border-line-color;
+      >div:first-child{
+        width: 15%;
+        padding: 0 16px;
+        text-align: right;
+        background-color: @lable-bg-color;
+        border-right: @border-line-color;
+      }
+      >div:last-child{
+        padding:  0 7px;
+        flex: 1;
+      }
+    }
+    .heightText{
+      color:rgba(21,164,250,1);
+    }
+  }
+  .propThreeList{
+    text-align: center;
+    margin-top: @margin-top-div;
+    display: flex;
+    flex-flow: column;
+    font-size:12px;
+    font-family:MicrosoftYaHei;
+    color:rgba(51,51,51,1);
+    line-height:16px;
+    title{
+      display: block;
+    }
+    header,>div,.sumScore,footer{
+      display: flex;
+      height: 48px;
+      line-height: 48px;
+    }
+    header{
+      background-color: @lable-bg-color;
+      border-top: @border-line-color;
+      border-bottom: @border-line-color;
+      title{
+        border-right: @border-line-color;
+      }
+      title:first-child, title:last-child{
+        width: 15%;
+      }
+      title:nth-child(2){
+        flex: 1;
+      }
+      title:last-child{
+        border-right:none;
+      }
+    }
+    >div{
+      border-bottom: @border-line-color;
+      title{
+        border-right: @border-line-color;
+      }
+      title:first-child,>div:last-child{
+        width: 15%;
+      }
+      title:first-child{
+        padding: 0 7px;
+        background-color: @lable-bg-color;
+      }
+      title:nth-child(2){
+        flex: 1;
+      }
+      >div:last-child{
+        padding:0 16px;
+        border-right:none;
+      }
+    }
+    .heightText{
+      color:rgba(21,164,250,1);
+    }
+    .sumScore{
+      font-size:12px;
+      font-family:MicrosoftYaHei;
+      font-weight:bold;
+      color:rgba(51,51,51,1);
+      span{
+        flex: 1;
+        width: 85%;
+        padding: 0 7px;
+        text-align: right;
+        border-right: @border-line-color;
+      }
+      >div{
+        text-align: left;
+        padding-left: 27px!important;
+      }
+    }
+    footer{
+      border-bottom: @border-line-color;
+      title{
+        width: 15%;
+        padding: 0 7px;
+        border-right: @border-line-color;
+        background-color: @lable-bg-color;
+      }
+      >div{
+        flex: 1;
+        padding:0 16px;
+      }
+    }
+  }
+  .marginTopDiv{
+    margin-top: @margin-top-div;
+  }
 }
 
 .buttons{
   margin: 0 57px;
+}
+.hidden{
+  display: none;
 }

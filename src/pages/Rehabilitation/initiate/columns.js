@@ -70,7 +70,7 @@ export default (self)=>{
                 let _flowType = state.staticStatus.flowType || [];
                 const objct = _flowType.find(res=>res.value == texts) || {};
                 //dict_flowType 内的字典
-                let badge = '';
+                let badge = null;
                 switch (Number(objct.value)){
                     case 0:
                         badge ="processing"
@@ -79,10 +79,9 @@ export default (self)=>{
                         badge ="success"
                         break;
                     default:
-                        badge ="error"
                         break;
                 }
-                return <span><Badge status={badge} />{objct.name}</span>
+                return <span>{badge? <Badge status={badge} /> : ''}{objct.name}</span>
             }
 
         }

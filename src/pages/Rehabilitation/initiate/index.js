@@ -28,7 +28,7 @@ class Initiate extends Component {
                     className: Global.BottomCss.REMOVE,
                     text:'康复出院评估',
                     onClick:(e)=>{
-                        this.handleRemove(this.state.selectedRows);
+                        this.goDischargeAssessment();
                     }
                 }
             ]
@@ -42,6 +42,15 @@ class Initiate extends Component {
             }
         })
     }
+    goDischargeAssessment(record){
+        this.props.history.push({
+            pathname: '/rehabilitation/initiate/dischargeAssessment',
+            query: {
+                record: record
+            }
+        })
+    }
+
     goEditRole(record){
 
     }
@@ -58,11 +67,11 @@ class Initiate extends Component {
     componentWillMount(){
         let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
         if (isFrozenPaging) {
-            this.props.initiate.initTable(this,{isFrozenPaging});
+            // this.props.initiate.initTable(this,{isFrozenPaging});
             this.props.initiate.initSearch(this.props.state.tempSearchObj);
         }else{
             this.props.initiate.initSearch();
-            this.props.initiate.initTable(this);
+            // this.props.initiate.initTable(this);
         }
     }
 

@@ -14,3 +14,5 @@ export const setBtnRequestDisplay = createAction(types.BTN_REQUEST_DISPLAY);
 export const setTypeDatas = createAction(types.SET_TYPE_DATAS);
 export const setStaticStatus = createAction(types.SET_STATIC_STATUS);
 export const setTempSearchObj = createAction(types.SET_TEMP_SEARCH_OBJ);
+export const pageTempObj = createAction(types.PAGE_TEMP_OBJ);
+export const pageTempObjCY = createAction(types.PAGE_TEMP_OBJ_CY);

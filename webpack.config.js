@@ -10,8 +10,8 @@ const HappyPack = require('happypack');
 const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 
 let option = {
-    mode: 'development',
-    // mode:'production',
+    // mode: 'development',
+    mode:'production',
     devtool: 'source-map',
     entry: {
         main: ['babel-polyfill', __dirname + "/app/entry.js"]
@@ -82,9 +82,14 @@ let option = {
                 }
             },
             '/rest': {
-                target: 'http://192.168.1.61:8081',
-                // target: 'http://192.168.16.160:9005',
-                ws: false,
+                // target: 'http://192.168.1.61:8081',// 吴涛
+                target: 'http://192.168.18.172:9004',//陈丙东
+                // ws: false,
+                changeOrigin: true
+            },
+            '/KFHL': {
+                target: 'http://192.168.18.172:9004',//陈丙东
+                // ws: false,
                 changeOrigin: true
             }
         },
@@ -230,6 +235,11 @@ let option = {
             loaders: ['babel-loader'],
             threadPool: happyThreadPool,
             verbose: true
+        }),
+        new webpack.ProvidePlugin({
+            $: "jquery",
+            jQuery: "jquery",
+            "window.jQuery": "jquery"
         })
     ],
     performance: {hints: false}

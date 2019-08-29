@@ -1,8 +1,16 @@
 // Step
 import React,{Component} from 'react';
+import {Icon} from 'antd';
 import * as PropTypes from 'prop-types';
-import style from './Step.less'
-
+import style from '../Step/Step.less'
+const myStatic = {
+    node :{
+        Zero:"0",//医生发起
+        One:"1",//机构审核
+        Two:"2",//社保中心审核
+        Three:"3",//归档
+    }
+}
 class Step extends Component {
     constructor(props) {
         super(props);
@@ -10,17 +18,17 @@ class Step extends Component {
             // 是否显示收起/显示全部
             isShow: true,
             // 是否展开
-            isSpread: true
+            isSpread: true,
+            // 默认当前的步骤
+            node:myStatic.node.Zero
         };
-        // this.onChange = this.onChange.bind(this);
         this.onClick = this.onClick.bind(this);
     }
     onClick() {
-        console.log("oo",this.state.isSpread)
         this.setState({isSpread:!this.state.isSpread});
     }
     render() {
-        let {isShow = this.state.isShow, isSpread = this.state.isSpread} =  this.props;
+        let {isShow = this.state.isShow, isSpread = this.state.isSpread,node =this.state.node} =  this.props;
         return (
                 <div className={style.speBody}>
 
@@ -29,7 +37,7 @@ class Step extends Component {
                             <div className="ant-steps-item-container">
                                 <div className="ant-steps-item-tail"></div>
                                 <div className="winning-style-div">
-                                    <div className="ant-steps-item-icon select"><span className="ant-steps-icon"><i
+                                    <div className={`ant-steps-item-icon ${ (!node || Number(node) >= Number(myStatic.node.Zero)) ? 'select' : '' }`}><span className="ant-steps-icon"><i
                                         aria-label="图标: check" className="anticon anticon-check ant-steps-finish-icon"><svg
                                         viewBox="64 64 896 896" focusable="false" className="" data-icon="check"
                                         width="1em" height="1em" fill="currentColor" aria-hidden="true"><path
@@ -53,7 +61,7 @@ class Step extends Component {
                             <div className="ant-steps-item-container">
                                 <div className="ant-steps-item-tail"></div>
                                 <div className="winning-style-div">
-                                    <div className="ant-steps-item-icon"><span className="ant-steps-icon"><i
+                                    <div className={`ant-steps-item-icon ${ (!node || Number(node) >= Number(myStatic.node.One)) ? 'select' : '' }`} ><span className="ant-steps-icon"><i
                                         aria-label="图标: check" className="anticon anticon-check ant-steps-finish-icon"><svg
                                         viewBox="64 64 896 896" focusable="false" className="" data-icon="check"
                                         width="1em" height="1em" fill="currentColor" aria-hidden="true"><path
@@ -77,7 +85,7 @@ class Step extends Component {
                             <div className="ant-steps-item-container">
                                 <div className="ant-steps-item-tail"></div>
                                 <div className="winning-style-div">
-                                    <div className="ant-steps-item-icon"><span className="ant-steps-icon"><i
+                                    <div  className={`ant-steps-item-icon ${ (!node || Number(node) >= Number(myStatic.node.Two)) ? 'select' : '' }`}><span className="ant-steps-icon"><i
                                         aria-label="图标: check" className="anticon anticon-check ant-steps-finish-icon"><svg
                                         viewBox="64 64 896 896" focusable="false" className="" data-icon="check"
                                         width="1em" height="1em" fill="currentColor" aria-hidden="true"><path
@@ -101,7 +109,7 @@ class Step extends Component {
                             <div className="ant-steps-item-container">
                                 <div className="ant-steps-item-tail"></div>
                                 <div className="winning-style-div">
-                                    <div className="ant-steps-item-icon"><span className="ant-steps-icon"><i
+                                    <div  className={`ant-steps-item-icon ${ (!node || Number(node) >= Number(myStatic.node.Three)) ? 'select' : '' }`}><span className="ant-steps-icon"><i
                                         aria-label="图标: check" className="anticon anticon-check ant-steps-finish-icon"><svg
                                         viewBox="64 64 896 896" focusable="false" className="" data-icon="check"
                                         width="1em" height="1em" fill="currentColor" aria-hidden="true"><path
@@ -124,9 +132,12 @@ class Step extends Component {
                     </div>
                     {
                         isShow ? <div className="winning-spread">
+                            <a onClick={this.onClick}>
                             {
-                                isSpread? <div onClick={this.onClick}>收起</div>:<div onClick={this.onClick}>显示全部</div>
+                                isSpread? <div>收起</div>:<div>显示全部</div>
                             }
+                                <Icon type={this.state.isSpread ? 'up' : 'down'} />
+                            </a>
                         </div> :<div></div>
                     }
 

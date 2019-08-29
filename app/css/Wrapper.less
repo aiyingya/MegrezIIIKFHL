@@ -1,5 +1,33 @@
 @import "Define.less";
 //common css
+html,body,div,span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,abbr,address,cite,code,del,dfn,em,img,ins,kbd,q,samp,small,strong,sub,sup,var,b,i,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,time,mark,audio,video {
+  margin:0;
+  padding:0;
+  /*border:0;
+  */
+  /*outline:0;
+  */
+  /*font-size:100%;
+  vertical-align:baseline;
+  background:transparent;
+  */
+}
+h1,h2,h3,h4,h5,h6,em,i {
+  font-weight:100;
+  font-style:normal;
+}
+ul,ol,li {
+  list-style-type:none;
+}
+a {
+  color:#666;
+  text-decoration:none;
+  outline:0;
+}
+a:hover {
+  text-decoration:none;
+}
+
 body {
   font-size: 13px;
 }
@@ -731,6 +759,7 @@ i.anticon.icon-lg {
 // 设置最小宽度且居中
 .winning-body {
   height: 100%;
+  background-color: #EFF1F5;
   .winning-content{
     margin:24px;
     min-width: @table-minWidth;
@@ -770,8 +799,23 @@ i.anticon.icon-lg {
 }
 /**布局内样式修改*/
 .winning-header{
+  z-index: 1;
   align-items: flex-end;
-  background-color: rgba(255, 255, 255, 0.9);
+  background:rgba(255,255,255,1);
+  .admin{
+    position: fixed;
+    right:30px;
+    top: 31px;
+  }
+  .logout{
+    cursor: pointer;
+    >svg{
+      margin-left: 2px;
+    }
+    &:hover{
+      color: #1890ff;
+    }
+  }
   .winning-tabs{
     display: flex;
     align-items: flex-end;
@@ -779,6 +823,7 @@ i.anticon.icon-lg {
     height: 30px;
     box-sizing: border-box;
     padding-left: 2px;
+    margin-bottom: 5px;
   }
   @winning-tab-active: #1890ff;
   .winning-tab-active{
@@ -806,11 +851,9 @@ i.anticon.icon-lg {
       height: 100%;
       width: 100%;
       padding: 0 8px;
-      border: 1px solid #e8e8e8;
       border-bottom: 0;
       border-top-left-radius: 5px;
       border-top-right-radius: 5px;
-      background-color: #fafafa;
       color: #333;
       -webkit-transition: .3s;
       transition: .3s;
@@ -837,6 +880,9 @@ i.anticon.icon-lg {
         color: rgba(0,0,0,.45);
         font-size: 12px;
         cursor: pointer;
+        >i{
+          cursor: pointer;
+        }
       }
     }
   }
@@ -856,4 +902,36 @@ i.anticon.icon-lg {
 };
 .winning-child-table{
   margin: -5px -5px -6px -5px!important;
+}
+
+/** 自动完成组件Input的样式*/
+.global-search-wrapper {
+  padding-right: 50px;
+}
+
+.global-search {
+  width: 100%;
+}
+
+.global-search.ant-select-auto-complete .ant-input-affix-wrapper .ant-input:not(:last-child) {
+  padding-right: 62px;
+}
+
+.global-search.ant-select-auto-complete .ant-input-affix-wrapper .ant-input-suffix button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.global-search-item {
+  display: flex;
+}
+
+.global-search-item-desc {
+  flex: auto;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.global-search-item-count {
+  flex: none;
 }

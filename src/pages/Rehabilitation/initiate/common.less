@@ -88,43 +88,47 @@
   @lable-padding: 7px 16px;
   @lable-bg-color:#DFECFF;
   @content-padding:7px;
-  @border-line-color:1px solid #e8e8e8;
+  @border-line-color:1px solid #9FAFC7;
   @margin-top-div:14px;
   margin: 0 57px;
-  border: 1px solid rgba(159,175,199,1);
+  .pageMTop{
+    margin-top: 20px;
+  }
+  >div{
+    border: 1px solid rgba(159,175,199,1);
+  }
   .descriptions{
     :global {
       .ant-descriptions-title {
-        margin: 25px 0;
+        margin: 0;
+        padding: 25px 0;
         font-size:16px;
         font-family:MicrosoftYaHei;
         font-weight:bold;
         color:rgba(51,51,51,1);
         line-height:21px;
         text-align: center;
+        border-bottom:1px solid #9FAFC7;
       }
       .ant-descriptions-view{
         table{
           width: 100%;
         }
-        border: @border-line-color;
         border-radius: 0;
       }
       .ant-descriptions-row {
-        border-bottom: @border-line-color;
+        border-bottom: 1px solid #9FAFC7;
         height: 46px;
       }
       .ant-descriptions-item-label{
         width: 15%;
         background-color: @lable-bg-color;
         padding: @lable-padding;
-        border-right: @border-line-color;
         text-align: right;
       }
       .ant-descriptions-item-content{
         width: 35%;
-        padding: @content-padding;
-        border-right: @border-line-color;
+        padding: 0 @content-padding;
       }
 
       .ant-descriptions-item-label,.ant-descriptions-item-content {
@@ -142,14 +146,14 @@
       }
     }
   }
+  .noneBorder{
+    border: 0;
+  }
   .rowStyle{
     padding: 15px;
     border-bottom:1px solid #9FAFC7 ;
     textarea{
       margin-top: 9px!important;
-    }
-    .noneBorder{
-      border: 0;
     }
     .checkboxFlex{
       display: flex;
@@ -160,7 +164,6 @@
     }
   }
   .tableStyle{
-
     :global{
       .ant-table{
         font-size:12px;
@@ -176,6 +179,9 @@
         position: absolute;
         right: 5px;
         top: 10px;
+      }
+      .ant-table-tbody>.ant-table-row{
+        height: 46px;
       }
     }
     .clickText{
@@ -193,6 +199,11 @@
       color: #FFFFFF;
       margin: 16px;
     }
+    > title{
+      margin: 10px 0 0 16px;
+      display: block;
+      color:#15A4FA;
+    }
   }
   .heightText{
     color:#15A4FA;
@@ -207,8 +218,8 @@
     line-height:16px;
     header{
       display: flex;
-      height: 48px;
-      line-height: 48px;
+      height: 46px;
+      line-height: 46px;
       text-align: center;
       background-color: @lable-bg-color;
       border-top: @border-line-color;
@@ -226,18 +237,19 @@
     }
     >div{
       display: flex;
-      height: 48px;
-      line-height: 48px;
+      height: 46px;
+
       border-bottom: @border-line-color;
       >div:first-child{
         width: 15%;
         padding: 0 16px;
         text-align: right;
+        line-height: 46px;
         background-color: @lable-bg-color;
         border-right: @border-line-color;
       }
       >div:last-child{
-        padding:  0 7px;
+        padding:  7px;
         flex: 1;
       }
     }
@@ -257,10 +269,10 @@
     title{
       display: block;
     }
-    header,>div,.sumScore,footer{
+    header,>div,.sumScore{
       display: flex;
-      height: 48px;
-      line-height: 48px;
+      height: 46px;
+      line-height: 46px;
     }
     header{
       background-color: @lable-bg-color;
@@ -295,7 +307,8 @@
         flex: 1;
       }
       >div:last-child{
-        padding:0 16px;
+        line-height: 32px;
+        padding: 8px 16px;
         border-right:none;
       }
     }
@@ -319,22 +332,70 @@
         padding-left: 27px!important;
       }
     }
-    footer{
-      border-bottom: @border-line-color;
-      title{
-        width: 15%;
-        padding: 0 7px;
-        border-right: @border-line-color;
-        background-color: @lable-bg-color;
-      }
-      >div{
-        flex: 1;
-        padding:0 16px;
-      }
+  }
+  .footer{
+    display: flex;
+    height: 46px;
+    line-height: 46px;
+    border-bottom: @border-line-color;
+    title{
+      display: block;
+      width: 15%;
+      padding: 0 7px;
+      background-color: @lable-bg-color;
+    }
+    title.tRight{
+      text-align: right;
+      padding-right: 16px;
+    }
+    >div{
+      flex: 1;
+      margin: auto;
+      padding:0 16px;
     }
   }
   .marginTopDiv{
     margin-top: @margin-top-div;
+  }
+  .borderTop{
+    border-top: @border-line-color;
+  }
+}
+
+// 開始打印 ,打印樣式调整
+.tabContent.showPrint{
+  >div{
+    margin-top: 20px;
+    display: block;
+  }
+  .propList{
+    >div{
+      >div:last-child{
+        input{
+          border: 0;
+        }
+      }
+
+    }
+  }
+  .propThreeList{
+    >div{
+      >div:last-child{
+        :global{
+          .ant-select-selection{
+            border: 0;
+            .ant-select-arrow{
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+  .footer{
+    input{
+      border: none;
+    }
   }
 }
 
@@ -344,3 +405,4 @@
 .hidden{
   display: none;
 }
+

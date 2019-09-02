@@ -56,9 +56,9 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 let toData = moment();
                 let dateFormat = "YYYY/MM/DD";
                 let fromData = moment().subtract(3, "months");
-                let _flowStatus =await Uc.getDictKey("dict_flowStatus");
-                let _flowType =await Uc.getDictKey("dict_flowType");
-                let _node =await Uc.getDictKey("dict_node");
+                let _flowStatus =await Uc.getDictKey("KFHL_ST");
+                let _flowType =await Uc.getDictKey("KFHL_TB");
+                let _node =await Uc.getDictKey("KFHL_LC");
                 // 初始化查询条件
                 let forms = [
                     {labelName: '标题', formType: Global.SelectEnum.INPUT, name: 'title'},
@@ -77,7 +77,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 // 写入查询Form，用于显示查询组件内容
                 dispatch(getFormItems(forms));
                 // 显示信息时使用
-                debugger
                 dispatch(setStaticStatus({flowStatus:_flowStatus,flowType:_flowType,node:_node}));
             },
             setTempSearchObj:(_this,searchObj={})=>{
@@ -101,6 +100,30 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 });
                 Global.alert(result,{successFun:fun});
             },
+            setApplyFile:(_this,fileRecord={})=>{
+                let {uploadApplyFiles =[]} = _this.props.state.pageTempObj;
+                let {setPageTempObj} = _this.props.applicationForAdmission;
+                uploadApplyFiles.push(fileRecord);
+                setPageTempObj(_this,{uploadApplyFiles:uploadApplyFiles});
+            },
+            setBergFile:(_this,fileRecord={})=>{
+                let {uploadBergFiles =[]} = _this.props.state.pageTempObj;
+                let {setPageTempObj} = _this.props.applicationForAdmission;
+                uploadBergFiles.push(fileRecord);
+                setPageTempObj(_this,{uploadBergFiles});
+            },
+            removeApplayFile:(_this,fileRecord)=>{
+                let {setPageTempObj} = _this.props.applicationForAdmission;
+                let {uploadApplyFiles} = _this.props.state.pageTempObj;
+                let array =uploadApplyFiles.filter(res=>res.fileId != fileRecord.fileId);
+                setPageTempObj(_this,{uploadApplyFiles:array});
+            },
+            removeBergFile:(_this,fileRecord)=>{
+                let {setPageTempObj} = _this.props.applicationForAdmission;
+                let {uploadBergFiles} = _this.props.state.pageTempObj;
+                let array = uploadBergFiles.filter(res=>res.fileId != fileRecord.fileId);
+                setPageTempObj(_this,{uploadBergFiles:array});
+            },
         },
         dischargeAssessment:{
             setPageTempObjCY:(_this,objs)=>{
@@ -116,7 +139,19 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                     },
                     isSuccessAlert:false
                 });
-            }
+            },
+            setBergFile:(_this,fileRecord={})=>{
+                let {setPageTempObjCY} = _this.props.dischargeAssessment;
+                let {uploadBergFiles =[]} = _this.props.state.pageTempObjCY;
+                uploadBergFiles.push(fileRecord);
+                setPageTempObjCY(_this,{uploadBergFiles});
+            },
+            removeBergFile:(_this,fileRecord)=>{
+                let {setPageTempObjCY} = _this.props.applicationForAdmission;
+                let {uploadBergFiles} = _this.props.state.pageTempObjCY;
+                let array = uploadBergFiles.filter(res=>res.fileId != fileRecord.fileId);
+                setPageTempObjCY(_this,{uploadBergFiles:array});
+            },
         }
     }
 }

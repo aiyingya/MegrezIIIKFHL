@@ -32,7 +32,7 @@ class Login extends Component {
                 loading:false
             })
         }else{
-            Global.localStorage.set(Global.localStorage.key.userInfo,result.data || "admin");
+            Global.localStorage.set(Global.localStorage.key.userInfo,result.data);
             window.location.href="/index.html";
         }
     }

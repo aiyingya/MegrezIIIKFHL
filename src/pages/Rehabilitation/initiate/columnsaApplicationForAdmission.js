@@ -3,12 +3,12 @@ import {Global,Uc} from 'winning-megreziii-utils';
 import {Badge} from 'antd';
 import style from './common.less';
 
-export default (self)=>{
-    // const {initiate,state}=self.props;
+export default (self,{remove})=>{
     return [
         {
             title: '序号',
-            dataIndex: 'key',
+            dataIndex: 'fileId',
+            render:(text,record,index)=>`${index+1}`,
         }, {
             title: '文件名',
             dataIndex: 'name',
@@ -24,10 +24,12 @@ export default (self)=>{
         } ,
         {
             title: '操作',
-            dataIndex:'key2',
+            dataIndex: 'operation',
             render:(texts, record, index) =>{
                 if(record.isTest){return "";}
-                return <div><span className={style.clickText}>下载</span><span className={style.clickText}>删除</span></div>
+                return <div>
+                    <span className={style.clickText} onClick={()=>{self.clickDownLoad(record.fileUrl)}}>下载</span>
+                    <span className={style.clickText} onClick={()=>{remove(self,record)}}>删除</span></div>
             }
         }
 

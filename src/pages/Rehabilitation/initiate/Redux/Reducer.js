@@ -25,7 +25,7 @@ let initialState = {
     // 康复入院申请
     pageTempObj:{
         // 显示哪个tab页
-        tabValue:'1',
+        tabValue:'0',
         // 显示哪些数据
         record:{},
         // 诊断依据的上端依据['0', "1"]
@@ -54,7 +54,7 @@ let initialState = {
         // 平很量表中的总分数
         sumScore:"",
         // 上传的评估文件
-        uploadBergFiles:[],
+        uploadBergFiles:[]
     }
 };
 

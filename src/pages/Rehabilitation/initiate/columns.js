@@ -69,7 +69,7 @@ export default (self)=>{
             dataIndex:'flowType',render:(texts, record, index) =>{
                 let _flowType = state.staticStatus.flowType || [];
                 const objct = _flowType.find(res=>res.value == texts) || {};
-                //dict_flowType 内的字典
+                //KFHL_TB 内的字典
                 let badge = null;
                 switch (Number(objct.value)){
                     case 0:
@@ -88,7 +88,7 @@ export default (self)=>{
         ,
         {
             title: '历史流程',
-            dataIndex:'inHospTableId',
+            dataIndex:'operation',
             render: (texts, record, index) =>{
                 return <div onClick={()=>{self.goEditApplicationForAdmission(record)}} className={style.jumpSelect}>查看</div>
             }
@@ -97,7 +97,7 @@ export default (self)=>{
             title: '备注',
             dataIndex:'flowStatus',
             render: async (texts, record, index) =>{
-                //dict_flowStatus 内的 {"name": "不通过","value": "1"}
+                //KFHL_ST 内的 {"name": "不通过","value": "1"}
                 if(texts == 1){
                     return <span onClick={()=>{self.goEditRole(record)}} className={style.textColor}>退回原因</span>
                 }

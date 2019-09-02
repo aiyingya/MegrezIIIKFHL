@@ -23,7 +23,7 @@ class Header extends Component {
 
         return (
             <div className='admin' >
-                {this.user.yh_mc}，<span className='logout' onClick={this.logout}>退出<Icon type="logout" /></span>
+                {this.user.yh_mc || 'admin'}，<span className='logout' onClick={this.logout}>退出<Icon type="logout" /></span>
             </div>
         );
     }

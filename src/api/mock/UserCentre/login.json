@@ -1,11 +1,10 @@
 {
-  "message": "",
   "status": 0,
-  "timestamp": 1534844188679,
-  "body": {
-    "remember_me": true,
-    "username": "admin",
-    "password": "21232f297a57a5a743894a0e4a801fc3"
-  },
-  "result": {"xg_id":"admin","cr_id":"admin","sc_bs":"0","dh":"11111111111","py":"admin","yh_mm":"a9abc33f54f27eb1","xg_sj":1563183250000,"cr_sj":1494813302000,"yh_tcq":[{"area_name":"1113","area_id":"0000000001","area_code":"1112111h"},{"area_name":"ffffhgh","area_id":"0000000019","area_code":"fghfghf"},{"area_name":"ddd","area_id":"0000000020","area_code":"ddddd"}],"yh_id":1,"xm":"11111111112","org_id":null,"qyzt":"1","bz":"55555","org_name":null,"zw":"231","yh_mc":"admin","yx":"winning@qq.com"}
+  "data":{
+    "yh_id":"1",
+    "yh_mc":"测试admin",
+    "yh_mm":"111111",
+    "xm":"192.168.1.1",
+    "py":"admn"
+  }
 }

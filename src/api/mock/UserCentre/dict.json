@@ -7,7 +7,7 @@
         "value": "5"
       }
     ],
-    "dict_flowStatus": [
+    "KFHL_ST": [
       {
         "name": "通过",
         "value": "0"
@@ -21,7 +21,7 @@
         "value": "2"
       }
     ],
-    "dict_flowType": [
+    "KFHL_TB": [
       {
         "name": "入院评估 ",
         "value": "0"
@@ -31,7 +31,7 @@
         "value": "1"
       }
     ],
-    "dict_node": [
+    "KFHL_LC": [
       {
       "name": "医生提交 ",
       "value": "0"
@@ -43,6 +43,10 @@
       {
       "name": "社保中心审核",
       "value": "2"
+      },
+      {
+        "name": "归档",
+        "value": "3"
       }
     ],
     "AJLX": [

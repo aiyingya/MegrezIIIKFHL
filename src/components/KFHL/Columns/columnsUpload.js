@@ -1,5 +1,5 @@
 import React from 'react';
-import style from './common.less';
+import style from '../common.less';
 
 export default (self,{remove})=>{
     return [

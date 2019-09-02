@@ -1,3 +1,4 @@
+// 发起流程只能查看当前医生用户的流程节点
 import React, {Component} from 'react';
 import { Table, Badge, Menu, Dropdown, Icon,Divider } from 'antd';
 import {Global,Utils,ReduxWarpper,BasicFormComponent, BasicGroupComponent,AuthComponent,Scrollbar} from 'winning-megreziii-utils';
@@ -51,12 +52,6 @@ class Initiate extends Component {
         })
     }
 
-    goEditRole(record){
-
-    }
-    goEditOrg(record){
-
-    }
     handleSearch(value){
         this.props.initiate.initTable(this,{value});
     }

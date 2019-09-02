@@ -1,7 +1,7 @@
 import React,{Component,Fragment} from 'react';
 import * as PropTypes from 'prop-types';
 import {Upload, Button, Icon, Table} from 'antd';
-class UploadFile extends Component {
+class UploadFileNoName extends Component {
     constructor(props) {
         super(props);
     }
@@ -32,4 +32,4 @@ PropTypes.propTypes = {
     dataSource: PropTypes.bool.isRequired,
     columnsaApplicationForAdmission: PropTypes.bool.isRequired
 };
-export default UploadFile;
+export default UploadFileNoName;

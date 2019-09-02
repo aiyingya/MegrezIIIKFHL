@@ -12,85 +12,34 @@
   color: #15A4FA;
   cursor:pointer;
 }
-.alertText{
-  width: 72px;
-  text-align: center;
-  border: 1px solid #FF7477;
-  color: #FF7477;
-  cursor:pointer;
+
+.green{
+  color: #38C78C;
 }
+.red{
+  color: #FF7477;
+}
+.blue{
+  color: #15A4FA;
+}
+.error{}
+
 
 .raioTab{
   margin: 33px 57px 16px 57px;
 }
 
-// index.js
-.winningBody{
-  :global{
-    .winning-body{
-      min-width: 940px;
-    }
-  }
-}
-.speTable {
-  background-color:#FFFFFF;
-  :global {
-    .winning-table-spe-nested{
-      .ant-table-thead{
-        background: #5594EB;
-        > tr > th{
-          color: #FFFFFF;
-        }
-      }
-    }
-    .winning-child-table{
-      .ant-table-thead{
-        background: #fafafa;
-        > tr > th{
-          background: rgba(239, 241, 245, 0.6);
-          color: #666666;
-        }
-      }
-    }
-    /*.ant-table-expand-icon-th {
-      width: 100px;
-    }*/
-    tr.ant-table-expanded-row.ant-table-expanded-row-level-1{
-      >td:first-child{
-        position: relative;
-        background-color: white;
-      }
-      >td:first-child:before{
-        content: "";
-        width: 100%;
-        height: 40px;
-        position: absolute;
-        background:rgba(239,241,245,0.7);
-        top: 0;
-        bottom: 0;
-        left: 0;
-      }
-      >td:last-child{
-        padding: 5px 0;
-
-      }
-    }
-  }
-}
 
 // applicationForAdmission.js
-.tabContent{
+.tabSelf{
   @lable-padding: 7px 16px;
   @lable-bg-color:#DFECFF;
   @content-padding:7px;
   @border-line-color:1px solid #9FAFC7;
   @margin-top-div:14px;
-  margin: 0 57px;
+  border: 1px solid rgba(159,175,199,1);
   .pageMTop{
     margin-top: 20px;
-  }
-  >div{
-    border: 1px solid rgba(159,175,199,1);
   }
   .descriptions{
     :global {
@@ -358,42 +307,6 @@
   }
 }
 
-// 開始打印 ,打印樣式调整
-.tabContent.showPrint{
-  >div{
-    margin-top: 20px;
-    display: block;
-  }
-  .propList{
-    >div{
-      >div:last-child{
-        input{
-          border: 0;
-        }
-      }
-
-    }
-  }
-  .propThreeList{
-    >div{
-      >div:last-child{
-        :global{
-          .ant-select-selection{
-            border: 0;
-            .ant-select-arrow{
-              display: none;
-            }
-          }
-        }
-      }
-    }
-  }
-  .footer{
-    input{
-      border: none;
-    }
-  }
-}
 
 .buttons{
   margin: 0 57px;

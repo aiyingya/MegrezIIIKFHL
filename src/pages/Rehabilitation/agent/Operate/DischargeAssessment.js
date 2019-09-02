@@ -1,4 +1,4 @@
-// 入院申请
+// 待办出院申请
 import React, {Component,Fragment} from 'react';
 import {Upload, Input, Button, Divider, Icon, Checkbox, Radio, Descriptions, Table, Select,Form,DatePicker, AutoComplete } from 'antd';
 const { Option  } = AutoComplete;//AutoOption

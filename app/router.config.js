@@ -177,7 +177,7 @@ export default [
             },
             {
                 path: '/rehabilitation/agent',
-                name: '流程代办',
+                name: '流程待办',
                 authority: ['admin'],
                 hidden: false,
                 component: require('@pages/Rehabilitation/agent').default

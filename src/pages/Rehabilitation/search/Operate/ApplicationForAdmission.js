@@ -186,7 +186,7 @@ class ApplicationForAdmission extends Component {
     }
 
     render() {
-        let {tabValue=0,canEdit} = this.props.state.pageTempObj;
+        let {tabValue="0",canEdit} = this.props.state.pageTempObj;
         const { isHidePrint } = this.state;
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>

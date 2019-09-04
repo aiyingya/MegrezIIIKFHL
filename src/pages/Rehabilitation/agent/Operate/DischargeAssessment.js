@@ -160,12 +160,12 @@ class DischargeAssessment extends Component {
 
                     <Form onSubmit={this.handleSubmit}>
                         <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
-                            <div name="tab1" className={(tabValue == "0") ? '' : style.hidden}
+                            <div name="tab1" className={(tabValue == "1") ? '' : style.hidden}
                                  style={{"pageBreakAfter": "always"}}>
                                 <OutHospAssess self={this}/>
                             </div>
 
-                            <div name="tab2" className={(tabValue == "1") ? '' : style.hidden}
+                            <div name="tab2" className={(tabValue == "2") ? '' : style.hidden}
                                  style={{"pageBreakAfter": "always"}}>
                                 <OutHospBerg self={this}/>
                             </div>

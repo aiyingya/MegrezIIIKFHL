@@ -213,7 +213,7 @@ class ApplicationForAdmission extends Component {
     }
 
     render() {
-        let {tabValue=0,canEdit,record={},showRejectModal,rejectTxts} = this.props.state.pageTempObj;
+        let {tabValue="0",canEdit,record={},showRejectModal,rejectTxts} = this.props.state.pageTempObj;
 
         const { isHidePrint } = this.state;
         return (
@@ -232,28 +232,28 @@ class ApplicationForAdmission extends Component {
 
                     <Form onSubmit={this.handleSubmit}>
 
-                    <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
-                        <div name="tab1" className={(tabValue == "0") ? '' : style.hidden}
-                             style={{"pageBreakAfter": "always"}}>
-                            <InHospApplication self={this}/>
+                        <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
+                            <div name="tab1" className={(tabValue == "0") ? '' : style.hidden}
+                                 style={{"pageBreakAfter": "always"}}>
+                                <InHospApplication self={this}/>
+                            </div>
+
+
+                            <div name="tab2" className={(tabValue == "1") ? '' : style.hidden}
+                                 style={{"pageBreakAfter": "always"}}>
+                                <InHospAssess self={this}/>
+                            </div>
+
+                            <div name="tab3" className={(tabValue == "2") ? '' : style.hidden}
+                                 style={{"pageBreakAfter": "always"}}>
+                                <InHospBerg self={this}/>
+                            </div>
                         </div>
 
-
-                        <div name="tab2" className={(tabValue == "1") ? '' : style.hidden}
-                             style={{"pageBreakAfter": "always"}}>
-                           <InHospAssess self={this}/>
+                        <div className={style.buttons}>
+                            <ReactToPrint trigger={() => <Button id="print-application" className={style.hidden}>打印</Button>} content={() => this.refs}/>
+                            <BasicGroupComponent {...curUtil.getButton(this,{canEdit,print:this.print,handleSubmit:this.handleSubmit,isDocter:false,showReject:this.showReject})}/>
                         </div>
-
-                        <div name="tab3" className={(tabValue == "2") ? '' : style.hidden}
-                             style={{"pageBreakAfter": "always"}}>
-                            <InHospBerg self={this}/>
-                        </div>
-                    </div>
-
-                    <div className={style.buttons}>
-                        <ReactToPrint trigger={() => <Button id="print-application" className={style.hidden}>打印</Button>} content={() => this.refs}/>
-                        <BasicGroupComponent {...curUtil.getButton(this,{canEdit,print:this.print,handleSubmit:this.handleSubmit,isDocter:false,showReject:this.showReject})}/>
-                    </div>
                     </Form>
                 </div>
                 {showRejectModal && <RejectModal isShow={showRejectModal} close={this.hideModal} rejectCallback={(context)=>{this.handleReject(context)}} confirmLoading={this.props.state.btnRequestLoading}

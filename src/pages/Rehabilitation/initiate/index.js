@@ -5,11 +5,13 @@ import {Global,Utils,ReduxWarpper,BasicFormComponent, BasicGroupComponent,AuthCo
 import {store, mapStateToProps, mapDispatchToProps} from './Redux/Store';
 import style from './common.less'
 import Columns from './columns';
+import curUtil from "@/components/KFHL/Util";
 
 class Initiate extends Component {
     constructor(props) {
         super(props);
-        this.goEditApplicationForAdmission = this.goEditApplicationForAdmission.bind(this);
+        this.goApplicationForAdmission = this.goApplicationForAdmission.bind(this);
+        this.goDischargeAssessment = this.goDischargeAssessment.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.inside = React.createRef();
@@ -21,7 +23,7 @@ class Initiate extends Component {
                     className: Global.BottomCss.ADD,
                     text:'康复入院申请',
                     onClick:(e)=>{
-                        this.goEditApplicationForAdmission();
+                        this.goApplicationForAdmission();
                     }
                 },
                 {
@@ -35,7 +37,14 @@ class Initiate extends Component {
             ]
         }
     }
-    goEditApplicationForAdmission(record){
+    goLook(record){
+        if(record.flowType == curUtil.myStatic.flowType.outHosp){
+            this.goDischargeAssessment(record);
+            return
+        }
+        this.goApplicationForAdmission(record);
+    }
+    goApplicationForAdmission(record){
         this.props.history.push({
             pathname: '/rehabilitation/initiate/applicationForAdmission',
             query: {
@@ -78,7 +87,7 @@ class Initiate extends Component {
 
         // const Auth = AuthComponent(Table);
         return (
-            <div className={`winning-body ${style.speTable}`} ref={this.inside}>
+            <div className={`winning-body`} ref={this.inside}>
                 <div className='winning-content'>
                     {/*搜索条件*/}
                     <BasicFormComponent forms={this.props.state.formItems} handleSearch={this.handleSearch} handleChange={this.handleChange}/>
@@ -91,14 +100,6 @@ class Initiate extends Component {
                             dataSource={this.props.state.datas}
                             pagination={this.props.state.pagination}
                             rowKey="inHospTableId"
-                            onRow={(record)=>{
-                                return {
-                                    onMouseEnter: (event)=> {
-                                        // this.props.user.setOperateToDatas(Global.changeDatasById({data:this.props.state.datas,record,id:"yh_id"}))
-                                    }
-                                }
-                            }}
-
                         />
                     </div>
                 </div>

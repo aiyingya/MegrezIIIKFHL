@@ -36,9 +36,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
                 Global.alert(result,{
                     successFun:()=>{
-                        // 显示模块树-基础服务这里是平级的
-                        // let tree = Global.changeDatasToTree({dataList:result.datas,id:'mk_id',parentId:'sj_mk_id'})
-                        // result.datas = tree
                         result.onChange = (_page, _pageSize)=>{
                             // 绑定分页按钮点击事件
                             _this.props.dict.initTable(_this,{value:_this.props.state.searchObj,page:_page, pageSize:_pageSize})
@@ -83,6 +80,18 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 let result = {..._this.props.state.searchObj,..._this.props.state.tempSearchObj,...searchObj};
                 dispatch(setTempSearchObj(result));
             },
+        },
+        common:{
+            handleReject:async (_this,{flowTableId,backCause,fun}={})=>{
+                dispatch(setBtnLoadingActive());
+                dispatch(setBtnRequestDisplay());
+                let result = await api.reject({flowTableId,backCause}).finally(() => {
+                    // setTimeout(()=>{dispatch(setBtnLoadingDisplay())},Global.AlertTime*1000);
+                    dispatch(setBtnLoadingDisplay());
+                    setTimeout(()=>{dispatch(setBtnRequestActive())},Global.AlertTime*1000);
+                });
+                Global.alert(result,{successFun:fun});
+            }
         },
         applicationForAdmission:{
             getInfo:async (_this,inHospTableId)=>{
@@ -147,7 +156,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 let {uploadBergFiles} = _this.props.state.pageTempObj;
                 let array = uploadBergFiles.filter(res=>res.fileId != fileRecord.fileId);
                 setPageTempObj(_this,{uploadBergFiles:array});
-            },
+            }
         },
         dischargeAssessment:{
             setPageTempObjCY:(_this,objs)=>{
@@ -175,7 +184,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 let {uploadBergFiles} = _this.props.state.pageTempObjCY;
                 let array = uploadBergFiles.filter(res=>res.fileId != fileRecord.fileId);
                 setPageTempObjCY(_this,{uploadBergFiles:array});
-            },
+            }
         }
     }
 }

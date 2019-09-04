@@ -4,18 +4,27 @@ import {Global,Utils,ReduxWarpper,BasicFormComponent, BasicGroupComponent,AuthCo
 import {store, mapStateToProps, mapDispatchToProps} from './Redux/Store';
 import style from './common.less'
 import Columns from './columns';
+import curUtil from "@/components/KFHL/Util";
 
 class Initiate extends Component {
     constructor(props) {
         super(props);
-        this.goEditApplicationForAdmission = this.goEditApplicationForAdmission.bind(this);
+        this.goApplicationForAdmission = this.goApplicationForAdmission.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.inside = React.createRef();
     }
-    goEditApplicationForAdmission(record){
+
+    goLook(record){
+        if(record.flowType == curUtil.myStatic.flowType.outHosp){
+            this.goDischargeAssessment(record);
+            return
+        }
+        this.goApplicationForAdmission(record);
+    }
+    goApplicationForAdmission(record){
         this.props.history.push({
-            pathname: '/rehabilitation/initiate/applicationForAdmission',
+            pathname: '/rehabilitation/agent/applicationForAdmission',
             query: {
                 record: record
             }
@@ -23,12 +32,13 @@ class Initiate extends Component {
     }
     goDischargeAssessment(record){
         this.props.history.push({
-            pathname: '/rehabilitation/initiate/dischargeAssessment',
+            pathname: '/rehabilitation/agent/dischargeAssessment',
             query: {
                 record: record
             }
         })
     }
+
     handleSearch(value){
         this.props.agent.initTable(this,{value});
     }

@@ -2,9 +2,10 @@ import React from 'react';
 import {Global,Uc} from 'winning-megreziii-utils';
 import {Badge} from 'antd';
 import style from './common.less';
+import curUtil from '@components/KFHL/Util';
 
 export default (self)=>{
-    const {initiate,state}=self.props;
+    const {state}=self.props;
     return [
         {
             title: '序号',
@@ -46,21 +47,23 @@ export default (self)=>{
                 let _flowStatus = state.staticStatus.flowStatus || [];
                 const objct = _flowStatus.find(res=>res.value == texts) || {};
                 let color = '';
-                switch (Number(objct.value)){
-                    case 0:
+                switch (objct.value){
+                    case curUtil.myStatic.flowStatus.agree:
                         color ="green"
                         break;
-                    case 1:
+                    case curUtil.myStatic.flowStatus.reject:
                         color ="red"
                         break;
-                    case 2:
+                    case curUtil.myStatic.flowStatus.awaitAudit:
                         color ="blue"
+                        break;
+                    case curUtil.myStatic.flowStatus.awaitSubmit:
+                        color ="gray"
                         break;
                     default:
                         color ="error"
                         break;
                 }
-
                 return <span className={style[color]}>{objct.name}</span>
             }
         },
@@ -71,11 +74,11 @@ export default (self)=>{
                 const objct = _flowType.find(res=>res.value == texts) || {};
                 //KFHL_TB 内的字典
                 let badge = null;
-                switch (Number(objct.value)){
-                    case 0:
+                switch (objct.value){
+                    case curUtil.myStatic.flowType.inHosp:
                         badge ="processing"
                         break;
-                    case 1:
+                    case curUtil.myStatic.flowType.outHosp:
                         badge ="success"
                         break;
                     default:
@@ -83,28 +86,15 @@ export default (self)=>{
                 }
                 return <span>{badge? <Badge status={badge} /> : ''}{objct.name}</span>
             }
-
         }
         ,
         {
             title: '历史流程',
             dataIndex:'operation',
             render: (texts, record, index) =>{
-                return <div onClick={()=>{self.goEditApplicationForAdmission(record)}} className={style.jumpSelect}>查看</div>
+                return <div onClick={()=>{self.goLook(record)}} className={style.jumpSelect}>查看</div>
             }
         }
-        /*{
-            title: '备注',
-            dataIndex:'flowStatus',
-            render: async (texts, record, index) =>{
-                //KFHL_ST 内的 {"name": "不通过","value": "1"}
-                if(texts == 1){
-                    return <span onClick={()=>{self.goEditRole(record)}} className={style.textColor}>退回原因</span>
-                }
-                return <div></div>
-
-            }
-        },*/
 
     ]
 }

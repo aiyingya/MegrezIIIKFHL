@@ -45,6 +45,15 @@
           "icon": "fa-circle-o-notch",
           "page_code": "basicService_user",
           "dropdown": false
+        },
+        {
+          "href": "/system/dict",
+          "title": "字典管理",
+          "treeid": "7",
+          "context": "字典管理",
+          "icon": "fa-circle-o-notch",
+          "page_code": "basicService_dict",
+          "dropdown": false
         }
       ]
     },

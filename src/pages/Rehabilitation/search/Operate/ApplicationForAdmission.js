@@ -1,4 +1,4 @@
-// 入院申请
+// 查看
 // 注意页面上的打印，input框有提示文本的时候打印时不能仅删除边框，直接使用文本
 import React, {Component, Fragment} from 'react';
 import {message} from "antd/lib/index";
@@ -20,8 +20,8 @@ class ApplicationForAdmission extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            backUrl:'/rehabilitation/initiate',
-            isHidePrint: true,//true是隐藏所有Tabs, 打印时使用false
+            backUrl:'/rehabilitation/search',
+            isHidePrint: true,//打印时使用false
         }
         this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
@@ -44,12 +44,9 @@ class ApplicationForAdmission extends Component {
         if(Global.isFrozen()) return;
         //判断当前发起流程是否可以操作；
         let query = this.props.location.query ||{};
-        const record = query.record ? query.record :{}
-        if (record.inHospTableId && (record.flowStatus == curUtil.myStatic.flowStatus.agree || record.flowStatus == curUtil.myStatic.flowStatus.awaitAudit)) {
-            //已通过 或 待审核 不可做任何操作
-            this.setPageTempObj({canEdit: false});
-        }else{
-            this.setPageTempObj({canEdit: true});
+        const record = query.record ? query.record :{};
+        if (record.inHospTableId) {
+            this.setPageTempObj({tabValue: record.lookType});
         }
     }
 
@@ -78,9 +75,11 @@ class ApplicationForAdmission extends Component {
             }
         });
     }
+
     setPageTempObj(object={}){
         this.props.applicationForAdmission.setPageTempObj(this,{...object});
     }
+
     handleChange(val, field) {
         // 表单变更立即触发的事件
         let {record ={},sumScore} = this.props.state.pageTempObj;
@@ -96,11 +95,13 @@ class ApplicationForAdmission extends Component {
         }
         this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});
     }
+
     onRadioChange(value, name) {
         if (name == curUtil.myStatic.radioType.imIsTab) {
             this.setPageTempObj({tabValue: value});
         }
     }
+
     onCheckChange(checkedValues,field) {
         // 其他障碍选择
         let {record,checkedGroupList,checkAll} = this.props.state.pageTempObj;
@@ -127,7 +128,6 @@ class ApplicationForAdmission extends Component {
             checkAll: checkAll,
             record
         });
-
     };
     onCheckboxGroupChange(checkedList,field) {
         // 骨头关节子选
@@ -146,6 +146,7 @@ class ApplicationForAdmission extends Component {
             record
         });
     };
+
     clickDownLoad(url){
         window.location.href=url;
     }
@@ -159,6 +160,7 @@ class ApplicationForAdmission extends Component {
             this.setState({isHidePrint: true});
         }, 1000);
     }
+
     setApplyFile(file={}){
         let count = Math.floor(Math.random() * (1000 - 1) + 1);
         this.props.applicationForAdmission.setApplyFile(this,{
@@ -183,48 +185,48 @@ class ApplicationForAdmission extends Component {
         });
     }
 
-
     render() {
-        let {tabValue=0,canEdit,record={}} = this.props.state.pageTempObj;
+        let {tabValue=0,canEdit} = this.props.state.pageTempObj;
         const { isHidePrint } = this.state;
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="康复" second="发起流程" third="康复入院申请" secondUrl={this.state.backUrl}/>
+                    <BreadcrumbCustom first="康复" second="查询" third="康复入院查看" secondUrl={this.state.backUrl}/>
                     <Divider/>
-                    <Step isShow={false} node={record.node}></Step>
+                    <Step isShow={true}></Step>
                     <Divider/>
-                    <Radio.Group className={style.raioTab} defaultValue={tabValue}
-                                 onChange={(e) => this.onRadioChange(e.target.value, curUtil.myStatic.radioType.imIsTab)}>
-                        <Radio.Button value='0'>康复入院申请</Radio.Button>
-                        <Radio.Button value='1'>康复入院评估</Radio.Button>
-                        <Radio.Button value='2'>Berg平衡量表</Radio.Button>
-                    </Radio.Group>
 
-                    <Form onSubmit={this.handleSubmit}>
+                    {/*<Radio.Group className={style.raioTab} defaultValue={tabValue}*/}
+                                 {/*onChange={(e) => this.onRadioChange(e.target.value, curUtil.myStatic.radioType.imIsTab)}>*/}
+                        {/*<Radio.Button value='0'>康复入院申请</Radio.Button>*/}
+                        {/*<Radio.Button value='1'>康复入院评估</Radio.Button>*/}
+                        {/*<Radio.Button value='2'>Berg平衡量表</Radio.Button>*/}
+                    {/*</Radio.Group>*/}
 
-                    <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
-                        <div name="tab1" className={(tabValue == "0") ? '' : style.hidden}
-                             style={{"pageBreakAfter": "always"}}>
-                            <InHospApplication self={this}/>
+                    <div className={style.seatDiv}></div>
+                        <Form onSubmit={this.handleSubmit}>
+                        <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
+                            <div name="tab1" className={(tabValue == "0") ? '' : style.hidden}
+                                 style={{"pageBreakAfter": "always"}}>
+                                <InHospApplication self={this}/>
+                            </div>
+
+
+                            <div name="tab2" className={(tabValue == "1") ? '' : style.hidden}
+                                 style={{"pageBreakAfter": "always"}}>
+                               <InHospAssess self={this}/>
+                            </div>
+
+                            <div name="tab3" className={(tabValue == "2") ? '' : style.hidden}
+                                 style={{"pageBreakAfter": "always"}}>
+                                <InHospBerg self={this}/>
+                            </div>
                         </div>
-
-
-                        <div name="tab2" className={(tabValue == "1") ? '' : style.hidden}
-                             style={{"pageBreakAfter": "always"}}>
-                           <InHospAssess self={this}/>
-                        </div>
-
-                        <div name="tab3" className={(tabValue == "2") ? '' : style.hidden}
-                             style={{"pageBreakAfter": "always"}}>
-                            <InHospBerg self={this}/>
-                        </div>
-                    </div>
-
-                    <div className={style.buttons}>
-                        <ReactToPrint trigger={() => <Button id="print-application" className={style.hidden}>打印</Button>} content={() => this.refs}/>
-                        <BasicGroupComponent {...curUtil.getButton(this,{canEdit,print:this.print,handleSubmit:this.handleSubmit,isDocter:true})}/>
-                    </div>
+                        {/*<div className={style.buttons}>*/}
+                            {/*<ReactToPrint trigger={() => <Button id="print-application" className={style.hidden}>打印</Button>} content={() => this.refs}/>*/}
+                            {/*<BasicGroupComponent {...curUtil.getButton(this,{canEdit,print:this.print,handleSubmit:this.handleSubmit})}/>*/}
+                        {/*</div>*/}
+                        <div className={style.seatDiv}></div>
                     </Form>
                 </div>
             </div>

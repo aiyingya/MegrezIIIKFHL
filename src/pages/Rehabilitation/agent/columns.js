@@ -1,7 +1,9 @@
 import React from 'react';
+import { Modal, Button } from 'antd';
 import {Global,Uc} from 'winning-megreziii-utils';
 import {Badge} from 'antd';
 import style from './common.less';
+import curUtil from "@/components/KFHL/Util";
 
 export default (self)=>{
     const {initiate,state}=self.props;
@@ -46,37 +48,38 @@ export default (self)=>{
                 let _flowStatus = state.staticStatus.flowStatus || [];
                 const objct = _flowStatus.find(res=>res.value == texts) || {};
                 let color = '';
-                switch (Number(objct.value)){
-                    case 0:
+                switch (objct.value){
+                    case curUtil.myStatic.flowStatus.agree:
                         color ="green"
                         break;
-                    case 1:
+                    case curUtil.myStatic.flowStatus.reject:
                         color ="red"
                         break;
-                    case 2:
+                    case curUtil.myStatic.flowStatus.awaitAudit:
                         color ="blue"
+                        break;
+                    case curUtil.myStatic.flowStatus.awaitSubmit:
+                        color ="gray"
                         break;
                     default:
                         color ="error"
                         break;
                 }
-
                 return <span className={style[color]}>{objct.name}</span>
             }
         },
         {
             title: '类型',
-            dataIndex:'flowType',
-            render:(texts, record, index) =>{
+            dataIndex:'flowType',render:(texts, record, index) =>{
                 let _flowType = state.staticStatus.flowType || [];
                 const objct = _flowType.find(res=>res.value == texts) || {};
                 //KFHL_TB 内的字典
                 let badge = null;
-                switch (Number(objct.value)){
-                    case 0:
+                switch (objct.value){
+                    case curUtil.myStatic.flowType.inHosp:
                         badge ="processing"
                         break;
-                    case 1:
+                    case curUtil.myStatic.flowType.outHosp:
                         badge ="success"
                         break;
                     default:
@@ -84,23 +87,36 @@ export default (self)=>{
                 }
                 return <span>{badge? <Badge status={badge} /> : ''}{objct.name}</span>
             }
-        },
+        }
+        ,
         {
             title: '历史流程',
             dataIndex:'operation',
             render: (texts, record, index) =>{
-                return <div onClick={()=>{self.goEditApplicationForAdmission(record)}} className={style.jumpSelect}>查看</div>
+                return <div onClick={()=>{self.goLook(record)}} className={style.jumpSelect}>查看</div>
             }
         },
         {
             title: '备注',
             dataIndex:'id',
             render: (texts, record, index) =>{
-                if(record.flowStatus == 1){
-                    return <div onClick={()=>{self.goEditRole(record)}} className={style.alertText}>退回原因</div>
+
+                function info(backCause) {
+                    Modal.info({
+                        title: '退回原因',
+                        content: (
+                            <div>
+                                {backCause}
+                            </div>
+                        ),
+                        okText:'知道了'
+                    });
+                }
+
+                if(record.flowStatus == curUtil.myStatic.flowStatus.reject){
+                    return <div onClick={()=>{info(record.backCause)}} className={style.alertText}>退回原因</div>
                 }
                 return <div></div>
-
             }
         }
 

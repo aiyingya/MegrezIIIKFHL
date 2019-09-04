@@ -7,6 +7,16 @@
         "value": "5"
       }
     ],
+    "KFHL_TAB_S": [
+      {
+        "name": "已填 ",
+        "value": "0"
+      },
+      {
+        "name": "未填",
+        "value": "1"
+      }
+    ],
     "KFHL_ST": [
       {
         "name": "通过",

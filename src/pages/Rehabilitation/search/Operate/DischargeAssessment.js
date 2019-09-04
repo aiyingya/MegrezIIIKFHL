@@ -16,12 +16,11 @@ import style from '../common.less'
 import OutHospAssess from '@components/KFHL/OutHospAssess/OutHospAssess';
 import OutHospBerg from '@components/KFHL/OutHospBerg/OutHospBerg';
 
-
 class DischargeAssessment extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            backUrl:'/rehabilitation/initiate',
+            backUrl:'/rehabilitation/search',
             isHidePrint: true//true是隐藏所有Tabs, 打印时使用false
         }
         this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
@@ -43,15 +42,13 @@ class DischargeAssessment extends Component {
     };
     componentDidMount() {
         new Scrollbar(this.inside.current).show();
+        this.setPageTempObj({canEdit: false});
         if(Global.isFrozen()) return;
         //判断当前发起流程是否可以操作；
         let query = this.props.location.query ||{};
-        const record = query.record ? query.record :{}
-        if (record.inHospTableId && (record.flowStatus == curUtil.myStatic.flowStatus.agree || record.flowStatus == curUtil.myStatic.flowStatus.awaitAudit)) {
-            //已通过 或 待审核 不可做任何操作
-            this.setPageTempObj({canEdit: false});
-        }else{
-            this.setPageTempObj({canEdit: true});
+        const record = query.record ? query.record :{};
+        if (record.inHospTableId) {
+            this.setPageTempObj({tabValue: record.lookType});
         }
     }
 
@@ -132,10 +129,11 @@ class DischargeAssessment extends Component {
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
 
-                    <BreadcrumbCustom first="康复" second="发起流程" third="康复出院申请" secondUrl={this.state.backUrl}/>
+                    <BreadcrumbCustom first="康复" second="发起流程" third="康复出院查看" secondUrl={this.state.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>
+                    <div className={style.seatDiv}></div>
                     <Radio.Group className={style.raioTab} defaultValue={tabValue}
                                  onChange={(e) => this.onRadioChange(e.target.value, curUtil.myStatic.radioType.imIsTab)}>
                         <Radio.Button value='1'>康复出院评估</Radio.Button>
@@ -155,12 +153,13 @@ class DischargeAssessment extends Component {
                             </div>
                         </div>
 
-                        <div className={style.buttons}>
-                            <ReactToPrint trigger={() =>
-                                <Button id="print-application" type="primary" className={style.hidden}>打印</Button>} content={() => this.refs}/>
-                            <BasicGroupComponent {...curUtil.getButton(this,{canEdit,print:this.print,handleSubmit:this.handleSubmit,isDocter:true})}/>
-                        </div>
+                        {/*<div className={style.buttons}>*/}
+                            {/*<ReactToPrint trigger={() =>*/}
+                                {/*<Button id="print-application" type="primary" className={style.hidden}>打印</Button>} content={() => this.refs}/>*/}
+                            {/*<BasicGroupComponent {...curUtil.getButton(this,{canEdit,print:this.print,handleSubmit:this.handleSubmit})}/>*/}
+                        {/*</div>*/}
                     </Form>
+                    <div className={style.seatDiv}></div>
                 </div>
             </div>
         );

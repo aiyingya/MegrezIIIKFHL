@@ -16,6 +16,49 @@ let initialState = {
     formItems:{},
     btnRequestLoading:false,
     btnRequest:true,
+    staticStatus:{
+        flowStatus:[],//流程状态
+        tableStatus:[], //填报状态
+    },
+    tempSearchObj:{},
+    // 康复入院申请
+    pageTempObj:{
+        // 显示哪个tab页
+        tabValue:'0',
+        // 显示哪些数据
+        record:{},
+        // 诊断依据的上端依据['0','1', '2', '3', '4']
+        checkedOutsideList:[],
+        // 诊断依据的下端骨科组选择依据 ['6', '7','8', '9', '10']
+        checkedGroupList:[],
+        // 诊断依据的下端骨科组选择依据 全选设置,默认不全选
+        indeterminate:false,
+        // 诊断依据的下端骨科组选择依据 是否显示全选['5']
+        checkAll:false,
+        // 平很量表中的总分数
+        sumScore:"",
+        // 上传的申请文件
+        uploadApplyFiles:[],
+        // 上传的评估文件
+        uploadBergFiles:[],
+        // 是否可以编辑页面
+        canEdit:false,
+        // 是否隐藏TabValue选择
+        isHideTabValue:true
+    },
+    // 康复出院申请
+    pageTempObjCY:{
+        // 显示哪个tab页
+        tabValue:'1',
+        // 显示哪些数据
+        record:{},
+        // 在院人员模糊用户信息列表
+        personUserList:[],
+        // 平很量表中的总分数
+        sumScore:"",
+        // 上传的评估文件
+        uploadBergFiles:[]
+    }
 };
 
 const actions={};
@@ -43,5 +86,9 @@ actions[types.SET_BTN_DLOADING_DISPLAY]=(state)=>({...state,btnRequestLoading:fa
 actions[types.BTN_REQUEST_ACTIVE]=(state)=>({...state,btnRequest:true});
 actions[types.BTN_REQUEST_DISPLAY]=(state)=>({...state,btnRequest:false});
 actions[types.SET_TYPE_DATAS]=(state,action)=>({...state,typeDatas:action.payload || []});
+actions[types.SET_STATIC_STATUS]=(state,action)=>({...state,staticStatus:action.payload || {}});
+actions[types.SET_TEMP_SEARCH_OBJ]=(state,action)=>({...state,tempSearchObj:action.payload || {}});
+actions[types.PAGE_TEMP_OBJ]=(state,action)=>({...state,pageTempObj:action.payload || {}});
+actions[types.PAGE_TEMP_OBJ_CY]=(state,action)=>({...state,pageTempObjCY:action.payload || {}});
 
 export const reducer = handleActions(actions, initialState);

@@ -33,7 +33,11 @@ let initialState = {
         // 诊断依据的下端骨科组选择依据 全选设置,默认不全选
         indeterminate:false,
         // 诊断依据的下端骨科组选择依据 是否显示全选
-        checkAll:false
+        checkAll:false,
+        // 是否显示退回Modal
+        showRejectModal:false,
+        // 退回节点的名称集合
+        rejectTxts:[]
     },
     // 康复出院申请
     pageTempObjCY:{
@@ -46,7 +50,11 @@ let initialState = {
         // 平很量表中的总分数
         sumScore:"",
         // 上传的评估文件
-        uploadBergFiles:[]
+        uploadBergFiles:[],
+        // 是否显示退回Modal
+        showRejectModal:false,
+        // 退回节点的名称集合
+        rejectTxts:[]
     }
 };
 

@@ -7,6 +7,7 @@ import curUtil from '../Util'
 import UploadFile from '@components/UploadFile/UploadFile';
 import style from '../common.less'
 import columnsUpload from '../Columns/columnsUpload'
+import Sign from '@components/KFHL/Sign/Sign';
 
 class InHospApplication  extends Component {
     constructor(props) {
@@ -15,20 +16,20 @@ class InHospApplication  extends Component {
 
     render() {
         let {self} = this.props;
-        let {record={},checkedOutsideList,indeterminate,checkedGroupList,checkAll,uploadApplyFiles:_uploadApplyFiles} = self.props.state.pageTempObj;
+        let {record={},checkedOutsideList,indeterminate,checkedGroupList,checkAll,uploadApplyFiles:_uploadApplyFiles,canEdit} = self.props.state.pageTempObj;
         const { getFieldDecorator } = self.props.form;
         const { removeApplayFile } = self.props.applicationForAdmission;
         const { isHidePrint } = self.state;
         const uploadApplyFiles = (_uploadApplyFiles && _uploadApplyFiles.length>0 ? _uploadApplyFiles : curUtil.myStatic.defaultUploadInfo);
         return (
-            <div className={ style.tabSelf}>
+            <div className={isHidePrint ?  style.tabSelf : style.tabSelf +' '+style.showPrint}>
                     <Descriptions title="无锡市康复医院2019年05月张三康复入院申请表" column={2} bordered
                                   className={style.descriptions}
                                   size="middle">
                         <Descriptions.Item label="姓名">
                             <Fragment>
                                 {
-                                    isHidePrint ?  <Form.Item style={{ marginBottom: 0 }}>
+                                    (isHidePrint && canEdit) ?  <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('personName', {
                                                 initialValue: record.personName,...curUtil.myStatic.rulesConfig.rules
                                             })(
@@ -44,7 +45,7 @@ class InHospApplication  extends Component {
                         <Descriptions.Item label="性别">
                             <Fragment>
                                 {
-                                    isHidePrint ?   <Form.Item style={{ marginBottom: 0 }}>
+                                    (isHidePrint && canEdit) ?   <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('sex', {
                                                 initialValue: (record.sex && record.sex=="女") ? "1":"0"
                                             })(
@@ -63,7 +64,7 @@ class InHospApplication  extends Component {
                         <Descriptions.Item label="年龄">
                             <Fragment>
                                 {
-                                    isHidePrint ?  <Form.Item style={{ marginBottom: 0 }}>
+                                    (isHidePrint && canEdit) ?  <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('age', {
                                                 initialValue: record.age,...curUtil.myStatic.rulesConfig
                                             })(
@@ -79,7 +80,7 @@ class InHospApplication  extends Component {
                         <Descriptions.Item label="诊断科室">
                             <Fragment>
                                 {
-                                    isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
+                                    (isHidePrint && canEdit) ? <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('diagnoseDept', {
                                                 initialValue: record.diagnoseDept,...curUtil.myStatic.rulesConfig
                                             })(
@@ -95,7 +96,7 @@ class InHospApplication  extends Component {
                         <Descriptions.Item label="疾病名称">
                             <Fragment>
                                 {
-                                    isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
+                                    (isHidePrint && canEdit) ? <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('illnessName', {
                                                 initialValue: record.illnessName,...curUtil.myStatic.rulesConfig
                                             })(
@@ -111,7 +112,7 @@ class InHospApplication  extends Component {
                         <Descriptions.Item label="个人编号">
                             <Fragment>
                                 {
-                                    isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
+                                    (isHidePrint && canEdit) ? <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('personId', {
                                                 initialValue: record.personId,...curUtil.myStatic.rulesConfig
                                             })(
@@ -127,7 +128,7 @@ class InHospApplication  extends Component {
                         <Descriptions.Item label="身份证号">
                             <Fragment>
                                 {
-                                    isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
+                                    (isHidePrint && canEdit) ? <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('identityCard', {
                                                 initialValue: record.identityCard,...curUtil.myStatic.rulesConfig
                                             })(
@@ -168,41 +169,53 @@ class InHospApplication  extends Component {
                     </div>
                     <div className={style.rowStyle}>
                         临床表现：<br/>
-                        <Form.Item style={{ marginBottom: 0 }}>
-                            {getFieldDecorator('clinicalMani', {
-                                initialValue: record.clinicalMani,
-                            })(
-                                <TextArea className={style.noneBorder} placeholder="患者表现正常" rows={5}></TextArea>
-                            )}
-                        </Form.Item>
+                        {
+                            (isHidePrint && canEdit) ?   <Form.Item style={{ marginBottom: 0 }}>
+                                    {getFieldDecorator('clinicalMani', {
+                                        initialValue: record.clinicalMani,
+                                    })(
+                                        <TextArea className={style.noneBorder} placeholder="患者表现正常" rows={5}
+                                                  onChange={(event)=> {self.handleChange(event.target.value, "clinicalMani")}}></TextArea>
+                                    )}
+                                </Form.Item>:
+                                <div className={style.textArea}>{record.clinicalMani}</div>
+                        }
 
                     </div>
                     <div className={style.rowStyle}>
                         体格检查（专科检查）：<br/>
-                        <Form.Item style={{ marginBottom: 0 }}>
-                            {getFieldDecorator('checkup', {
-                                initialValue: record.checkup,
-                            })(
-                                <TextArea className={style.noneBorder} placeholder="患者表现正常" rows={5}></TextArea>
-                            )}
-                        </Form.Item>
+                        {
+                            (isHidePrint && canEdit) ? <Form.Item style={{ marginBottom: 0 }}>
+                                    {getFieldDecorator('checkup', {
+                                        initialValue: record.checkup,
+                                    })(
+                                        <TextArea className={style.noneBorder} placeholder="患者表现正常" rows={5}
+                                                  onChange={(event)=> {self.handleChange(event.target.value, "checkup")}}></TextArea>
+                                    )}
+                                </Form.Item>:
+                                <div className={style.textArea}>{record.clinicalMani}</div>
+                        }
                     </div>
                     <div className={style.rowStyle}>
                         实验室检查：<br/>
-                        <Form.Item style={{ marginBottom: 0 }}>
-                            {getFieldDecorator('labCheckup', {
-                                initialValue: record.labCheckup,
-                            })(
-                                <TextArea className={style.noneBorder} placeholder="患者表现正常" rows={5}></TextArea>
-                            )}
-                        </Form.Item>
+                        {
+                            (isHidePrint && canEdit) ? <Form.Item style={{ marginBottom: 0 }}>
+                                    {getFieldDecorator('labCheckup', {
+                                        initialValue: record.labCheckup,
+                                    })(
+                                        <TextArea className={style.noneBorder} placeholder="患者表现正常" rows={5}
+                                                  onChange={(event)=> {self.handleChange(event.target.value, "labCheckup")}}></TextArea>
+                                    )}
+                                </Form.Item>:
+                                <div className={style.textArea}>{record.clinicalMani}</div>
+                        }
                     </div>
                     <Descriptions column={2} bordered className={style.descriptions}
                                   size="middle">
                         <Descriptions.Item label="康复科主任签字">
                             <Fragment>
                                 {
-                                    isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
+                                    (isHidePrint && canEdit) ? <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('initPerson', {
                                                 initialValue: record.initPerson
                                             })(
@@ -212,32 +225,15 @@ class InHospApplication  extends Component {
                                         <Fragment>{record.initPerson}</Fragment>
                                 }
                             </Fragment>
-
                         </Descriptions.Item>
                         <Descriptions.Item label="日期">
                             {self.currentDay}
                         </Descriptions.Item>
                     </Descriptions>
+                    <Sign self={self} pageTempObj ={self.props.state.pageTempObj}/>
+
                     <div className={style.rowStyle}>
-                        医疗机构意见：<br/>
-                        <TextArea className={style.noneBorder} rows={5} ></TextArea>
-                    </div>
-                    <Descriptions column={2} bordered className={style.descriptions}
-                                  size="middle">
-                        <Descriptions.Item label="医疗机构签字"></Descriptions.Item>
-                        <Descriptions.Item label="日期"></Descriptions.Item>
-                    </Descriptions>
-                    <div className={style.rowStyle}>
-                        社保中心人员意见：<br/>
-                        <TextArea className={style.noneBorder} rows={5}></TextArea>
-                    </div>
-                    <Descriptions column={2} bordered className={style.descriptions}
-                                  size="middle">
-                        <Descriptions.Item label="签字"></Descriptions.Item>
-                        <Descriptions.Item label="日期"></Descriptions.Item>
-                    </Descriptions>
-                    <div className={style.rowStyle}>
-                        注：<br/>
+                        注：<br/>{self.props.state.pageTempObj.canEdit}
                         <p>
                             一、需要康复的病种：各种原因所致的中枢神经系统疾病如脑出血后遗症、脑梗塞后遗症、脑外伤后遗症、脑肿瘤术后后遗症、脊髓损伤、骨关节功能障碍。
                             <br/>
@@ -252,7 +248,8 @@ class InHospApplication  extends Component {
                     </div>
                     <div className={style.tableStyle}>
                         <title>上级医院病历</title>
-                        <UploadFile successCallback ={self.setApplyFile}
+                        <UploadFile disabled ={!canEdit}
+                                    successCallback ={self.setApplyFile}
                                     dataSource={uploadApplyFiles}
                                     columns={columnsUpload(self,{remove:removeApplayFile})}/>
                     </div>

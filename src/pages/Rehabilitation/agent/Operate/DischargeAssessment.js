@@ -1,64 +1,31 @@
-// 待办出院申请
+// 入院申请
 import React, {Component,Fragment} from 'react';
 import {Upload, Input, Button, Divider, Icon, Checkbox, Radio, Descriptions, Table, Select,Form,DatePicker, AutoComplete } from 'antd';
 const { Option  } = AutoComplete;//AutoOption
 const RadioGroup = Radio.Group;
 const {TextArea} = Input;
 import ReactToPrint from 'react-to-print'
-import _ from 'lodash';
 import {Global, ReduxWarpper, BasicGroupComponent, Scrollbar, BreadcrumbCustom} from 'winning-megreziii-utils';
-import curUtil from '../Util'
+import curUtil from '@components/KFHL/Util';
 import Step from '@components/Step/Step';
 import UploadFileNoName from '@components/UploadFile/UploadFile';
-import CheckScore from '@components/CheckScore/CheckScore';
+import CheckScore from '@components/KFHL/CheckScore/CheckScore';
 import {store, mapStateToProps, mapDispatchToProps} from '../Redux/Store';
 import style from '../common.less'
-import columnsaApplicationForAdmission from '../columnsaApplicationForAdmission'
+import OutHospAssess from '@components/KFHL/OutHospAssess/OutHospAssess';
+import OutHospBerg from '@components/KFHL/OutHospBerg/OutHospBerg';
+import RejectModal from './RejectModal';
 
 class DischargeAssessment extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            backUrl:'/rehabilitation/initiate',
+            backUrl:'/rehabilitation/agent',
             isHidePrint: true//true是隐藏所有Tabs, 打印时使用false
         }
+        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.currentDay = curUtil.currentDay();
-        this.button = {
-            direction: Global.Direction.DOWN,
-            datas: [
-                {
-                    type: 'null',
-                    className: Global.BottomCss.Default,
-                    text: '打印',
-                    onClick: (e) => {
-                        this.print();
-                    }
-                },
-                {
-                    type: 'primary',
-                    className: Global.BottomCss.ADD,
-                    text: '保存',
-                    onClick: (e) => {
-                        this.handleSubmit();
-                    }
-                },
-                {
-                    type: 'primary',
-                    className: Global.BottomCss.REMOVE,
-                    text: '退回',
-                    disabled:true
-                },
-                {
-                    type: 'primary',
-                    className: Global.BottomCss.ADD,
-                    text: '提交',
-                    onClick: (e) => {
-                        this.handleRemove();
-                    }
-                }
-            ]
-        }
         this.checkUser = this.checkUser.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleAutoSearch = this.handleAutoSearch.bind(this);
@@ -66,16 +33,28 @@ class DischargeAssessment extends Component {
         this.print = this.print.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.setPageTempObj = this.setPageTempObj.bind(this);
+        this.setApplyFile = this.setApplyFile.bind(this);
+        this.hideModal = this.hideModal.bind(this);
+        this.handleReject = this.handleReject.bind(this);
+        this.showReject = this.showReject.bind(this);
     }
-
 
     handleAutoSearch (personName) {
         this.props.dischargeAssessment.getUser(this,personName);
     };
     componentDidMount() {
-        new Scrollbar(this.inside.current).show()
+        new Scrollbar(this.inside.current).show();
+        if(Global.isFrozen()) return;
+        //判断当前发起流程是否可以操作；
+        let query = this.props.location.query ||{};
+        const record = query.record ? query.record :{}
+        if (record.inHospTableId && (record.flowStatus == curUtil.myStatic.flowStatus.agree || record.flowStatus == curUtil.myStatic.flowStatus.awaitAudit)) {
+            //已通过 或 待审核 不可做任何操作
+            this.setPageTempObj({canEdit: false});
+        }else{
+            this.setPageTempObj({canEdit: true});
+        }
     }
-
     checkUser(name){
         this.props.dischargeAssessment.getUser(name);
     }
@@ -93,12 +72,9 @@ class DischargeAssessment extends Component {
             }
         });
     }
-
     setPageTempObj(object={}){
         this.props.dischargeAssessment.setPageTempObjCY(this,{...object});
     }
-
-
     handleChange(val, field) {
         // 表单变更立即触发的事件
         let {record ={},sumScore} = this.props.state.pageTempObjCY;
@@ -119,7 +95,6 @@ class DischargeAssessment extends Component {
             this.setPageTempObj({tabValue: value});
         }
     }
-
     clickDownLoad(url){
         window.location.href=url;
     }
@@ -133,570 +108,78 @@ class DischargeAssessment extends Component {
             this.setState({isHidePrint: true});
         }, 1000);
     }
+    setApplyFile(file={}){
+        let count = Math.floor(Math.random() * (1000 - 1) + 1);
+        this.props.applicationForAdmission.setApplyFile(this,{
+            name: file.name,
+            size: (file.size / 1024) + "KB" ,
+            uploadTime:curUtil.currentDay(),
+            uploadUser: this.user.yh_mc || 'admin',
+            fileId:count,
+            fileUrl:'https://github.com/vuejs/vuepress/archive/master.zip'
+        });
+    }
+    handleReject(rejectContent){
+        let {record={}} = this.props.state.pageTempObjCY;
+        this.props.common.handleReject(this,{flowTableId:record.flowTableId,backCause:rejectContent,fun:()=>{
+           this.hideModal();
+        }});
+    }
+    showReject(){
+        let rejectTxts = [];
+        switch (this.user.js_lx){
+            case( curUtil.myStatic.currentRole.medicalInstitution):
+                rejectTxts = curUtil.myStatic.auditReject.inHospMedicalInstitution;
+                break;
+            case( curUtil.myStatic.currentRole.socialInsurance):
+                rejectTxts = curUtil.myStatic.auditReject.socialInsurance;
+                break;
+        }
+        this.setPageTempObj({showRejectModal: true,rejectTxts:rejectTxts});
+    }
+    hideModal(){
+        this.setPageTempObj({showRejectModal: false});
+    }
 
     render() {
-        let {tabValue,record={},personUserList,indeterminate,checkedGroupList,checkAll,sumScore,userName,uploadBergFiles:_uploadBergFiles} = this.props.state.pageTempObjCY;
-        const { getFieldDecorator } = this.props.form;
-        const { setBergFile,removeBergFile } = this.props.dischargeAssessment;
+        let {tabValue,canEdit,record={},showRejectModal,rejectTxts} = this.props.state.pageTempObjCY;
         const { isHidePrint } = this.state;
-        const uploadBergFiles = (_uploadBergFiles && _uploadBergFiles.length>0 ? _uploadBergFiles : curUtil.myStatic.defaultUploadInfo);
 
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-
-                    <BreadcrumbCustom first="康复" second="发起流程" third="康复出院申请" secondUrl={this.state.backUrl}/>
+                    <BreadcrumbCustom first="康复" second="流程待办" third="出院评估" secondUrl={this.state.backUrl}/>
                     <Divider/>
-                    <Step isShow={true}></Step>
+                    <Step isShow={false} node={record.node}></Step>
                     <Divider/>
                     <Radio.Group className={style.raioTab} defaultValue={tabValue}
                                  onChange={(e) => this.onRadioChange(e.target.value, curUtil.myStatic.radioType.imIsTab)}>
-                        <Radio.Button value='0'>康复出院评估</Radio.Button>
-                        <Radio.Button value='1'>Berg平衡量表</Radio.Button>
+                        <Radio.Button value='1'>康复出院评估</Radio.Button>
+                        <Radio.Button value='2'>Berg平衡量表</Radio.Button>
                     </Radio.Group>
 
                     <Form onSubmit={this.handleSubmit}>
                         <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
                             <div name="tab1" className={(tabValue == "0") ? '' : style.hidden}
                                  style={{"pageBreakAfter": "always"}}>
-                                <Descriptions title="无锡市康复医院2019年05月张三康复入院评估表" column={2} bordered
-                                              className={style.descriptions}>
-                                    <Descriptions.Item label="姓名">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('personName', {
-                                                            initialValue: record.personName,...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <AutoComplete
-                                                                className="global-search"
-                                                                style={{ width: '100%' }}
-                                                                dataSource={personUserList.map(curUtil.renderOption)}
-                                                                // onSelect={this.onAutoSelect}
-                                                                onSearch={_.debounce((e)=>{this.handleAutoSearch(e)}, 1000)}
-                                                                onChange={(e)=>{this.handleChange(e,"personName")}}
-                                                                placeholder="请输入"
-                                                                optionLabelProp="value"
-                                                            >
-                                                            </AutoComplete>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.personName}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="性别">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('sex', {
-                                                            initialValue: (record.sex && record.sex=="女") ? "1":"0",...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <Select onChange={(event)=> {this.handleChange(event, "sex")}}>
-                                                                <Select.Option value="0">男</Select.Option>
-                                                                <Select.Option value="1">女</Select.Option>
-                                                            </Select>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.personName}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="年龄">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ?  <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('age', {
-                                                            initialValue: record.age,...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <Input
-                                                                placeholder="请输入"
-                                                                onChange={(event)=> {this.handleChange(event.target.value, "age")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.age}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="证件号码">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('identityCard', {
-                                                            initialValue: record.identityCard,...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <Input
-                                                                placeholder="请输入"
-                                                                onChange={(event)=> {this.handleChange(event.target.value, "identityCard")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.identityCard}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="床号">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('bedNumber', {
-                                                            initialValue: record.bedNumber,...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <Input
-                                                                placeholder="请输入"
-                                                                onChange={(event)=> {this.handleChange(event.target.value, "bedNumber")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.bedNumber}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="病区">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ?  <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('lesion', {
-                                                            initialValue: record.lesion,...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <Input
-                                                                placeholder="请输入"
-                                                                onChange={(event)=> {this.handleChange(event.target.value, "lesion")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.lesion}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="住院号">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ?  <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('inHospNumber', {
-                                                            initialValue: record.inHospNumber,...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <Input
-                                                                placeholder="请输入"
-                                                                onChange={(event)=> {this.handleChange(event.target.value, "inHospNumber")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.inHospNumber}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="入院时间">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('inHospDate', {
-                                                            initialValue: record.inHospDate,rules: [{required: false, message: '请输入'}]
-                                                        })(
-                                                            <DatePicker  format={curUtil.myStatic.dateFormat}
-                                                                         onChange={(date, dateString)=>  {this.handleChange(dateString, "inHospDate")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.inHospDate}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="入院诊断" span={2}>
-                                        <Fragment>
-                                            {
-                                                isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('inHospDiagnose', {
-                                                            initialValue: record.inHospDiagnose,...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <Input
-                                                                placeholder="请输入"
-                                                                onChange={(event)=> {this.handleChange(event.target.value, "inHospDiagnose")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.inHospDiagnose}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                </Descriptions>
-                                <div className={style.propList}>
-                                    <header>
-                                        <div>评估项目</div>
-                                        <div>功能障碍及其程度</div>
-                                    </header>
-                                    <div>
-                                        <div className={style.heightText}>1.脑高级功能复制</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "brainFun")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>意识水平</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "mentLevel")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>认知功能</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "cognitive")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>言语功能</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "speak")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>情感情绪</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "mood")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div className={style.heightText}>2.吞咽功能</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "swallowingFun")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div className={style.heightText}>3.运动功能</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "motionFun")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>肌力</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "myodynamia")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>肌张力</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "muscularTone")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>平衡功能</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "balance")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>感觉功能</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "sensibility")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>浅感觉</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "superficialSen")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>深感觉</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "deepSen")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>复合感觉</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "compositeSen")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>日常生活能力</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "dayLive")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>合并症/并发症</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "syndrome")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>心功能不全</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "cardiacFun")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>肺部感染</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "pulInfection")}}/></div>
-                                    </div>
-                                    <div>
-                                        <div>气管切开</div>
-                                        <div><Input  onChange={(event)=> {this.handleChange(event.target.value, "tracheotomy")}}/></div>
-                                    </div>
-                                </div>
-                                <div className={style.rowStyle}>
-                                康复科评估意见：<br/>
-                                <TextArea className={style.noneBorder} rows={5}></TextArea>
-                            </div>
-                                <Descriptions column={2} bordered className={style.descriptions}>
-                                    <Descriptions.Item label="护理人员签字">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ?  <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('nurse', {
-                                                            initialValue: record.evaPerson
-                                                        })(
-                                                            <Input
-                                                                placeholder="请输入"
-                                                                onChange={(event)=> {this.handleChange(event.target.value, "nurse")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.nurse}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="日期">
-                                        {this.currentDay}
-                                    </Descriptions.Item>
-                                </Descriptions>
-                                <div className={style.rowStyle}>
-                                    医疗机构意见：<br/>
-                                    <TextArea className={style.noneBorder} rows={5}></TextArea>
-                                </div>
-                                <Descriptions column={2} bordered className={style.descriptions}>
-                                    <Descriptions.Item label="医疗机构签字"></Descriptions.Item>
-                                    <Descriptions.Item label="日期"></Descriptions.Item>
-                                </Descriptions>
-                                <div className={style.rowStyle}>
-                                    社保中心人员意见：<br/>
-                                    <TextArea className={style.noneBorder} rows={5}></TextArea>
-                                </div>
-                                <Descriptions column={2} bordered className={style.descriptions}>
-                                    <Descriptions.Item label="社保中心签字"></Descriptions.Item>
-                                    <Descriptions.Item label="日期"></Descriptions.Item>
-                                </Descriptions>
-                                <footer className={style.footer}><title className={style.tRight}>备注</title>
-                                    <div>
-                                        <Form.Item style={{ marginBottom: 0 }}>
-                                            {getFieldDecorator('remake', {
-                                                initialValue: record.remake,...curUtil.myStatic.rulesConfig
-                                            })(
-                                                <Input onChange={(event)=> {this.handleChange(event.target.value, "remake")}}/>
-                                            )}
-                                        </Form.Item>
-                                    </div>
-                                </footer>
-                                <footer className={style.footer}><title className={style.tRight}>据此考虑</title>
-                                    <div>
-                                        <Form.Item style={{ marginBottom: 0 }}>
-                                            {getFieldDecorator('isOutHosp', {
-                                                initialValue: record.isOutHosp || "0"
-                                            })(
-                                                <RadioGroup
-                                                    className={style.checkboxFlex}
-                                                    options={curUtil.myStatic.outHospResult}
-                                                    onChange={(e)=>this.handleChange(e,"isOutHosp")}
-                                                />
-                                            )}
-                                        </Form.Item>
-                                    </div>
-                                </footer>
-
+                                <OutHospAssess self={this}/>
                             </div>
 
                             <div name="tab2" className={(tabValue == "1") ? '' : style.hidden}
                                  style={{"pageBreakAfter": "always"}}>
-                                <Descriptions title="Berg平衡量表" column={2} bordered className={style.descriptions}>
-                                    <Descriptions.Item label="姓名">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ?<Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('personName', {
-                                                            initialValue: record.personName,...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <AutoComplete
-                                                                className="global-search"
-                                                                style={{ width: '100%' }}
-                                                                dataSource={personUserList.map(curUtil.renderOption)}
-                                                                onSearch={_.debounce((e)=>{this.handleAutoSearch(e)}, 1000)}
-                                                                onChange={(e)=>{this.handleChange(e,"personName")}}
-                                                                placeholder="请输入"
-                                                                optionLabelProp="value"
-                                                            >
-                                                            </AutoComplete>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.personName}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="性别">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ?   <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('sex', {
-                                                            initialValue: (record.sex && record.sex=="女") ? "1":"0"
-                                                        })(
-
-                                                            <Select onChange={(event)=> {this.handleChange(event, "sex")}}>
-                                                                <Option value="0">男</Option>
-                                                                <Option value="1">女</Option>
-                                                            </Select>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.sex}</Fragment>
-                                            }
-                                        </Fragment>
-
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="年龄">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ?  <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('age', {
-                                                            initialValue: record.age,...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <Input
-                                                                placeholder="请输入"
-                                                                onChange={(event)=> {this.handleChange(event.target.value, "age")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.age}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="证件号码">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('identityCard', {
-                                                            initialValue: record.identityCard,...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <Input
-                                                                placeholder="请输入"
-                                                                onChange={(event)=> {this.handleChange(event.target.value, "identityCard")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.identityCard}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="床号">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('bedNumber', {
-                                                            initialValue: record.bedNumber,...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <Input
-                                                                placeholder="请输入"
-                                                                onChange={(event)=> {this.handleChange(event.target.value, "bedNumber")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.bedNumber}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="住院号">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ?  <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('inHospNumber', {
-                                                            initialValue: record.inHospNumber,...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <Input
-                                                                placeholder="请输入"
-                                                                onChange={(event)=> {this.handleChange(event.target.value, "inHospNumber")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.inHospNumber}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="发病日期">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ?  <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('fbrq', {
-                                                            initialValue: record.fbrq, rules: [{required: true,  message: '请输入'}]
-                                                        })(
-                                                            <DatePicker  format={curUtil.myStatic.dateFormat}
-                                                                         onChange={(date, dateString)=>{this.handleChange(dateString, "fbrq")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.fbrq}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="入院日期">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ? <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('inHospDate', {
-                                                            initialValue: record.inHospDate, rules: [{required: true,  message: '请输入'}]
-                                                        })(
-                                                            <DatePicker  format={curUtil.myStatic.dateFormat}
-                                                                         onChange={(date, dateString)=>{this.handleChange(dateString, "inHospDate")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.inHospDate}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="临床诊断" span={2}>
-                                        <Fragment>
-                                            {
-                                                isHidePrint ?<Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('clinicalDiagnose', {
-                                                            initialValue: record.clinicalDiagnose,...curUtil.myStatic.rulesConfig
-                                                        })(
-                                                            <Input
-                                                                placeholder="请输入"
-                                                                onChange={(event)=> {this.handleChange(event.target.value, "clinicalDiagnose")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.clinicalDiagnose}</Fragment>
-                                            }
-                                        </Fragment>
-
-                                    </Descriptions.Item>
-                                </Descriptions>
-                                <Descriptions column={2} bordered className={`${style.descriptions} ${style.marginTopDiv} ${style.borderTop}`}>
-                                    <Descriptions.Item label="评定人员">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ?  <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('evaPerson', {
-                                                            initialValue: record.evaPerson
-                                                        })(
-                                                            <Input
-                                                                placeholder="请输入"
-                                                                onChange={(event)=> {this.handleChange(event.target.value, "evaPerson")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.evaPerson}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="评定日期">
-                                        <Fragment>
-                                            {
-                                                isHidePrint ?  <Form.Item style={{ marginBottom: 0 }}>
-                                                        {getFieldDecorator('evaDate', {
-                                                            initialValue: record.evaDate
-                                                        })(
-                                                            <DatePicker  format={curUtil.myStatic.dateFormat}
-                                                                         onChange={(date, dateString)=>  {this.handleChange(dateString, "evaDate")}}/>
-                                                        )}
-                                                    </Form.Item>:
-                                                    <Fragment>{record.evaDate}</Fragment>
-                                            }
-                                        </Fragment>
-                                    </Descriptions.Item>
-                                </Descriptions>
-                                <div className={style.propThreeList}>
-                                    <header><title>检查序号</title><title>检查内容</title><title>得分(0-4)</title></header>
-                                    <CheckScore data={curUtil.myStatic.checkTitle} score={curUtil.myStatic.checkScore}
-                                                onChange={this.handleChange}></CheckScore>
-                                    <div className={style.sumScore}>
-                                        <span>总分</span>
-                                        <div>
-                                            {/*<Input readOnly/>*/}
-                                            {sumScore}
-                                        </div>
-                                    </div>
-                                    <footer className={style.footer}><title>备注</title>
-                                        <div>
-                                            <Form.Item style={{ marginBottom: 0 }}>
-                                                {getFieldDecorator('remake', {
-                                                    initialValue: record.remake,...curUtil.myStatic.rulesConfig
-                                                })(
-                                                    <Input
-                                                        onChange={(event)=> {this.handleChange(event.target.value, "remake")}}/>
-                                                )}
-                                            </Form.Item>
-                                        </div>
-                                    </footer>
-                                </div>
-                                <div className={style.tableStyle}>
-                                    <header><span className={style.heightText}>出院小结</span>（入院评估无需增加出院小结）</header>
-                                    {/*config={curUtil.uploader(this,{method:setBergFile})}*/}
-                                    <UploadFileNoName
-                                                      dataSource={uploadBergFiles}
-                                                      columns={columnsaApplicationForAdmission(this,{remove:removeBergFile})}/>
-                                </div>
+                                <OutHospBerg self={this}/>
                             </div>
                         </div>
 
                         <div className={style.buttons}>
                             <ReactToPrint trigger={() =>
                                 <Button id="print-application" type="primary" className={style.hidden}>打印</Button>} content={() => this.refs}/>
-                            <BasicGroupComponent {...this.button}/>
+                            <BasicGroupComponent {...curUtil.getButton(this,{canEdit,print:this.print,handleSubmit:this.handleSubmit,isDocter:false,showReject:this.showReject})}/>
                         </div>
                     </Form>
                 </div>
+                {showRejectModal && <RejectModal isShow={showRejectModal} close={this.hideModal} rejectCallback={(context)=>{this.handleReject(context)}} confirmLoading={this.props.state.btnRequestLoading}
+                             rejectTxts={rejectTxts}/>}
             </div>
         );
     }

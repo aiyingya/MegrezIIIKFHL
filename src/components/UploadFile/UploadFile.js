@@ -69,6 +69,6 @@ class UploadFile extends Component {
 PropTypes.propTypes = {
     successCallback: PropTypes.string.isRequired,
     dataSource: PropTypes.string.isRequired,
-    columnsaApplicationForAdmission: PropTypes.string.isRequired
+    columns: PropTypes.object.isRequired
 };
 export default UploadFile;

@@ -65,11 +65,114 @@ const myStatic = {
         {label: '继续住院', value: '1'},
         {label: '结算并继续住院', value: '2'}
     ],
+    //审核驳回
+    auditReject:{
+        // 入院医疗机构驳回
+        inHospMedicalInstitution:['医疗机构审核','入院评估'],
+        // 出院医疗机构驳回
+        outHospMedicalInstitution:['医疗机构审核','出院评估'],
+        // 社保驳回
+        socialInsurance:['社保中心审核','医疗机构审核']
+    },
+    //审核提交
+    auditAgree:{
+        // 入院医护人员提交
+        inHospDocter:['入院评估','医疗机构审核'],
+        // 出院医护人员提交
+        outHospDocter:['出院评估','医疗机构审核'],
+        // 医疗机构提交
+        medicalInstitution:['医疗机构审核','社保中心审核'],
+        // 社保中心提交
+        socialInsurance:['社保中心审核','归档'],
+    },
+    // 对应数据字典中的 KFHL_ST 属性
+    flowStatus:{
+        agree: "0",//通过
+        reject: "1",//不通过
+        awaitAudit:'2',//待审核
+        awaitSubmit:'4'//待提交
+    },
+    // 对应数据字典中的 KFHL_TB 属性
+    flowType:{
+        inHosp: "0",// 入院评估
+        outHosp: "1",// 出院评估
+    },
+    // 对应数据字典中的 KFHL_JS 属性
+    currentRole:{
+        docter: "0",//医护人员
+        medicalInstitution: "1",//医疗机构
+        socialInsurance:'2',//社保中心
+    },
+    // 填报状态：对应数据字典中的 KFHL_TAB_S 属性
+    tableStatus:{
+        completed:"0", //已填
+        notFilledIn:"1" //未填
+    },
+    type:{
+        inHosp:"0", // 入院
+        outHosp:"1" // 出院
+    },
+    // 查看Tab页的页码
+    lookTab:{
+        inhospApplication:"0", // 入院申请
+        inHospAssess:"1", // 入院评估
+        inHospBerg:"2", // 入院berg
+        outHospAssess:"1", // 出院评估
+        outHospBerg:"2" // 出院berg
+    }
+}
+
+let getButton =(_this,{canEdit,print,handleSubmit,showReject,isDocter = true})=>{
+    let isHideReject  = isDocter ? true : !canEdit;
+    return {
+        direction: Global.Direction.DOWN,
+        datas: [
+            {
+                type: 'null',
+                className: Global.BottomCss.Default,
+                text: '打印',
+                onClick: (e) => {
+                    print();
+                }
+            },
+            {
+                type: 'primary',
+                className: Global.BottomCss.ADD,
+                text: '保存',
+                disabled:!canEdit,
+                onClick: (e) => {
+                    handleSubmit();
+                }
+            },
+            {
+                type: 'primary',
+                className: Global.BottomCss.REMOVE,
+                text: '退回',
+                disabled:isHideReject,
+                onClick: (e) => {
+                    showReject();
+                }
+            },
+            {
+                type: 'primary',
+                className: Global.BottomCss.ADD,
+                text: '提交',
+                disabled:!canEdit,
+                onClick: (e) => {
+                    handleSubmit(true);
+                }
+            }
+        ]
+    }
 }
 
 const currentDay = ()=>{
     const date = new Date();
-    return date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
+    let month = (date.getMonth()+1);
+    month = month >= 10 ? month: '0'+month;
+    let day =date.getDate();
+    day = day >= 10 ? day: '0'+day;
+    return date.getFullYear()+"-"+month+"-"+day;
 }
 function renderOption(item) {
     return (
@@ -85,5 +188,7 @@ export default {
     myStatic,
     // 初始化编辑中机构列表的选中数据
     currentDay,
-    renderOption
+    renderOption,
+    // 获取按钮列表
+    getButton
 }

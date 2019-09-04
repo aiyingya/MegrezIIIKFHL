@@ -42,6 +42,8 @@ let initialState = {
         uploadApplyFiles:[],
         // 上传的评估文件
         uploadBergFiles:[],
+        // 是否可以编辑页面
+        canEdit:true,
     },
     // 康复出院申请
     pageTempObjCY:{

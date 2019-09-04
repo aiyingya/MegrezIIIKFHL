@@ -20,7 +20,7 @@ class Step extends Component {
             // 是否展开
             isSpread: true,
             // 默认当前的步骤
-            node:myStatic.node.Zero
+            node:'0'
         };
         this.onClick = this.onClick.bind(this);
     }
@@ -37,7 +37,7 @@ class Step extends Component {
                             <div className="ant-steps-item-container">
                                 <div className="ant-steps-item-tail"></div>
                                 <div className="winning-style-div">
-                                    <div className={`ant-steps-item-icon ${ (!node || Number(node) >= Number(myStatic.node.Zero)) ? 'select' : '' }`}><span className="ant-steps-icon"><i
+                                    <div className={`ant-steps-item-icon ${ ((node && Number(node)) > Number(myStatic.node.Zero)) ?'select' : '' }  ${ ((node && Number(node)) == Number(myStatic.node.Zero)) ?'current' : '' }`}><span className="ant-steps-icon"><i
                                         aria-label="图标: check" className="anticon anticon-check ant-steps-finish-icon"><svg
                                         viewBox="64 64 896 896" focusable="false" className="" data-icon="check"
                                         width="1em" height="1em" fill="currentColor" aria-hidden="true"><path
@@ -61,7 +61,7 @@ class Step extends Component {
                             <div className="ant-steps-item-container">
                                 <div className="ant-steps-item-tail"></div>
                                 <div className="winning-style-div">
-                                    <div className={`ant-steps-item-icon ${ (!node || Number(node) >= Number(myStatic.node.One)) ? 'select' : '' }`} ><span className="ant-steps-icon"><i
+                                    <div className={`ant-steps-item-icon ${ (node && Number(node) > Number(myStatic.node.One)) ? 'select' : '' } ${ ((node && Number(node)) == Number(myStatic.node.One)) ?'current' : '' }`} ><span className="ant-steps-icon"><i
                                         aria-label="图标: check" className="anticon anticon-check ant-steps-finish-icon"><svg
                                         viewBox="64 64 896 896" focusable="false" className="" data-icon="check"
                                         width="1em" height="1em" fill="currentColor" aria-hidden="true"><path
@@ -85,7 +85,7 @@ class Step extends Component {
                             <div className="ant-steps-item-container">
                                 <div className="ant-steps-item-tail"></div>
                                 <div className="winning-style-div">
-                                    <div  className={`ant-steps-item-icon ${ (!node || Number(node) >= Number(myStatic.node.Two)) ? 'select' : '' }`}><span className="ant-steps-icon"><i
+                                    <div  className={`ant-steps-item-icon ${ (node &&  Number(node) > Number(myStatic.node.Two)) ? 'select' : '' } ${((node && Number(node)) == Number(myStatic.node.Two)) ?'current' : '' }`}><span className="ant-steps-icon"><i
                                         aria-label="图标: check" className="anticon anticon-check ant-steps-finish-icon"><svg
                                         viewBox="64 64 896 896" focusable="false" className="" data-icon="check"
                                         width="1em" height="1em" fill="currentColor" aria-hidden="true"><path
@@ -109,7 +109,7 @@ class Step extends Component {
                             <div className="ant-steps-item-container">
                                 <div className="ant-steps-item-tail"></div>
                                 <div className="winning-style-div">
-                                    <div  className={`ant-steps-item-icon ${ (!node || Number(node) >= Number(myStatic.node.Three)) ? 'select' : '' }`}><span className="ant-steps-icon"><i
+                                    <div  className={`ant-steps-item-icon ${ (node && Number(node) > Number(myStatic.node.Three)) ? 'select' : '' } ${ ((node && Number(node)) == Number(myStatic.node.Three)) ?'current' : '' }`}><span className="ant-steps-icon"><i
                                         aria-label="图标: check" className="anticon anticon-check ant-steps-finish-icon"><svg
                                         viewBox="64 64 896 896" focusable="false" className="" data-icon="check"
                                         width="1em" height="1em" fill="currentColor" aria-hidden="true"><path

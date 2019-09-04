@@ -1,40 +1,49 @@
-import React, {Component, Fragment} from 'react';
-import * as PropTypes from 'prop-types';
-import { Input, Descriptions, Select,Form,DatePicker} from 'antd';
-const {TextArea} = Input;
+// 入院申请
+import React, {Component,Fragment} from 'react';
+import {Upload, Input, Button, Divider, Icon, Checkbox, Radio, Descriptions, Table, Select,Form,DatePicker, AutoComplete } from 'antd';
+const { Option  } = AutoComplete;//AutoOption
+import _ from 'lodash';
 import curUtil from '../Util'
-import style from '../common.less'
 import CheckScore from '@components/KFHL/CheckScore/CheckScore';
-import columnsUpload from "@/components/KFHL/Columns/columnsUpload";
+import style from '../common.less'
 import UploadFile from '@components/UploadFile/UploadFile';
+import * as PropTypes from 'prop-types';
+import columnsUpload from "@/components/KFHL/Columns/columnsUpload";
 
-class InHospBerg  extends Component {
+
+class OutHospBerg  extends Component {
     constructor(props) {
         super(props);
     }
 
     render() {
         let {self} = this.props;
-        let {record={},sumScore, uploadBergFiles:_uploadBergFiles,canEdit} = self.props.state.pageTempObj;
+        let {record={},personUserList,sumScore,uploadBergFiles:_uploadBergFiles,canEdit} = self.props.state.pageTempObjCY;
         const { getFieldDecorator } = self.props.form;
-        const { removeBergFile } = self.props.applicationForAdmission;
+        const { removeBergFile } = self.props.dischargeAssessment;
         const { isHidePrint } = self.state;
         const uploadBergFiles = (_uploadBergFiles && _uploadBergFiles.length>0 ? _uploadBergFiles : curUtil.myStatic.defaultUploadInfo);
 
         return (
             <div className={isHidePrint ?  style.tabSelf : style.tabSelf +' '+style.showPrint}>
-                <Descriptions title="Berg平衡量表" column={2} bordered className={style.descriptions}
-                              size="middle">
+                <Descriptions title="Berg平衡量表" column={2} bordered className={style.descriptions}>
                     <Descriptions.Item label="姓名">
                         <Fragment>
                             {
-                                (isHidePrint && canEdit) ?  <Form.Item style={{ marginBottom: 0 }}>
+                                (isHidePrint && canEdit) ?<Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...curUtil.myStatic.inputRules
+                                            initialValue: record.personName,...curUtil.myStatic.rulesConfig
                                         })(
-                                            <Input
+                                            <AutoComplete
+                                                className="global-search"
+                                                style={{ width: '100%' }}
+                                                dataSource={personUserList.map(curUtil.renderOption)}
+                                                onSearch={_.debounce((e)=>{self.handleAutoSearch(e)}, 1000)}
+                                                onChange={(e)=>{self.handleChange(e,"personName")}}
                                                 placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "personName")}}/>
+                                                optionLabelProp="value"
+                                            >
+                                            </AutoComplete>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.personName}</Fragment>
@@ -169,10 +178,10 @@ class InHospBerg  extends Component {
                                     <Fragment>{record.clinicalDiagnose}</Fragment>
                             }
                         </Fragment>
+
                     </Descriptions.Item>
                 </Descriptions>
-
-                <Descriptions column={2} bordered className={`${style.descriptions} ${style.marginTopDiv} ${style.borderTop}`} size="middle">
+                <Descriptions column={2} bordered className={`${style.descriptions} ${style.marginTopDiv} ${style.borderTop}`}>
                     <Descriptions.Item label="评定人员">
                         <Fragment>
                             {
@@ -205,7 +214,6 @@ class InHospBerg  extends Component {
                         </Fragment>
                     </Descriptions.Item>
                 </Descriptions>
-
                 <div className={style.propThreeList}>
                     <header><title>检查序号</title><title>检查内容</title><title>得分(0-4)</title></header>
                     <CheckScore data={curUtil.myStatic.checkTitle} score={curUtil.myStatic.checkScore}
@@ -213,6 +221,7 @@ class InHospBerg  extends Component {
                     <div className={style.sumScore}>
                         <span>总分</span>
                         <div>
+                            {/*<Input readOnly/>*/}
                             {sumScore}
                         </div>
                     </div>
@@ -234,10 +243,10 @@ class InHospBerg  extends Component {
                 </div>
                 <div className={style.tableStyle}>
                     <header><span className={style.heightText}>出院小结</span>（入院评估无需增加出院小结）</header>
-                    <UploadFile successCallback ={self.setBergFile}
+                    <UploadFile disabled ={!canEdit}
+                                successCallback ={self.setApplyFile}
                                 dataSource={uploadBergFiles}
-                                columns={columnsUpload(self,{remove:removeBergFile})}
-                                disabled={true}/>
+                                columns={columnsUpload(self,{remove:removeBergFile})}/>
                 </div>
             </div>
         );
@@ -247,4 +256,4 @@ class InHospBerg  extends Component {
 PropTypes.propTypes = {
     self: PropTypes.string.isRequired
 };
-export default InHospBerg;
+export default OutHospBerg;

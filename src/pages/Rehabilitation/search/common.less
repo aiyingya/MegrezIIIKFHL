@@ -56,8 +56,367 @@
 
       }
     }
-
-
-
   }
 }
+
+
+
+.green{
+  color: #38C78C;
+}
+.red{
+  color: #FF7477;
+}
+.blue{
+  color: #15A4FA;
+}
+.gray{
+  color: #666666;
+}
+
+.error{}
+.alertText{
+  width: 72px;
+  text-align: center;
+  border: 1px solid #FF7477;
+  color: #FF7477;
+  cursor:pointer;
+}
+
+.raioTab{
+  margin: 33px 57px 16px 57px;
+}
+
+// index.js
+.winningBody{
+  :global{
+    .winning-body{
+      min-width: 940px;
+    }
+  }
+}
+.seatDiv{
+  height: 33px;
+}
+// applicationForAdmission.js
+.tabContent{
+  @lable-padding: 7px 16px;
+  @lable-bg-color:#DFECFF;
+  @content-padding:7px;
+  @border-line-color:1px solid #9FAFC7;
+  @margin-top-div:14px;
+  margin: 0 57px;
+  .pageMTop{
+    margin-top: 20px;
+  }
+  .descriptions{
+    :global {
+      .ant-descriptions-title {
+        margin: 0;
+        padding: 25px 0;
+        font-size:16px;
+        font-family:MicrosoftYaHei;
+        font-weight:bold;
+        color:rgba(51,51,51,1);
+        line-height:21px;
+        text-align: center;
+        border-bottom:1px solid #9FAFC7;
+      }
+      .ant-descriptions-view{
+        table{
+          width: 100%;
+        }
+        border-radius: 0;
+      }
+      .ant-descriptions-row {
+        border-bottom: 1px solid #9FAFC7;
+        height: 46px;
+      }
+      .ant-descriptions-item-label{
+        width: 15%;
+        background-color: @lable-bg-color;
+        padding: @lable-padding;
+        text-align: right;
+      }
+      .ant-descriptions-item-content{
+        width: 35%;
+        padding: 0 @content-padding;
+      }
+
+      .ant-descriptions-item-label,.ant-descriptions-item-content {
+        font-size:12px;
+        font-family:MicrosoftYaHei;
+        color:rgba(51,51,51,1);
+        line-height:16px;
+      }
+      .ant-descriptions-item-label:last-child, .ant-descriptions-item-content:last-child {
+        border-right: none;
+      }
+
+      .ant-descriptions-row >td:after{
+        content: none;
+      }
+    }
+  }
+  .noneBorder{
+    border: 0;
+  }
+  .rowStyle{
+    padding: 15px;
+    border-bottom:1px solid #9FAFC7 ;
+    textarea{
+      margin-top: 9px!important;
+      height: 128px;
+    }
+    .checkboxFlex{
+      display: flex;
+      flex-flow: column;
+    }
+    .checkboxChild{
+      margin-left: 46px;
+    }
+  }
+  .tableStyle{
+    :global{
+      .ant-table{
+        font-size:12px;
+        font-family:MicrosoftYaHei;
+        color:rgba(51,51,51,1);
+        line-height:16px;
+      }
+      .ant-table-thead > tr > th:not(:last-child):after{
+        content: "";
+        display: table;
+        border-right: @border-line-color;
+        height: 28px;
+        position: absolute;
+        right: 5px;
+        top: 10px;
+      }
+      .ant-table-tbody>.ant-table-row{
+        height: 46px;
+      }
+    }
+    .clickText{
+      margin-left: 10px;
+      color:rgba(21,164,250,1);
+      cursor: pointer;
+    }
+    >header{
+      display: block;
+      margin: 10px 0 0 16px;
+    }
+    button{
+      background: rgba(21,164,250,1);
+      border-radius: 4px;
+      color: #FFFFFF;
+      margin: 16px;
+    }
+    > title{
+      margin: 10px 0 0 16px;
+      display: block;
+      color:#15A4FA;
+    }
+  }
+  .heightText{
+    color:#15A4FA;
+  }
+  .propList{
+    margin-top: @margin-top-div;
+    display: flex;
+    flex-flow: column;
+    font-size:12px;
+    font-family:MicrosoftYaHei;
+    color:rgba(51,51,51,1);
+    line-height:16px;
+    header{
+      display: flex;
+      height: 46px;
+      line-height: 46px;
+      text-align: center;
+      background-color: @lable-bg-color;
+      border-top: @border-line-color;
+      border-bottom: @border-line-color;
+      div{
+        border-right: @border-line-color;
+      }
+      div:first-child{
+        width: 15%;
+      }
+      div:last-child{
+        flex: 1;
+        border-right:none;
+      }
+    }
+    >div{
+      display: flex;
+      height: 46px;
+
+      border-bottom: @border-line-color;
+      >div:first-child{
+        width: 15%;
+        padding: 0 16px;
+        text-align: right;
+        line-height: 46px;
+        background-color: @lable-bg-color;
+        border-right: @border-line-color;
+      }
+      >div:last-child{
+        padding:  7px;
+        flex: 1;
+      }
+    }
+    .heightText{
+      color:rgba(21,164,250,1);
+    }
+  }
+  .propThreeList{
+    text-align: center;
+    margin-top: @margin-top-div;
+    display: flex;
+    flex-flow: column;
+    font-size:12px;
+    font-family:MicrosoftYaHei;
+    color:rgba(51,51,51,1);
+    line-height:16px;
+    title{
+      display: block;
+    }
+    header,>div,.sumScore{
+      display: flex;
+      height: 46px;
+      line-height: 46px;
+    }
+    header{
+      background-color: @lable-bg-color;
+      border-top: @border-line-color;
+      border-bottom: @border-line-color;
+      title{
+        border-right: @border-line-color;
+      }
+      title:first-child, title:last-child{
+        width: 15%;
+      }
+      title:nth-child(2){
+        flex: 1;
+      }
+      title:last-child{
+        border-right:none;
+      }
+    }
+    >div{
+      border-bottom: @border-line-color;
+      title{
+        border-right: @border-line-color;
+      }
+      title:first-child,>div:last-child{
+        width: 15%;
+      }
+      title:first-child{
+        padding: 0 7px;
+        background-color: @lable-bg-color;
+      }
+      title:nth-child(2){
+        flex: 1;
+      }
+      >div:last-child{
+        line-height: 32px;
+        padding: 8px 16px;
+        border-right:none;
+      }
+    }
+    .heightText{
+      color:rgba(21,164,250,1);
+    }
+    .sumScore{
+      font-size:12px;
+      font-family:MicrosoftYaHei;
+      font-weight:bold;
+      color:rgba(51,51,51,1);
+      span{
+        flex: 1;
+        width: 85%;
+        padding: 0 7px;
+        text-align: right;
+        border-right: @border-line-color;
+      }
+      >div{
+        text-align: left;
+        padding-left: 27px!important;
+      }
+    }
+  }
+  .footer{
+    display: flex;
+    height: 46px;
+    line-height: 46px;
+    border-bottom: @border-line-color;
+    title{
+      display: block;
+      width: 15%;
+      padding: 0 7px;
+      background-color: @lable-bg-color;
+    }
+    title.tRight{
+      text-align: right;
+      padding-right: 16px;
+    }
+    >div{
+      flex: 1;
+      margin: auto;
+      padding:0 16px;
+    }
+  }
+  .marginTopDiv{
+    margin-top: @margin-top-div;
+  }
+  .borderTop{
+    border-top: @border-line-color;
+  }
+}
+
+// 開始打印 ,打印樣式调整
+.tabContent.showPrint{
+  >div{
+    margin-top: 20px;
+    display: block;
+  }
+  .propList{
+    >div{
+      >div:last-child{
+        input{
+          border: 0;
+        }
+      }
+
+    }
+  }
+  .propThreeList{
+    >div{
+      >div:last-child{
+        :global{
+          .ant-select-selection{
+            border: 0;
+            .ant-select-arrow{
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+  .footer{
+    input{
+      border: none;
+    }
+  }
+}
+
+.buttons{
+  margin: 0 57px;
+}
+.hidden{
+  display: none;
+}
+
+

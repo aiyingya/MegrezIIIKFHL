@@ -4,7 +4,9 @@ import in_hosp_apply from './mock/success';
 import out_hosp_apply from './mock/success';
 import look_hosp_apply from './mock/Rehabilitation/Initiate/look_hosp_apply';
 import person_infos from './mock/Rehabilitation/Initiate/person_infos.json';
-import file_upload from './mock/UserCentre/logout';
+import file_upload from './mock/success';
+import search_tree from './mock/Rehabilitation/Initiate/search_tree';
+import reject from  './mock/success';
 
 const api = {
     // 发起流程 - 列表
@@ -19,9 +21,13 @@ const api = {
     person_infos: '/KFHL/inHospApply/personInfo',
     // 文件上传
     file_upload: '/KFHL/inHospApply/upload',
+    // 查询
+    search_tree: '/KFHL/recovery/query',
+    // 退回
+    reject: '/KFHL/flow/back',
 };
 
 export default Loader.batchExport(
     api,
-    [initiate_list,in_hosp_apply,out_hosp_apply,look_hosp_apply,person_infos,file_upload]
+    [initiate_list,in_hosp_apply,out_hosp_apply,look_hosp_apply,person_infos,file_upload,search_tree,reject]
 );

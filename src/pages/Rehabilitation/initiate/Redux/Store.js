@@ -35,9 +35,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
                 Global.alert(result,{
                     successFun:()=>{
-                        // 显示模块树-基础服务这里是平级的
-                        // let tree = Global.changeDatasToTree({dataList:result.datas,id:'mk_id',parentId:'sj_mk_id'})
-                        // result.datas = tree
                         result.onChange = (_page, _pageSize)=>{
                             // 绑定分页按钮点击事件
                             _this.props.dict.initTable(_this,{value:_this.props.state.searchObj,page:_page, pageSize:_pageSize})

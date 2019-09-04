@@ -100,6 +100,11 @@
       margin-top: 9px!important;
       height: 128px;
     }
+    .textArea{
+      margin-top: 9px!important;
+      min-height: 128px;
+      margin-left: 4px;
+    }
     .checkboxFlex{
       display: flex;
       flex-flow: column;
@@ -183,7 +188,6 @@
     >div{
       display: flex;
       height: 46px;
-
       border-bottom: @border-line-color;
       >div:first-child{
         width: 15%;
@@ -196,6 +200,11 @@
       >div:last-child{
         padding:  7px;
         flex: 1;
+        display: flex;
+        align-items: center;
+      }
+      .tLeft{
+        padding-left: 11px;
       }
     }
     .heightText{
@@ -260,6 +269,10 @@
     .heightText{
       color:rgba(21,164,250,1);
     }
+    .tRightScore{
+      text-align: left;
+      padding-left: 9px;
+    }
     .sumScore{
       font-size:12px;
       font-family:MicrosoftYaHei;
@@ -307,6 +320,43 @@
   }
 }
 
+
+// 開始打印 ,打印樣式调整
+.tabSelf.showPrint{
+  >div{
+    margin-top: 20px;
+    display: block;
+  }
+  .propList{
+    >div{
+      >div:last-child{
+        input{
+          border: 0;
+        }
+      }
+
+    }
+  }
+  .propThreeList{
+    >div{
+      >div:last-child{
+        :global{
+          .ant-select-selection{
+            border: 0;
+            .ant-select-arrow{
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+  .footer{
+    input{
+      border: none;
+    }
+  }
+}
 
 .buttons{
   margin: 0 57px;

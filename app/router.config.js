@@ -183,11 +183,43 @@ export default [
                 component: require('@pages/Rehabilitation/agent').default
             },
             {
+                path: '/rehabilitation/agent/applicationForAdmission',
+                name: '待办康复入院申请',
+                authority: ['admin'],
+                hidden: true,
+                parentPath:'/rehabilitation/agent',
+                component: require('@pages/Rehabilitation/agent/Operate/applicationForAdmission').default
+            },
+            {
+                path: '/rehabilitation/agent/dischargeAssessment',
+                name: '待办康复出院评估',
+                authority: ['admin'],
+                hidden: true,
+                parentPath:'/rehabilitation/agent',
+                component: require('@pages/Rehabilitation/agent/Operate/dischargeAssessment').default
+            },
+            {
                 path: '/rehabilitation/search',
                 name: '查询',
                 authority: ['admin'],
                 hidden: false,
                 component: require('@pages/Rehabilitation/search').default
+            },
+            {
+                path: '/rehabilitation/search/applicationForAdmission',
+                name: '查看康复入院申请',
+                authority: ['admin'],
+                hidden: true,
+                parentPath:'/rehabilitation/search',
+                component: require('@pages/Rehabilitation/search/Operate/applicationForAdmission').default
+            },
+            {
+                path: '/rehabilitation/search/dischargeAssessment',
+                name: '查看康复出院评估',
+                authority: ['admin'],
+                hidden: true,
+                parentPath:'/rehabilitation/search',
+                component: require('@pages/Rehabilitation/search/Operate/dischargeAssessment').default
             },
         ]
     },

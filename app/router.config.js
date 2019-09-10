@@ -14,7 +14,8 @@ export default [
         name: 'redirect',
         icon: '',
         redirect: '/dashboard/analysis'
-    },{
+    },
+    {
         path: '/system',
         name: '系统管理',
         icon: (
@@ -236,24 +237,48 @@ export default [
         routes: [
             {
                 path: '/nursing/initiate',
-                name: '发起流程',
+                name: '护理发起流程',
                 authority: ['admin'],
                 hidden: false,
-                component: require('@pages/Rehabilitation/search').default
+                component: require('@pages/Nursing/initiate').default
+            },
+            {
+                path: '/nursing/initiate/admissionAssessment',
+                name: '护理入院评估',
+                authority: ['admin'],
+                hidden: true,
+                parentPath:'/nursing/initiate',
+                component: require('@pages/Nursing/initiate/Operate/AdmissionAssessment').default
+            },
+            {
+                path: '/nursing/initiate/stageAssessment',
+                name: '护理阶段性评估',
+                authority: ['admin'],
+                hidden: true,
+                parentPath:'/nursing/initiate',
+                component: require('@pages/Nursing/initiate/Operate/StageAssessment').default
+            },
+            {
+                path: '/nursing/initiate/dischargeRecord',
+                name: '护理出院记录',
+                authority: ['admin'],
+                hidden: true,
+                parentPath:'/nursing/initiate',
+                component: require('@pages/Nursing/initiate/Operate/DischargeAssessment').default
             },
             {
                 path: '/nursing/agent',
-                name: '流程代办',
+                name: '护理流程代办',
                 authority: ['admin'],
                 hidden: false,
-                component: require('@pages/Rehabilitation/search').default
+                component: require('@pages/Nursing/agent').default
             },
             {
                 path: '/nursing/search',
-                name: '查询',
+                name: '护理查询',
                 authority: ['admin'],
                 hidden: false,
-                component: require('@pages/Rehabilitation/search').default
+                component: require('@pages/Nursing/search').default
             },
         ]
     },

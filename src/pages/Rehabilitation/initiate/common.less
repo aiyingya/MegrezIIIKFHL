@@ -87,6 +87,7 @@
         background-color: @lable-bg-color;
         padding: @lable-padding;
         text-align: right;
+        white-space: normal;
       }
       .ant-descriptions-item-content{
         width: 35%;
@@ -207,9 +208,11 @@
         width: 15%;
         padding: 0 16px;
         text-align: right;
-        line-height: 46px;
         background-color: @lable-bg-color;
-        border-right: @border-line-color;
+        border-right:  @lable-bg-color;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
       }
       >div:last-child{
         padding:  7px;

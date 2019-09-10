@@ -96,6 +96,44 @@
       ]
     },
     {
+      "href": "/nursing",
+      "title": "护理",
+      "treeid": "4",
+      "context": "护理",
+      "icon": "fa-list-alt",
+      "page_code": "basicServiceManagement",
+      "dropdown": true,
+      "children": [
+        {
+          "href": "/nursing/initiate",
+          "title": "护理发起流程",
+          "treeid": "84",
+          "context": "发起流程",
+          "icon": "fa fa-signal",
+          "page_code": "basicService_module",
+          "dropdown": false
+        },
+        {
+          "href": "/nursing/agent",
+          "title": "护理流程代办",
+          "treeid": "40",
+          "context": "流程代办",
+          "icon": "fa fa-eercast",
+          "page_code": "basicService_organization",
+          "dropdown": false
+        },
+        {
+          "href": "/nursing/search",
+          "title": "护理查询",
+          "treeid": "126",
+          "context": "查询",
+          "icon": "fa-user-circle",
+          "page_code": "null",
+          "dropdown": false
+        }
+      ]
+    },
+    {
       "href": "http://www.baidu.com",
       "title": "我的收藏",
       "treeid": "150",

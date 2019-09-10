@@ -2,19 +2,19 @@ import React from 'react';
 import {Global,Uc} from 'winning-megreziii-utils';
 import {Badge} from 'antd';
 import style from './common.less';
-import curUtil from '@components/KFHL/Util';
+import curUtil from '../Service/Util';
 
 export default (self)=>{
     const {state}=self.props;
     return [
         {
             title: '序号',
-            dataIndex: 'inHospTableId',
+            dataIndex: 'ID',
             render:(text,record,index)=>`${index+1}`,
             width: '8%',
         }, {
             title: '标题',
-            dataIndex: 'titile',
+            dataIndex: 'title',
         }, {
             title: '患者',
             dataIndex: 'personName',
@@ -27,6 +27,7 @@ export default (self)=>{
             render: (texts, record) => {
                 let _node = state.staticStatus.node || [];
                 const objct = _node.find(res=>res.value == texts) || {};
+                console.log(objct.value,_node)
                 return <span>{objct.name}</span>
             }
         }, {
@@ -47,6 +48,7 @@ export default (self)=>{
                 let _flowStatus = state.staticStatus.flowStatus || [];
                 const objct = _flowStatus.find(res=>res.value == texts) || {};
                 let color = '';
+                console.log(objct.value,_flowStatus)
                 switch (objct.value){
                     case curUtil.myStatic.flowStatus.agree:
                         color ="green"

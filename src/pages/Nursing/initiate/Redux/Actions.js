@@ -1,0 +1,19 @@
+import {createAction} from "redux-actions";
+import types from "./ActionTypes";
+
+export const loadingStart = createAction(types.LOADINGSTART);
+export const loadingEnd = createAction(types.LOADINGEND);
+export const search = createAction(types.SEARCH);
+export const getFormItems = createAction(types.GETFORMITEMS);
+export const setDatas = createAction(types.SET_DATAS);
+export const setSearchObj = createAction(types.setSearchObj);
+export const setBtnLoadingActive = createAction(types.SET_BTN_LOADING_ACTIVE);
+export const setBtnLoadingDisplay = createAction(types.SET_BTN_DLOADING_DISPLAY);
+export const setBtnRequestActive = createAction(types.BTN_REQUEST_ACTIVE);
+export const setBtnRequestDisplay = createAction(types.BTN_REQUEST_DISPLAY);
+export const setTypeDatas = createAction(types.SET_TYPE_DATAS);
+export const setStaticStatus = createAction(types.SET_STATIC_STATUS);
+export const setTempSearchObj = createAction(types.SET_TEMP_SEARCH_OBJ);
+export const pageTempObj = createAction(types.PAGE_TEMP_OBJ);
+export const pageTempObjStag = createAction(types.PAGE_TEMP_OBJ_STAG);
+export const pageTempObjDischarge = createAction(types.PAGE_TEMP_OBJ_DISCHARGE);

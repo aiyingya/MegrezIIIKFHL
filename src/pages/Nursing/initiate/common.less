@@ -1,0 +1,83 @@
+
+// 首页列表
+.green{
+  color: #38C78C;
+}
+.red{
+  color: #FF7477;
+}
+.blue{
+  color: #15A4FA;
+}
+.gray{
+  color: #666666;
+}
+.jumpSelect{
+  width: 72px;
+  text-align: center;
+  border: 1px solid #25A6F7;
+  color: #15A4FA;
+  cursor:pointer;
+}
+
+// 模块中的子页面
+.winningBody{
+  :global{
+    .winning-body{
+      min-width: 940px;
+    }
+  }
+}
+
+// applicationForAdmission.js
+.tabContent{
+  margin: 30px 57px;
+}
+
+.buttons{
+  margin: 0 57px;
+  :global{
+    .ant-btn-group{
+      padding-top: 0;
+    }
+  }
+}
+
+
+
+// 開始打印 ,打印樣式调整
+.tabContent.showPrint{
+  >div{
+    margin-top: 20px;
+    display: block;
+  }
+  .propList{
+    >div{
+      >div:last-child{
+        input{
+          border: 0;
+        }
+      }
+
+    }
+  }
+  .propThreeList{
+    >div{
+      >div:last-child{
+        :global{
+          .ant-select-selection{
+            border: 0;
+            .ant-select-arrow{
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+  .footer{
+    input{
+      border: none;
+    }
+  }
+}

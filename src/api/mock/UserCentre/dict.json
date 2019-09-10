@@ -7,6 +7,41 @@
         "value": "5"
       }
     ],
+    "KFHL_TAB_RS": [
+      {
+        "name": "父子 ",
+        "value": "0"
+      },
+      {
+        "name": "父女",
+        "value": "1"
+      },
+      {
+        "name": "母子 ",
+        "value": "2"
+      },
+      {
+        "name": "母女",
+        "value": "3"
+      },{
+        "name": "夫妻 ",
+        "value": "4"
+      },
+      {
+        "name": "兄妹",
+        "value": "5"
+      }
+    ],
+    "KFHL_TAB_HY": [
+      {
+        "name": "已婚 ",
+        "value": "0"
+      },
+      {
+        "name": "未婚",
+        "value": "1"
+      }
+    ],
     "KFHL_TAB_S": [
       {
         "name": "已填 ",

@@ -5,7 +5,7 @@ import {Global,Utils,ReduxWarpper,BasicFormComponent, BasicGroupComponent,AuthCo
 import {store, mapStateToProps, mapDispatchToProps} from './Redux/Store';
 import style from './common.less'
 import Columns from './columns';
-import curUtil from "@/components/KFHL/Util";
+import curUtil from "@/pages/Rehabilitation/Service/Util";
 
 class Initiate extends Component {
     constructor(props) {

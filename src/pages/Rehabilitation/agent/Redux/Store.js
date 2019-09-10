@@ -4,9 +4,9 @@ import moment from 'moment';
 import {loadingStart,loadingEnd,setDatas,search,getFormItems, setSearchObj,setStaticStatus, setTempSearchObj,setBtnRequestActive, setBtnRequestDisplay,
     setBtnLoadingActive,setBtnLoadingDisplay,setTypeDatas,pageTempObj,pageTempObjCY
 } from './Actions';
-import api from "@/api/InitiateApi";
+import api from "@/api/RehabilitationApi";
 import {Global,Uc} from 'winning-megreziii-utils';
-import curUtil from "../Util";
+import curUtil from "../../Service/Util";
 export const store = createStore(reducer);
 
 export const mapStateToProps = (state, ownProps) => {
@@ -91,23 +91,24 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                     setTimeout(()=>{dispatch(setBtnRequestActive())},Global.AlertTime*1000);
                 });
                 Global.alert(result,{successFun:fun});
-            }
-        },
-        applicationForAdmission:{
-            getInfo:async (_this,inHospTableId)=>{
+            },
+            getInfo:async (_this,inHospTableId,recordEditVal ={})=>{
                 Global.showLoading();
                 let result = await api.look_hosp_apply({inHospTableId}).finally(() => {
                     Global.hideLoading();
                 });
                 Global.alert(result,{
                     successFun:()=>{
-                        let record = result.data || {};
+                        // TODO: 这里result.data[0] ?????
+                        let record = result.data[0] || {};
                         const diagnoseGists = record.diagnoseGists || [];
                         const checkedOutsideList = _.difference(diagnoseGists, ['5','6', '7','8', '9', '10']);
                         const checkedGroupList = _.difference(diagnoseGists, ['0','1', '2', '3', '4','5']);
                         const indeterminate =   !!checkedGroupList.length && checkedGroupList.length < curUtil.myStatic.plainOptions.length;
                         const checkAll = checkedGroupList.length === curUtil.myStatic.plainOptions.length;
+                        record = {...record,...recordEditVal};
                         _this.props.applicationForAdmission.setPageTempObj(_this,{
+                            record:record,
                             checkedOutsideList,
                             checkedGroupList,
                             indeterminate,
@@ -118,6 +119,8 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                     isSuccessAlert:false
                 });
             },
+        },
+        applicationForAdmission:{
             setPageTempObj:(_this,objs)=>{
                 let result = {..._this.props.state.pageTempObj,...objs};
                 dispatch(pageTempObj(result));

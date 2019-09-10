@@ -1,6 +1,5 @@
 import React from 'react';
 import style from './common.less'
-import curUtil from '@components/KFHL/Util';
 
 export default ()=>{
     return [

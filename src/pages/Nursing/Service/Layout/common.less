@@ -1,0 +1,497 @@
+// applicationForAdmission.js
+.tabSelf{
+  @lable-padding: 7px 16px;
+  @lable-bg-color:#DFECFF;
+  @content-padding:7px;
+  @border-line-color:1px solid #9FAFC7;
+  @margin-top-div:14px;
+  border: 1px solid rgba(159,175,199,1);
+  .pageMTop{
+    margin-top: 20px;
+  }
+  .descriptions{
+    :global {
+      .ant-descriptions-title {
+        margin: 0;
+        padding: 25px 0;
+        font-size:16px;
+        font-family:MicrosoftYaHei;
+        font-weight:bold;
+        color:rgba(51,51,51,1);
+        line-height:21px;
+        text-align: center;
+        border-bottom:1px solid #9FAFC7;
+      }
+      .ant-descriptions-view{
+        table{
+          width: 100%;
+        }
+        border-radius: 0;
+      }
+      .ant-descriptions-row {
+        border-bottom: 1px solid #9FAFC7;
+        height: 46px;
+      }
+      .ant-descriptions-item-label{
+        width: 15%;
+        background-color: @lable-bg-color;
+        padding: @lable-padding;
+        text-align: right;
+        white-space: normal;
+      }
+      .ant-descriptions-item-content{
+        width: 35%;
+        padding: 0 @content-padding;
+      }
+
+      .ant-descriptions-item-label,.ant-descriptions-item-content {
+        font-size:12px;
+        font-family:MicrosoftYaHei;
+        color:rgba(51,51,51,1);
+        line-height:16px;
+      }
+      .ant-descriptions-item-label:last-child, .ant-descriptions-item-content:last-child {
+        border-right: none;
+      }
+
+      .ant-descriptions-row >td:after{
+        content: none;
+      }
+    }
+    .flexRow{
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+  }
+
+  .noneBorder{
+    border: 0;
+  }
+  .rowStyle{
+    padding: 15px;
+    border-bottom:1px solid #9FAFC7 ;
+    textarea{
+      margin-top: 9px!important;
+      height: 128px;
+    }
+    .textArea{
+      margin-top: 9px!important;
+      min-height: 128px;
+      margin-left: 4px;
+    }
+    .checkboxFlex{
+      display: flex;
+      flex-flow: column;
+    }
+    .checkboxChild{
+      margin-left: 46px;
+    }
+  }
+  .tableStyle{
+    :global{
+      .ant-table{
+        font-size:12px;
+        font-family:MicrosoftYaHei;
+        color:rgba(51,51,51,1);
+        line-height:16px;
+      }
+      .ant-table-thead > tr > th:not(:last-child):after{
+        content: "";
+        display: table;
+        border-right: @border-line-color;
+        height: 28px;
+        position: absolute;
+        right: 5px;
+        top: 10px;
+      }
+      .ant-table-tbody>.ant-table-row{
+        height: 46px;
+      }
+    }
+    .clickText{
+      margin-left: 10px;
+      color:rgba(21,164,250,1);
+      cursor: pointer;
+    }
+    >header{
+      display: block;
+      margin: 10px 0 0 16px;
+    }
+    button{
+      background: rgba(21,164,250,1);
+      border-radius: 4px;
+      color: #FFFFFF;
+      margin: 16px;
+    }
+    > title{
+      margin: 10px 0 0 16px;
+      display: block;
+      color:#15A4FA;
+    }
+  }
+  .heightText{
+    color:#15A4FA;
+  }
+  .propList{
+    margin-top: @margin-top-div;
+    display: flex;
+    flex-flow: column;
+    font-size:12px;
+    font-family:MicrosoftYaHei;
+    color:rgba(51,51,51,1);
+    line-height:16px;
+    header{
+      display: flex;
+      height: 46px;
+      line-height: 46px;
+      text-align: center;
+      background-color: @lable-bg-color;
+      border-top: @border-line-color;
+      border-bottom: @border-line-color;
+      div{
+        border-right: @border-line-color;
+      }
+      div:first-child{
+        width: 15%;
+      }
+      div:last-child{
+        flex: 1;
+        border-right:none;
+      }
+    }
+    >div{
+      display: flex;
+      height: 46px;
+      border-bottom: @border-line-color;
+      >div:first-child{
+        width: 15%;
+        padding: 0 16px;
+        text-align: right;
+        background-color: @lable-bg-color;
+        border-right:  @lable-bg-color;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
+      >div:last-child{
+        padding:  7px;
+        flex: 1;
+        display: flex;
+        align-items: center;
+      }
+      .tLeft{
+        padding-left: 11px;
+      }
+    }
+    .heightText{
+      color:rgba(21,164,250,1);
+    }
+  }
+  .propThreeList{
+    text-align: center;
+    margin-top: @margin-top-div;
+    display: flex;
+    flex-flow: column;
+    font-size:12px;
+    font-family:MicrosoftYaHei;
+    color:rgba(51,51,51,1);
+    line-height:16px;
+    title{
+      display: block;
+    }
+    header,>div,.sumScore{
+      display: flex;
+      height: 46px;
+      line-height: 46px;
+    }
+    header{
+      background-color: @lable-bg-color;
+      border-top: @border-line-color;
+      border-bottom: @border-line-color;
+      title{
+        border-right: @border-line-color;
+      }
+      title:first-child, title:last-child{
+        width: 15%;
+      }
+      title:nth-child(2){
+        flex: 1;
+      }
+      title:last-child{
+        border-right:none;
+      }
+    }
+    >div{
+      border-bottom: @border-line-color;
+      title{
+        border-right: @border-line-color;
+      }
+      title:first-child,>div:last-child{
+        width: 15%;
+      }
+      title:first-child{
+        padding: 0 7px;
+        background-color: @lable-bg-color;
+      }
+      title:nth-child(2){
+        flex: 1;
+      }
+      >div:last-child{
+        line-height: 32px;
+        padding: 8px 16px;
+        border-right:none;
+      }
+    }
+    .heightText{
+      color:rgba(21,164,250,1);
+    }
+    .tRightScore{
+      text-align: left;
+      padding-left: 9px;
+    }
+    .sumScore{
+      font-size:12px;
+      font-family:MicrosoftYaHei;
+      font-weight:bold;
+      color:rgba(51,51,51,1);
+      span{
+        flex: 1;
+        width: 85%;
+        padding: 0 7px;
+        text-align: right;
+        border-right: @border-line-color;
+      }
+      >div{
+        text-align: left;
+        padding-left: 27px!important;
+      }
+    }
+  }
+  .footer{
+    display: flex;
+    height: 46px;
+    line-height: 46px;
+    border-bottom: @border-line-color;
+    title{
+      display: block;
+      width: 15%;
+      padding: 0 7px;
+      background-color: @lable-bg-color;
+    }
+    title.tRight{
+      text-align: right;
+      padding-right: 16px;
+    }
+    >div{
+      flex: 1;
+      margin: auto;
+      padding:0 7px;
+    }
+  }
+  .marginTopDiv{
+    margin-top: @margin-top-div;
+  }
+  .borderTop{
+    border-top: @border-line-color;
+  }
+
+  .upDown{
+      display: flex;
+      align-items: center;
+      width: 100%;
+    .upDownLeft{
+      flex: 1;
+    }
+    .upDownRight{
+      display: flex;
+      flex-flow: column;
+      border-left: 1px solid #9FAFC7;
+      margin-right: -7px;
+      >div:first-child{
+        flex: 1;
+        border-bottom: 1px solid #9FAFC7;
+      }
+      >div{
+        display: flex;
+        align-items: center;
+        padding: 4px 8px;
+        input{
+          min-width: 46px;
+          width: 46px;
+          padding: 0 4px;
+          margin-left: 4px;
+        }
+      }
+    }
+  }
+
+  .leftUpDown{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    .leftUpDownLeft{
+      flex: 1;
+      span{
+        display: inline-block;
+        padding-right: 8px;
+      }
+    }
+    .leftUpDownRight{
+      display: flex;
+      align-items: center;
+      border-left: 1px solid #9FAFC7;
+      &:last-child{
+        margin-right: -7px;
+      }
+      .texts{
+        padding: 0 2px;
+      }
+      .upDownRight{
+        flex-flow: column;
+        border-left: 1px solid #9FAFC7;
+        >div:first-child{
+          flex: 1;
+          border-bottom: 1px solid #9FAFC7;
+        }
+        >div{
+          display: flex;
+          align-items: center;
+          padding: 4px 8px;
+          input{
+            min-width: 46px;
+            width: 46px;
+            padding: 0 4px;
+            margin-left: 4px;
+          }
+        }
+      }
+    }
+  }
+
+  .leftRight{
+    display: flex;
+    align-items: center;
+    >div{
+      &:last-child{
+        span{
+          padding:0 4px;
+        }
+
+        border-left:1px solid #9FAFC7;
+        line-height: 46px;
+
+      }
+      display: inline-block;
+    }
+  }
+
+  .rc{
+    display: flex;
+    align-items: center;
+    >div{
+      input{
+        width: 80px;
+        margin-right: 4px;
+      }
+      margin-right: 10px;
+      display: flex;
+      align-items: center;
+    }
+  }
+  .ybqk{
+    padding-left: 15px;
+    font-size:12px;
+    font-family:MicrosoftYaHei;
+    font-weight:bold;
+    color:rgba(21,164,250,1);
+    line-height:16px;
+  }
+  .ys,.db.xb{
+    display: flex;
+  }
+  .cysw{
+    display: flex;
+    height: 46px;
+    line-height: 46px;
+    border-bottom: @border-line-color;
+  }
+
+}
+
+// 開始打印 ,打印樣式调整
+.tabSelf.showPrint{
+  >div{
+    margin-top: 20px;
+    display: block;
+  }
+  .propList{
+    >div{
+      >div:last-child{
+        input{
+          border: 0;
+        }
+      }
+
+    }
+  }
+  .propThreeList{
+    >div{
+      >div:last-child{
+        :global{
+          .ant-select-selection{
+            border: 0;
+            .ant-select-arrow{
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+  .footer{
+    input{
+      border: none;
+    }
+  }
+}
+
+// 自适应
+@media screen and (max-width: 1154px) {
+  .leftRight{
+    >div{
+      &:last-child{
+        line-height: 16px;
+      }
+    }
+  }
+}
+@media screen and (max-width: 1330px) {
+  .tabSelf{
+    .leftUpDown{
+      .leftUpDownRight {
+        .upDownRight{
+          >div{
+            padding: 4px 6px;
+            input{
+              margin-left: 0;
+            }
+          }
+        }
+
+      }
+    }
+    .leftRight{
+      >div{
+        &:last-child{
+          line-height: 23px;
+        }
+      }
+    }
+
+  }
+
+
+
+}
+

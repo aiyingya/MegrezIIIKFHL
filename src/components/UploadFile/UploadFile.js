@@ -14,7 +14,7 @@ class UploadFile extends Component {
     }
     render() {
         const { uploading } = this.state;
-        let { url,successCallback,dataSource,columns,disabled} =  this.props;
+        let { url,successCallback,dataSource=[],columns,disabled} =  this.props;
         const props = {
             showUploadList:false,
             beforeUpload: (file) => {
@@ -31,8 +31,16 @@ class UploadFile extends Component {
                     method: 'post',
                     processData: false,
                     data: formData,
-                    success: (date) => {
-                        successCallback(file);
+                    success: (result) => {
+                        let count = Math.floor(Math.random() * (1000 - 1) + 1);
+                        let mockFile = {
+                            fileName: file.name,
+                            fileSize: (file.size / 1024) + "KB" ,
+                            uploadDate: "2020-02-22",
+                            uploadUser: 'admin',
+                            fileId:count,
+                        }
+                        successCallback({...mockFile,...result.data});
                         this.setState({uploading: false});
                         message.success(`${file.name} 文件上传成功！`);
                     },

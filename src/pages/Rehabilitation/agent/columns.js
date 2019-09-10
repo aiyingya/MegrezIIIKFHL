@@ -3,7 +3,7 @@ import { Modal, Button } from 'antd';
 import {Global,Uc} from 'winning-megreziii-utils';
 import {Badge} from 'antd';
 import style from './common.less';
-import curUtil from "@/components/KFHL/Util";
+import curUtil from "@/pages/Rehabilitation/Service/Util";
 
 export default (self)=>{
     const {initiate,state}=self.props;
@@ -15,7 +15,7 @@ export default (self)=>{
             width: '8%',
         }, {
             title: '标题',
-            dataIndex: 'titile',
+            dataIndex: 'title',
         }, {
             title: '患者',
             dataIndex: 'personName',
@@ -24,7 +24,7 @@ export default (self)=>{
             )
         },{
             title: '节点',
-            dataIndex: 'node',
+            dataIndex: 'c',
             render: (texts, record) => {
                 let _node = state.staticStatus.node || [];
                 const objct = _node.find(res=>res.value == texts) || {};

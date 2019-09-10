@@ -1,7 +1,11 @@
 import React from 'react';
 import style from '../common.less';
 
-export default (self,{remove})=>{
+export default ({remove=()=>{}})=>{
+
+   const clickDownLoad=(url)=>{
+        window.location.href=url;
+    }
     return [
         {
             title: '序号',
@@ -9,13 +13,13 @@ export default (self,{remove})=>{
             render:(text,record,index)=>`${index+1}`,
         }, {
             title: '文件名',
-            dataIndex: 'name',
+            dataIndex: 'fileName',
         }, {
             title: '大小(KB)',
             dataIndex: 'size'
         },{
             title: '上传时间',
-            dataIndex: 'uploadTime'
+            dataIndex: 'uploadDate'
         }, {
             title: '上传人',
             dataIndex: 'uploadUser'
@@ -26,8 +30,8 @@ export default (self,{remove})=>{
             render:(texts, record, index) =>{
                 if(record.isTest){return "";}
                 return <div>
-                    <span className={style.clickText} onClick={()=>{self.clickDownLoad(record.fileUrl)}}>下载</span>
-                    <span className={style.clickText} onClick={()=>{remove(self,record)}}>删除</span></div>
+                    <span className={style.clickText} onClick={()=>{clickDownLoad(record.fileUrl)}}>下载</span>
+                    <span className={style.clickText} onClick={()=>{remove(record)}}>删除</span></div>
             }
         }
 

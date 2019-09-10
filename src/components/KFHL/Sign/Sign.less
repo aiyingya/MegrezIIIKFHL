@@ -1,0 +1,76 @@
+@lable-padding: 7px 16px;
+@lable-bg-color:#DFECFF;
+@content-padding:7px;
+@border-line-color:1px solid #9FAFC7;
+@margin-top-div:14px;
+
+.rowStyle{
+    padding: 15px;
+    border-bottom:1px solid #9FAFC7 ;
+    textarea{
+        margin-top: 9px!important;
+        height: 128px;
+    }
+    .textArea{
+        margin-top: 9px!important;
+        min-height: 128px;
+        margin-left: 4px;
+    }
+    .checkboxFlex{
+        display: flex;
+        flex-flow: column;
+    }
+    .checkboxChild{
+        margin-left: 46px;
+    }
+}
+.descriptions{
+    :global {
+        .ant-descriptions-title {
+            margin: 0;
+            padding: 25px 0;
+            font-size:16px;
+            font-family:MicrosoftYaHei;
+            font-weight:bold;
+            color:rgba(51,51,51,1);
+            line-height:21px;
+            text-align: center;
+            border-bottom:1px solid #9FAFC7;
+        }
+        .ant-descriptions-view{
+            table{
+                width: 100%;
+            }
+            border-radius: 0;
+        }
+        .ant-descriptions-row {
+            border-bottom: 1px solid #9FAFC7;
+            height: 46px;
+        }
+        .ant-descriptions-item-label{
+            width: 15%;
+            background-color: @lable-bg-color;
+            padding: @lable-padding;
+            text-align: right;
+            white-space: normal;
+        }
+        .ant-descriptions-item-content{
+            width: 35%;
+            padding: 0 @content-padding;
+        }
+
+        .ant-descriptions-item-label,.ant-descriptions-item-content {
+            font-size:12px;
+            font-family:MicrosoftYaHei;
+            color:rgba(51,51,51,1);
+            line-height:16px;
+        }
+        .ant-descriptions-item-label:last-child, .ant-descriptions-item-content:last-child {
+            border-right: none;
+        }
+
+        .ant-descriptions-row >td:after{
+            content: none;
+        }
+    }
+}

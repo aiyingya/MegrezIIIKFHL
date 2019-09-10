@@ -4,8 +4,9 @@ import moment from 'moment';
 import {loadingStart,loadingEnd,setDatas,search,getFormItems, setSearchObj,setStaticStatus, setTempSearchObj,setBtnRequestActive, setBtnRequestDisplay,
     setBtnLoadingActive,setBtnLoadingDisplay,setTypeDatas,pageTempObj,pageTempObjCY
 } from './Actions';
-import api from "@/api/InitiateApi";
+import api from "@/api/RehabilitationApi";
 import {Global,Uc} from 'winning-megreziii-utils';
+import curUtil from "../../Service/Util";
 export const store = createStore(reducer);
 
 export const mapStateToProps = (state, ownProps) => {
@@ -16,6 +17,36 @@ export const mapStateToProps = (state, ownProps) => {
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
     return {
+        common:{
+            getInfo:async (_this,inHospTableId,recordEditVal ={})=>{
+                Global.showLoading();
+                let result = await api.look_hosp_apply({inHospTableId}).finally(() => {
+                    Global.hideLoading();
+                });
+                Global.alert(result,{
+                    successFun:()=>{
+                        console.log("2222")
+                        // TODO: 这里result.data[0] ?????
+                        let record = result.data[0] || {};
+                        const diagnoseGists = record.diagnoseGists || [];
+                        const checkedOutsideList = _.difference(diagnoseGists, ['5','6', '7','8', '9', '10']);
+                        const checkedGroupList = _.difference(diagnoseGists, ['0','1', '2', '3', '4','5']);
+                        const indeterminate =   !!checkedGroupList.length && checkedGroupList.length < curUtil.myStatic.plainOptions.length;
+                        const checkAll = checkedGroupList.length === curUtil.myStatic.plainOptions.length;
+                        record = {...record,...recordEditVal};
+                        _this.props.applicationForAdmission.setPageTempObj(_this,{
+                            record:record,
+                            checkedOutsideList,
+                            checkedGroupList,
+                            indeterminate,
+                            checkAll
+                        });
+
+                    },
+                    isSuccessAlert:false
+                });
+            },
+        },
         initiate:{
             initTable:async (_this,{value ={},page = 1,pageSize =10,isFrozenPaging = false}={}) => {
                 //初始化分页Table

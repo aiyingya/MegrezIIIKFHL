@@ -10,8 +10,8 @@ const HappyPack = require('happypack');
 const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 
 let option = {
-    // mode: 'development',
-    mode:'production',
+    mode: 'development',
+    // mode:'production',
     devtool: 'source-map',
     entry: {
         main: ['babel-polyfill', __dirname + "/app/entry.js"]
@@ -55,6 +55,7 @@ let option = {
             "@api": __dirname + "/src/api",
             "@pages": __dirname + "/src/pages",
             "@components": __dirname + "/src/components",
+            "@layout": __dirname + "/src/layout",
             "@locales": __dirname + "/src/locales",
             "@utils": __dirname + "/src/utils",
             "~": __dirname,

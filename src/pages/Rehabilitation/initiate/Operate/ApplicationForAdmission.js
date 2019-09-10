@@ -7,14 +7,15 @@ const CheckboxGroup = Checkbox.Group;
 const {TextArea} = Input;
 import ReactToPrint from 'react-to-print'
 import {Global, ReduxWarpper, BasicGroupComponent, Scrollbar, BreadcrumbCustom} from 'winning-megreziii-utils';
-import curUtil from '@components/KFHL/Util';
+import curUtil from '../../Service/Util';
 import Step from '@components/Step/Step';
 import {store, mapStateToProps, mapDispatchToProps} from '../Redux/Store';
 import style from '../common.less'
-import InHospApplication from '@components/KFHL/InHospApplication/InHospApplication';
-import InHospAssess from '@components/KFHL/InHospAssess/InHospAssess';
-import InHospBerg from '@components/KFHL/InHospBerg/InHospBerg';
-
+import InHospApplication from '../../Service/Layout/InHospApplication/InHospApplication';
+import InHospAssess from '../../Service/Layout/InHospAssess/InHospAssess';
+import InHospBerg from '../../Service/Layout/InHospBerg/InHospBerg';
+import Static from "@components/KFHL/Utils/Static";
+import KFHLService from "@components/KFHL/Utils/Service";
 class ApplicationForAdmission extends Component {
     constructor(props) {
         super(props);
@@ -24,7 +25,7 @@ class ApplicationForAdmission extends Component {
         }
         this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
-        this.currentDay = curUtil.currentDay();
+        this.currentDay = KFHLService.currentDay();
         this.handleChange = this.handleChange.bind(this)
         this.onRadioChange = this.onRadioChange.bind(this)
         this.onCheckboxGroupChange = this.onCheckboxGroupChange.bind(this);
@@ -38,17 +39,27 @@ class ApplicationForAdmission extends Component {
     }
 
     componentDidMount() {
+
         new Scrollbar(this.inside.current).show();
-        this.setPageTempObj({canEdit: false});
         if(Global.isFrozen()) return;
-        //判断当前发起流程是否可以操作；
+        // 只有医护人员访问的发起流程页面
         let query = this.props.location.query ||{};
-        const record = query.record ? query.record :{}
-        if (record.inHospTableId && (record.flowStatus == curUtil.myStatic.flowStatus.agree || record.flowStatus == curUtil.myStatic.flowStatus.awaitAudit)) {
-            //已通过 或 待审核 不可做任何操作
-            this.setPageTempObj({canEdit: false});
+        const record = query.record ? query.record :{};
+        debugger
+        if(!record.inHospTableId){
+            record.doctorSignDate = KFHLService.currentDay();
+            this.setPageTempObj({canEdit: true,record:record});
         }else{
-            this.setPageTempObj({canEdit: true});
+
+            if ((record.flowStatus == curUtil.myStatic.flowStatus.agree || record.flowStatus == curUtil.myStatic.flowStatus.awaitAudit)) {
+                //已通过 或 待审核 不可做任何操作
+                this.setPageTempObj({canEdit: false});
+                this.props.common.getInfo(this,record.inHospTableId);
+            }else{
+                this.setPageTempObj({canEdit: true});
+                this.props.common.getInfo(this,record.inHospTableId,{doctorSignDate:KFHLService.currentDay()});
+            }
+
         }
     }
 
@@ -161,9 +172,9 @@ class ApplicationForAdmission extends Component {
     setApplyFile(file={}){
         let count = Math.floor(Math.random() * (1000 - 1) + 1);
         this.props.applicationForAdmission.setApplyFile(this,{
-            name: file.name,
+            fileName: file.name,
             size: (file.size / 1024) + "KB" ,
-            uploadTime:curUtil.currentDay(),
+            uploadDate:KFHLService.currentDay(),
             uploadUser: this.user.yh_mc || 'admin',
             fileId:count,
             fileUrl:'https://github.com/vuejs/vuepress/archive/master.zip'
@@ -173,9 +184,9 @@ class ApplicationForAdmission extends Component {
         let user =  Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         let count = Math.floor(Math.random() * (1000 - 1) + 1);
         this.props.applicationForAdmission.setBergFile(this,{
-            name: file.name,
+            fileName: file.name,
             size: (file.size / 1024) + "KB" ,
-            uploadTime: curUtil.currentDay(),
+            uploadDate: KFHLService.currentDay(),
             uploadUser: this.user.yh_mc || 'admin',
             fileId:count,
             fileUrl:'https://github.com/vuejs/vuepress/archive/master.zip'
@@ -184,8 +195,13 @@ class ApplicationForAdmission extends Component {
 
 
     render() {
-        let {tabValue="0",canEdit,record={}} = this.props.state.pageTempObj;
+        let {tabValue="0",canEdit,record={},uploadBergFiles,uploadApplyFiles} = this.props.state.pageTempObj;
         const { isHidePrint } = this.state;
+        const { getFieldDecorator } = this.props.form;
+        const { removeBergFile,setBergFile,removeApplayFile,setApplyFile  } = this.props.applicationForAdmission;
+        const uploadBergFileDataSource = (uploadBergFiles && uploadBergFiles.length>0 ? uploadBergFiles : curUtil.myStatic.defaultUploadInfo);
+        const uploadApplyFileDataSource = (uploadApplyFiles && uploadApplyFiles.length>0 ? uploadApplyFiles : curUtil.myStatic.defaultUploadInfo);
+
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
@@ -205,24 +221,37 @@ class ApplicationForAdmission extends Component {
                         <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
                             <div name="tab1" className={(tabValue == "0") ? '' : style.hidden}
                                  style={{"pageBreakAfter": "always"}}>
-                                <InHospApplication self={this}/>
+                                <InHospApplication self={this} isDocter={true} canEdit={canEdit}
+                                                   getFieldDecorator ={getFieldDecorator}
+                                                   isHidePrint ={isHidePrint}
+                                                   uploadApplyFileDataSource={uploadApplyFileDataSource}
+                                                   removeApplayFile={removeApplayFile}
+                                                   setApplyFile={setApplyFile}/>
                             </div>
 
 
                             <div name="tab2" className={(tabValue == "1") ? '' : style.hidden}
                                  style={{"pageBreakAfter": "always"}}>
-                                <InHospAssess self={this}/>
+                                <InHospAssess self={this} isDocter={true} canEdit={canEdit}
+                                              getFieldDecorator ={getFieldDecorator}
+                                              isHidePrint ={isHidePrint}/>
                             </div>
 
                             <div name="tab3" className={(tabValue == "2") ? '' : style.hidden}
                                  style={{"pageBreakAfter": "always"}}>
-                                <InHospBerg self={this}/>
+                                <InHospBerg self={this} isDocter={true} canEdit={canEdit}
+                                            getFieldDecorator ={getFieldDecorator}
+                                            isHidePrint ={isHidePrint}
+                                            removeBergFile ={removeBergFile}
+                                            setBergFile ={setBergFile}
+                                            uploadBergFileDataSource ={uploadBergFileDataSource}
+                                />
                             </div>
                         </div>
 
                         <div className={style.buttons}>
                             <ReactToPrint trigger={() => <Button id="print-application" className={style.hidden}>打印</Button>} content={() => this.refs}/>
-                            <BasicGroupComponent {...curUtil.getButton(this,{canEdit,print:this.print,handleSubmit:this.handleSubmit,isDocter:true})}/>
+                            <BasicGroupComponent {...KFHLService.getButton(this,{canEdit,print:this.print,handleSubmit:this.handleSubmit,isDocter:true})}/>
                         </div>
                     </Form>
                 </div>

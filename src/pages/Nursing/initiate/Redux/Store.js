@@ -18,7 +18,8 @@ export const mapStateToProps = (state, ownProps) => {
 export const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         common:{
-            getInfo:async (_this,inHospTableId,recordEditVal ={})=>{
+            getInfo:async (_this,param={},fun)=>{
+                let {inHospTableId,recordVal ={},setStoreVal={}} = param;
                 Global.showLoading();
                 let result = await api.look_hosp_apply({inHospTableId}).finally(() => {
                     Global.hideLoading();
@@ -26,20 +27,20 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
                 Global.alert(result,{
                     successFun:()=>{
-                        // TODO: 这里result.data[0] ?????
-                        let record = result.data[0] || {};
+                        let record = result.data || {};
                         const diagnoseGists = record.diagnoseGists || [];
                         const checkedOutsideList = _.difference(diagnoseGists, ['5','6', '7','8', '9', '10']);
                         const checkedGroupList = _.difference(diagnoseGists, ['0','1', '2', '3', '4','5']);
                         const indeterminate =   !!checkedGroupList.length && checkedGroupList.length < curUtil.myStatic.plainOptions.length;
                         const checkAll = checkedGroupList.length === curUtil.myStatic.plainOptions.length;
-                        record = {...record,...recordEditVal};
-                        _this.props.applicationForAdmission.setPageTempObj(_this,{
+                        record = {...record,...recordVal};
+                        fun && fun({
                             record:record,
                             checkedOutsideList,
                             checkedGroupList,
                             indeterminate,
-                            checkAll
+                            checkAll,
+                            ...setStoreVal
                         });
 
                     },

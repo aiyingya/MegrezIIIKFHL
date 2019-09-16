@@ -13,6 +13,7 @@ import {store, mapStateToProps, mapDispatchToProps} from '../Redux/Store';
 import style from '../common.less'
 import AdmissionAssessmentLayout from '../../Service/Layout/AdmissionAssessment';
 import KFHLService from "@components/KFHL/Utils/Service";
+import curUtil from "@/pages/Rehabilitation/Service/Util";
 class AdmissionAssessment extends Component {
     constructor(props) {
         super(props);
@@ -30,31 +31,39 @@ class AdmissionAssessment extends Component {
 
     componentDidMount() {
         new Scrollbar(this.inside.current).show();
-        let {record} = this.props.admissionAssessment.pageTempObj;
-        // 所有人员都可以看的查看页面，只能查看
-        this.setPageTempObj({record:record});
+        //判断当前发起流程是否可以操作；
+        let query = this.props.location.query ||{};
+        const record = query.record ? query.record :{};
+        if(!record.inHospTableId){console.error("页面必须有数据")}
+        else{
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId},this.setPageTempObj);
+        }
     }
 
     handleSubmit(isSubmit){
         //是否提交 否则保存
         // if(!this.props.state.btnRequest) return
         let {record} = this.props.state.pageTempObj;
-        record.type = '0';//0 = 入院，1 = 出院
         // console.log("record",this.props.state.pageTempObj.record)
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                let title = "是否保存？"
-                if(isSubmit){
-                    title = `【${nursingUtils.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${nursingUtils.myStatic.auditAgree.inHospDocter[1]}】`
+                let handleOperate =()=>{
+                    this.props.admissionAssessment.handleOperate(record,()=>{
+                        KFHLService.goBackUrl(this,this.backUrl);
+                    })
                 }
-                Global.showConfirm({title,
-                    onConfirm:()=> {
-                        // let val = {...this.props.state.fromObj.record,...values}
-                        this.props.admissionAssessment.handleOperate(record,()=>{
-                            this.goBack();
-                        })
-                    }
-                });
+                if(isSubmit){
+                    let title = `【${nursingUtils.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${nursingUtils.myStatic.auditAgree.inHospDocter[1]}】`;
+                    Global.showConfirm({title,
+                        onConfirm:()=> {
+                            handleOperate();
+                        }
+                    });
+                }else{
+                    handleOperate();
+                }
+
+
             }else{
                 message.error("请检查必选项！");
             }
@@ -67,7 +76,7 @@ class AdmissionAssessment extends Component {
         // 表单变更立即触发的事件
         let {record ={},sumScore} = this.props.state.pageTempObj;
         record[field] = val;
-        let isCheckChange = nursingUtils.myStatic.checkTitle.find(res=>res.name == field);
+       /* let isCheckChange = nursingUtils.myStatic.checkTitle.find(res=>res.name == field);
         let _sumScore = 0;
         //平衡量表总分数
         if(isCheckChange){
@@ -76,7 +85,7 @@ class AdmissionAssessment extends Component {
                 _sumScore += tempScore;
             })
         }
-        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});
+        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});*/         this.setPageTempObj({record});
     }
     clickDownLoad(url){
         window.location.href=url;
@@ -101,7 +110,7 @@ class AdmissionAssessment extends Component {
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请" secondUrl={this.backUrl}/>
+                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请"  secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>

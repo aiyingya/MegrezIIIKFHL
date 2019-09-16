@@ -9,12 +9,26 @@ import style from '../../../../../components/KFHL/common.less'
 import * as PropTypes from 'prop-types';
 import Assess from '../Assess/Assess';
 import Static from "@components/KFHL/Utils/Static";
+import moment from "moment/moment";
+import KFHLService from "@components/KFHL/Utils/Service";
 
 class OutHospAssess  extends Component {
     constructor(props) {
         super(props);
+        this.handleChange = this.handleChange.bind(this);
     }
-
+    handleChange(key) {
+        // key可能为选中的身份证号码，或者用户输入的个名称
+        let {self} = this.props;
+        let {personUserList} = self.props.state.pageTempObjCY;
+        const finded = personUserList.find(item=>item.identityCard===key);
+        if(finded){
+            self.handleChange(finded.personName,"personName");
+            self.handleChange(finded.identityCard,"identityCard");
+            return
+        }
+        self.handleChange(key,"personName");
+    }
     render() {
         let {self,isDocter,canEdit,getFieldDecorator,isHidePrint} = this.props;
         let {record={},personUserList} = self.props.state.pageTempObjCY;
@@ -28,17 +42,16 @@ class OutHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.personName,...Static.rulesConfig.required
                                         })(
                                             <AutoComplete
                                                 className="global-search"
                                                 style={{ width: '100%' }}
-                                                dataSource={personUserList.map(curUtil.renderOption)}
-                                                // onSelect={self.onAutoSelect}
+                                                dataSource={personUserList.map(KFHLService.renderOption)}
                                                 onSearch={_.debounce((e)=>{self.handleAutoSearch(e)}, 1000)}
-                                                onChange={(e)=>{self.handleChange(e,"personName")}}
+                                                onChange={this.handleChange}
                                                 placeholder="请输入"
-                                                optionLabelProp="value"
+                                                optionLabelProp="text"
                                             >
                                             </AutoComplete>
                                         )}
@@ -52,15 +65,14 @@ class OutHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('sex', {
-                                            initialValue: (record.sex && record.sex=="女") ? "1":"0",...curUtil.myStatic.rulesConfig
+                                            initialValue: record.sex ? record.sex : Static.myEnum.sex.man,...Static.rulesConfig.required
                                         })(
                                             <Select onChange={(event)=> {self.handleChange(event, "sex")}}>
-                                                <Select.Option value="0">男</Select.Option>
-                                                <Select.Option value="1">女</Select.Option>
+                                                {Static.myDict.sex.map(res=><Option value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.personName}</Fragment>
+                                    <Fragment>{KFHLService.getSexName(record.sex)}</Fragment>
                             }
                         </Fragment>
                     </Descriptions.Item>
@@ -69,7 +81,7 @@ class OutHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('age', {
-                                            initialValue: record.age,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.age,...Static.rulesConfig.age
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -85,7 +97,7 @@ class OutHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('identityCard', {
-                                            initialValue: record.identityCard,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.identityCard,...Static.rulesConfig.identityCard
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -101,7 +113,7 @@ class OutHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('bedNumber', {
-                                            initialValue: record.bedNumber,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.bedNumber,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -117,7 +129,7 @@ class OutHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('lesion', {
-                                            initialValue: record.lesion,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.lesion,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -133,7 +145,7 @@ class OutHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('inHospNumber', {
-                                            initialValue: record.inHospNumber,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.inHospNumber,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -149,9 +161,9 @@ class OutHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('inHospDate', {
-                                            initialValue: record.inHospDate,rules: [{required: false, message: '请输入'}]
+                                            initialValue: record.inHospDate && moment(record.inHospDate),rules: [{required: false, message: '请输入'}]
                                         })(
-                                            <DatePicker  format={curUtil.myStatic.dateFormat}
+                                            <DatePicker  format={Static.dateFormat}
                                                          onChange={(date, dateString)=>  {self.handleChange(dateString, "inHospDate")}}/>
                                         )}
                                     </Form.Item>:
@@ -164,7 +176,7 @@ class OutHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('inHospDiagnose', {
-                                            initialValue: record.inHospDiagnose,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.inHospDiagnose,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"

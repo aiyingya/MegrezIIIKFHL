@@ -8,6 +8,8 @@ import style from './common.less'
 import {Global} from "winning-megreziii-utils";
 import Sign from '@components/KFHL/Sign/Sign';
 import Static from "@components/KFHL/Utils/Static";
+import moment from "moment/moment";
+import KFHLService from "@components/KFHL/Utils/Service";
 
 class AdmissionAssessment  extends Component {
     constructor(props) {
@@ -33,7 +35,7 @@ class AdmissionAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...nursingUtils.myStatic.rulesConfig.rules
+                                            initialValue: record.personName,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -49,15 +51,14 @@ class AdmissionAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?   <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('sex', {
-                                            initialValue: (record.sex && record.sex=="女") ? "1":"0"
+                                            initialValue: record.sex ? record.sex : Static.myEnum.sex.man,...Static.rulesConfig.required
                                         })(
                                             <Select onChange={(event)=> {self.handleChange(event, "sex")}}>
-                                                <Option value="0">男</Option>
-                                                <Option value="1">女</Option>
+                                                {Static.myDict.sex.map(res=><Option value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.sex}</Fragment>
+                                    <Fragment>{KFHLService.getSexName(record.sex)}</Fragment>
                             }
                         </Fragment>
 
@@ -66,14 +67,14 @@ class AdmissionAssessment  extends Component {
                         <Fragment>
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
-                                        {getFieldDecorator('inHospDate', {
-                                            initialValue: record.inHospDate,rules: [{required: false, message: '请输入'}]
+                                        {getFieldDecorator('birthDate', {
+                                            initialValue: record.birthDate && moment(record.birthDate),rules: [{required: false, message: '请输入'}]
                                         })(
-                                            <DatePicker  format={nursingUtils.myStatic.dateFormat}
-                                                         onChange={(date, dateString)=>  {self.handleChange(dateString, "inHospDate")}}/>
+                                            <DatePicker  format={Static.dateFormat}
+                                                         onChange={(date, dateString)=>  {self.handleChange(dateString, "birthDate")}}/>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.inHospDate}</Fragment>
+                                    <Fragment>{record.birthDate}</Fragment>
                             }
                         </Fragment>
                     </Descriptions.Item>
@@ -81,17 +82,15 @@ class AdmissionAssessment  extends Component {
                         <Fragment>
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
-                                        {getFieldDecorator('js_lx', {
-                                            initialValue:record.js_lx,...nursingUtils.myStatic.rulesConfig
+                                        {getFieldDecorator('isMarried', {
+                                            initialValue:record.isMarried,...Static.rulesConfig.required
                                         })(
-                                            <Select onChange={(event)=> {self.handleChange(event, "js_lx")}}>
-                                                {dict.KFHL_TAB_HY && dict.KFHL_TAB_HY.map(item =>
-                                                    <Select.Option  key={item.value}>{item.name}</Select.Option>
-                                                )}
+                                            <Select onChange={(event)=> {self.handleChange(event, "isMarried")}}>
+                                                {Static.myDict.hyzk.map(res=><Option value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.identityCard}</Fragment>
+                                    <Fragment>{Global.returnNameByValue(Static.myDict.hyzk,record.isMarried)}</Fragment>
                             }
                         </Fragment>
 
@@ -100,40 +99,8 @@ class AdmissionAssessment  extends Component {
                         <Fragment>
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
-                                        {getFieldDecorator('illnessName', {
-                                            initialValue: record.illnessName,...nursingUtils.myStatic.rulesConfig
-                                        })(
-                                            <Input
-                                                placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "illnessName")}}/>
-                                        )}
-                                    </Form.Item>:
-                                    <Fragment>{record.personName}</Fragment>
-                            }
-                        </Fragment>
-                    </Descriptions.Item>
-                    <Descriptions.Item label="联系电话">
-                        <Fragment>
-                            {
-                                (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
-                                        {getFieldDecorator('personId', {
-                                            initialValue: record.personId,...nursingUtils.myStatic.rulesConfig
-                                        })(
-                                            <Input
-                                                placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "personId")}}/>
-                                        )}
-                                    </Form.Item>:
-                                    <Fragment>{record.personId}</Fragment>
-                            }
-                        </Fragment>
-                    </Descriptions.Item>
-                    <Descriptions.Item label="监护人（家属）姓名">
-                        <Fragment>
-                            {
-                                (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('identityCard', {
-                                            initialValue: record.identityCard,...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.identityCard,...Static.rulesConfig.identityCard
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -144,21 +111,51 @@ class AdmissionAssessment  extends Component {
                             }
                         </Fragment>
                     </Descriptions.Item>
+                    <Descriptions.Item label="联系电话">
+                        <Fragment>
+                            {
+                                (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
+                                        {getFieldDecorator('tel', {
+                                            initialValue: record.tel,...Static.rulesConfig.telephone
+                                        })(
+                                            <Input
+                                                placeholder="请输入"
+                                                onChange={(event)=> {self.handleChange(event.target.value, "tel")}}/>
+                                        )}
+                                    </Form.Item>:
+                                    <Fragment>{record.tel}</Fragment>
+                            }
+                        </Fragment>
+                    </Descriptions.Item>
+                    <Descriptions.Item label="监护人（家属）姓名">
+                        <Fragment>
+                            {
+                                (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
+                                        {getFieldDecorator('guardian', {
+                                            initialValue: record.guardian,...Static.rulesConfig.required
+                                        })(
+                                            <Input
+                                                placeholder="请输入"
+                                                onChange={(event)=> {self.handleChange(event.target.value, "guardian")}}/>
+                                        )}
+                                    </Form.Item>:
+                                    <Fragment>{record.guardian}</Fragment>
+                            }
+                        </Fragment>
+                    </Descriptions.Item>
                     <Descriptions.Item label="与参保人关系">
                         <Fragment>
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
-                                        {getFieldDecorator('js_lx', {
-                                            initialValue:record.js_lx,...nursingUtils.myStatic.rulesConfig
+                                        {getFieldDecorator('relation', {
+                                            initialValue:record.relation,...Static.rulesConfig.required
                                         })(
-                                            <Select onChange={(event)=> {self.handleChange(event, "js_lx")}}>
-                                                {dict.KFHL_TAB_RS && dict.KFHL_TAB_RS.map(item =>
-                                                    <Select.Option  key={item.value}>{item.name}</Select.Option>
-                                                )}
+                                            <Select onChange={(event)=> {self.handleChange(event, "relation")}}>
+                                                {Static.myDict.gx.map(res=><Option value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.identityCard}</Fragment>
+                                    <Fragment>{Global.returnNameByValue(Static.myDict.gx,record.relation)}</Fragment>
                             }
                         </Fragment>
 
@@ -167,15 +164,15 @@ class AdmissionAssessment  extends Component {
                         <Fragment>
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
-                                        {getFieldDecorator('identityCard', {
-                                            initialValue: record.identityCard,...nursingUtils.myStatic.rulesConfig
+                                        {getFieldDecorator('guardian', {
+                                            initialValue: record.guardian,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "identityCard")}}/>
+                                                onChange={(event)=> {self.handleChange(event.target.value, "guardian")}}/>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.identityCard}</Fragment>
+                                    <Fragment>{record.guardian}</Fragment>
                             }
                         </Fragment>
                     </Descriptions.Item>
@@ -185,14 +182,14 @@ class AdmissionAssessment  extends Component {
                     过去史、家族史、手术史、药物过敏史（阳性记录）：<br/>
                     {
                         (isHidePrint && canEdit && isDocter) ?   <Form.Item style={{ marginBottom: 0 }}>
-                                {getFieldDecorator('clinicalMani', {
-                                    initialValue: record.clinicalMani,
+                                {getFieldDecorator('yxjl', {
+                                    initialValue: record.yxjl,
                                 })(
                                     <TextArea className={style.noneBorder} rows={5}
-                                              onChange={(event)=> {self.handleChange(event.target.value, "clinicalMani")}}></TextArea>
+                                              onChange={(event)=> {self.handleChange(event.target.value, "yxjl")}}></TextArea>
                                 )}
                             </Form.Item>:
-                            <div className={style.textArea}>{record.clinicalMani}</div>
+                            <div className={style.textArea}>{record.yxjl}</div>
                     }
                 </div>
                 <Descriptions column={{ xxl: 5, xl: 5, lg: 3, md: 3, sm: 2, xs: 2 }}  bordered className={style.descriptions} size="middle">
@@ -200,14 +197,14 @@ class AdmissionAssessment  extends Component {
                         <div className={style.flexRow}>
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
-                                        {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...nursingUtils.myStatic.rulesConfig.rules
+                                        {getFieldDecorator('t', {
+                                            initialValue: record.t,...Static.rulesConfig.required
                                         })(
                                             <Input
-                                                onChange={(event)=> {self.handleChange(event.target.value, "personName")}}/>
+                                                onChange={(event)=> {self.handleChange(event.target.value, "t")}}/>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.personName}</Fragment>
+                                    <Fragment>{record.t}</Fragment>
                             }
                             <div>&nbsp;&nbsp;℃</div>
                         </div>
@@ -216,14 +213,14 @@ class AdmissionAssessment  extends Component {
                         <div className={style.flexRow}>
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
-                                        {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...nursingUtils.myStatic.rulesConfig.rules
+                                        {getFieldDecorator('p', {
+                                            initialValue: record.p,...Static.rulesConfig.required
                                         })(
                                             <Input
-                                                onChange={(event)=> {self.handleChange(event.target.value, "personName")}}/>
+                                                onChange={(event)=> {self.handleChange(event.target.value, "p")}}/>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.personName}</Fragment>
+                                    <Fragment>{record.p}</Fragment>
                             }
                             <div>&nbsp;次/分</div>
                         </div>
@@ -232,30 +229,43 @@ class AdmissionAssessment  extends Component {
                         <div className={style.flexRow}>
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
-                                        {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...nursingUtils.myStatic.rulesConfig.rules
+                                        {getFieldDecorator('r', {
+                                            initialValue: record.r,...Static.rulesConfig.required
                                         })(
                                             <Input
-                                                onChange={(event)=> {self.handleChange(event.target.value, "personName")}}/>
+                                                onChange={(event)=> {self.handleChange(event.target.value, "r")}}/>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.personName}</Fragment>
+                                    <Fragment>{record.r}</Fragment>
                             }
                             <span>&nbsp;次/分</span>
                         </div>
                     </Descriptions.Item>
                     <Descriptions.Item label="BP">
-                        <div className={style.flexRow}>
+                        <div className={`${style.flexRow} ${style.bp}`}>
                             {
-                                (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
-                                        {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...nursingUtils.myStatic.rulesConfig.rules
-                                        })(
-                                            <Input
-                                                onChange={(event)=> {self.handleChange(event.target.value, "personName")}}/>
-                                        )}
-                                    </Form.Item>:
-                                    <Fragment>{record.personName}</Fragment>
+                                (isHidePrint && canEdit && isDocter) ?
+                                    <div className={style.bp}>
+                                        <Form.Item style={{ marginBottom: 0 }}>
+                                            {getFieldDecorator('bpfz', {
+                                                initialValue: record.bpfz,...Static.rulesConfig.required
+                                            })(
+                                                <Input
+                                                    onChange={(event)=> {self.handleChange(event.target.value, "bpfz")}}/>
+                                            )}
+                                        </Form.Item>
+                                        <span>&nbsp;/&nbsp;</span>
+                                        <Form.Item style={{ marginBottom: 0 }}>
+                                            {getFieldDecorator('bpfm', {
+                                                initialValue: record.bpfm,...Static.rulesConfig.required
+                                            })(
+                                                <Input
+                                                    onChange={(event)=> {self.handleChange(event.target.value, "bpfm")}}/>
+                                            )}
+                                        </Form.Item>
+                                    </div>
+                                    :
+                                    <Fragment>{record.bpfz}/{record.bpfm}</Fragment>
                             }
                             <span>&nbsp;mmHg</span>
                         </div>
@@ -264,14 +274,14 @@ class AdmissionAssessment  extends Component {
                         <div className={style.flexRow}>
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
-                                        {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...nursingUtils.myStatic.rulesConfig.rules
+                                        {getFieldDecorator('weight', {
+                                            initialValue: record.weight,...Static.rulesConfig.required
                                         })(
                                             <Input
-                                                onChange={(event)=> {self.handleChange(event.target.value, "personName")}}/>
+                                                onChange={(event)=> {self.handleChange(event.target.value, "weight")}}/>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.personName}</Fragment>
+                                    <Fragment>{record.weight}</Fragment>
                             }
                             <span>&nbsp;KG</span>
                         </div>
@@ -393,9 +403,9 @@ class AdmissionAssessment  extends Component {
                     </Descriptions.Item>
                     <Descriptions.Item label="洗漱">
                         <CheckboxGroup
-                            options={nursingUtils.myStatic.radios.ss}
-                            value={record.ss}
-                            onChange={(e)=>this.onCheckChange(e,"ss")}
+                            options={nursingUtils.myStatic.radios.xs}
+                            value={record.xs}
+                            onChange={(e)=>this.onCheckChange(e,"xs")}
                         />
                     </Descriptions.Item>
 
@@ -439,17 +449,17 @@ class AdmissionAssessment  extends Component {
                                 {nursingUtils.myStatic.radios.jl.map(res=><span className={style.jl}>{res.label}</span>)}
                             </div>
                             <div className={style.leftUpDownRight}>
-                                <div className={style.texts}>下</div>
+                                <div className={style.texts}>上</div>
                                 <div className={style.upDownRight}>
-                                    <div><label>左:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "tlLeft")}}/></div>
-                                    <div><label>右:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "tlRight")}}/></div>
+                                    <div><label>左:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "jlsz")}}/></div>
+                                    <div><label>右:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "jlsy")}}/></div>
                                 </div>
                             </div>
                             <div className={style.leftUpDownRight}>
                                 <div className={style.texts}>下</div>
                                 <div className={style.upDownRight}>
-                                    <div><label>左:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "tlLeft")}}/></div>
-                                    <div><label>右:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "tlRight")}}/></div>
+                                    <div><label>左:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "jlxz")}}/></div>
+                                    <div><label>右:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "jlxy")}}/></div>
                                 </div>
                             </div>
                         </div>
@@ -528,16 +538,16 @@ class AdmissionAssessment  extends Component {
                         />
                         <div>
                             <span>部位：</span>
-                            <Input onChange={(event)=> {self.handleChange(event.target.value, "remake")}}/>
+                            <Input onChange={(event)=> {self.handleChange(event.target.value, "bw")}}/>
                         </div>
                         <div>
                             <span>大小：</span>
-                            <Input onChange={(event)=> {self.handleChange(event.target.value, "remake")}}/>
+                            <Input onChange={(event)=> {self.handleChange(event.target.value, "dx")}}/>
                             <div>cm</div>
                         </div>
                         <div>
                             <span>深度：</span>
-                            <Input onChange={(event)=> {self.handleChange(event.target.value, "remake")}}/>
+                            <Input onChange={(event)=> {self.handleChange(event.target.value, "sd")}}/>
                             <div>cm</div>
                         </div>
                         </div>
@@ -546,7 +556,7 @@ class AdmissionAssessment  extends Component {
                     <CheckboxGroup
                         options={nursingUtils.myStatic.radios.lyqjzdz}
                         value={record.lyqjzdz}
-                        onChange={(e)=>this.onCheckChange(e,"llqjzdz")}
+                        onChange={(e)=>this.onCheckChange(e,"lyqjzdz")}
                     />
                 </footer>
                 <footer className={style.footer}><title className={style.tRight}>本次入院目的</title>
@@ -561,89 +571,89 @@ class AdmissionAssessment  extends Component {
                     各系统及主要脏器功能状况（体格检查发现）：<br/>
                     {
                         (isHidePrint && canEdit && isDocter) ?   <Form.Item style={{ marginBottom: 0 }}>
-                                {getFieldDecorator('clinicalMani', {
-                                    initialValue: record.clinicalMani,
+                                {getFieldDecorator('sysChange', {
+                                    initialValue: record.sysChange,
                                 })(
                                     <TextArea className={style.noneBorder} rows={5}
-                                              onChange={(event)=> {self.handleChange(event.target.value, "clinicalMani")}}></TextArea>
+                                              onChange={(event)=> {self.handleChange(event.target.value, "sysChange")}}></TextArea>
                                 )}
                             </Form.Item>:
-                            <div className={style.textArea}>{record.clinicalMani}</div>
+                            <div className={style.textArea}>{record.sysChange}</div>
                     }
                 </div>
                 <div className={style.rowStyle}>
                     专科情况（针对本人入院的主要原因）：<br/>
                     {
                         (isHidePrint && canEdit && isDocter) ?   <Form.Item style={{ marginBottom: 0 }}>
-                                {getFieldDecorator('clinicalMani', {
-                                    initialValue: record.clinicalMani,
+                                {getFieldDecorator('zkCase', {
+                                    initialValue: record.zkCase,
                                 })(
                                     <TextArea className={style.noneBorder} rows={5}
-                                              onChange={(event)=> {self.handleChange(event.target.value, "clinicalMani")}}></TextArea>
+                                              onChange={(event)=> {self.handleChange(event.target.value, "zkCase")}}></TextArea>
                                 )}
                             </Form.Item>:
-                            <div className={style.textArea}>{record.clinicalMani}</div>
+                            <div className={style.textArea}>{record.zkCase}</div>
                     }
                 </div>
                 <div className={style.rowStyle}>
                     辅助检查：<br/>
                     {
                         (isHidePrint && canEdit && isDocter) ?   <Form.Item style={{ marginBottom: 0 }}>
-                                {getFieldDecorator('clinicalMani', {
-                                    initialValue: record.clinicalMani,
+                                {getFieldDecorator('assistCheck', {
+                                    initialValue: record.assistCheck,
                                 })(
                                     <TextArea className={style.noneBorder} rows={5}
-                                              onChange={(event)=> {self.handleChange(event.target.value, "clinicalMani")}}></TextArea>
+                                              onChange={(event)=> {self.handleChange(event.target.value, "assistCheck")}}></TextArea>
                                 )}
                             </Form.Item>:
-                            <div className={style.textArea}>{record.clinicalMani}</div>
+                            <div className={style.textArea}>{record.assistCheck}</div>
                     }
                 </div>
                 <div className={style.rowStyle}>
                     疾病诊断：<br/>
                     {
                         (isHidePrint && canEdit && isDocter) ?   <Form.Item style={{ marginBottom: 0 }}>
-                                {getFieldDecorator('clinicalMani', {
-                                    initialValue: record.clinicalMani,
+                                {getFieldDecorator('jbzd', {
+                                    initialValue: record.jbzd,
                                 })(
                                     <TextArea className={style.noneBorder}  rows={5}
-                                              onChange={(event)=> {self.handleChange(event.target.value, "clinicalMani")}}></TextArea>
+                                              onChange={(event)=> {self.handleChange(event.target.value, "jbzd")}}></TextArea>
                                 )}
                             </Form.Item>:
-                            <div className={style.textArea}>{record.clinicalMani}</div>
+                            <div className={style.textArea}>{record.jbzd}</div>
                     }
                 </div>
                 <div className={style.rowStyle}>
                     处置意见：
                     <CheckboxGroup
-                        options={nursingUtils.myStatic.radios.czyj}
-                        value={record.czyj}
-                        onChange={(e)=>this.onCheckChange(e,"czyj")}
+                        options={nursingUtils.myStatic.radios.clyj}
+                        value={record.clyj}
+                        onChange={(e)=>this.onCheckChange(e,"clyj")}
                     />
                     <br/><br/>
                     收治本护理院后的治疗护理方案：<br/>
                     {
                         (isHidePrint && canEdit && isDocter) ?   <Form.Item style={{ marginBottom: 0 }}>
-                                {getFieldDecorator('clinicalMani', {
-                                    initialValue: record.clinicalMani,
+                                {getFieldDecorator('hlfa', {
+                                    initialValue: record.hlfa,
                                 })(
                                     <TextArea className={style.noneBorder}  rows={5}
-                                              onChange={(event)=> {self.handleChange(event.target.value, "clinicalMani")}}></TextArea>
+                                              onChange={(event)=> {self.handleChange(event.target.value, "hlfa")}}></TextArea>
                                 )}
                             </Form.Item>:
-                            <div className={style.textArea}>{record.clinicalMani}</div>
+                            <div className={style.textArea}>{record.hlfa}</div>
                     }
                 </div>
                 <Descriptions column={2} bordered className={style.descriptions}
                               size="middle">
                     <Descriptions.Item label="评估小组长签字">
                         {
-                            (isHidePrint && canEdit && isDocter) ?  <Input defaultValue={record.sicSign} onChange={(event)=> {self.handleChange(event.target.value, "sicSign")}}/>:
-                                <Fragment>{record.sicSign}</Fragment>
+                            (isHidePrint && canEdit && isDocter) ?  <Input defaultValue={record.doctorSign} onChange={(event)=> {self.handleChange(event.target.value, "doctorSign")}}/>:
+                                <Fragment>{record.doctorSign}</Fragment>
                         }
                     </Descriptions.Item>
                     <Descriptions.Item label="日期">
-                        <Fragment>{record.sicSignDate}</Fragment>
+                        <Fragment>{record.doctorSignDate}</Fragment>
                     </Descriptions.Item>
                 </Descriptions>
 

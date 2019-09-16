@@ -54,9 +54,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 let toData = moment();
                 let dateFormat = "YYYY/MM/DD";
                 let fromData = moment().subtract(3, "months");
-                let _flowStatus =await Uc.getDictKey("KFHL_ST");
-                let _flowType =await Uc.getDictKey("KFHL_TB");
-                let _node =await Uc.getDictKey("KFHL_LC");
+                let _dict = await Uc.getDict();
                 // 初始化查询条件
                 let forms = [
                     {labelName: '标题', formType: Global.SelectEnum.INPUT, name: 'title'},
@@ -64,8 +62,8 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                     {labelName: '发起人', formType: Global.SelectEnum.INPUT, name: 'initPerson'},
                     {labelName: '发起时间', formType: Global.SelectEnum.RangePickerSplit, name: 'dataTimes', dateFormat:dateFormat,outName:['initDateTo','initDateFrom'],outFormat:'YYYY-MM-DD',
                         initialValue:[moment(fromData,dateFormat), moment(toData,dateFormat)]},
-                    {labelName: '流程状态', formType: Global.SelectEnum.SELECT, name: 'flowStatus', children: _flowStatus},
-                    {labelName: '流程类型', formType: Global.SelectEnum.SELECT, name: 'flowType', children: _flowType},
+                    {labelName: '流程状态', formType: Global.SelectEnum.SELECT, name: 'flowStatus', children: _dict.KFHL_ST},
+                    {labelName: '流程类型', formType: Global.SelectEnum.SELECT, name: 'flowType', children: _dict.KFHL_TB},
                 ]
                 // 写入查询初始值
                 if (searchVal) {
@@ -74,7 +72,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 // 写入查询Form，用于显示查询组件内容
                 dispatch(getFormItems(forms));
                 // 显示信息时使用
-                dispatch(setStaticStatus({flowStatus:_flowStatus,flowType:_flowType,node:_node}));
+                dispatch(setStaticStatus({flowStatus:_dict.KFHL_ST,flowType:_dict.KFHL_TB,node:_dict.KFHL_LC,dict:_dict}));
             },
             setTempSearchObj:(_this,searchObj={})=>{
                 let result = {..._this.props.state.searchObj,..._this.props.state.tempSearchObj,...searchObj};
@@ -82,37 +80,38 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
             },
         },
         common:{
-            handleReject:async (_this,{flowTableId,backCause,fun}={})=>{
+            handleReject:async (_this,{inHospTableId,backCause,fun}={})=>{
                 dispatch(setBtnLoadingActive());
                 dispatch(setBtnRequestDisplay());
-                let result = await api.reject({flowTableId,backCause}).finally(() => {
+                let result = await api.reject({inHospTableId,backCause}).finally(() => {
                     // setTimeout(()=>{dispatch(setBtnLoadingDisplay())},Global.AlertTime*1000);
                     dispatch(setBtnLoadingDisplay());
                     setTimeout(()=>{dispatch(setBtnRequestActive())},Global.AlertTime*1000);
                 });
                 Global.alert(result,{successFun:fun});
             },
-            getInfo:async (_this,inHospTableId,recordEditVal ={})=>{
+            getInfo:async (_this,param={},fun)=>{
+                let {inHospTableId,recordVal ={},setStoreVal={}} = param;
                 Global.showLoading();
                 let result = await api.look_hosp_apply({inHospTableId}).finally(() => {
                     Global.hideLoading();
                 });
                 Global.alert(result,{
                     successFun:()=>{
-                        // TODO: 这里result.data[0] ?????
-                        let record = result.data[0] || {};
+                        let record = result.data || {};
                         const diagnoseGists = record.diagnoseGists || [];
                         const checkedOutsideList = _.difference(diagnoseGists, ['5','6', '7','8', '9', '10']);
                         const checkedGroupList = _.difference(diagnoseGists, ['0','1', '2', '3', '4','5']);
                         const indeterminate =   !!checkedGroupList.length && checkedGroupList.length < curUtil.myStatic.plainOptions.length;
                         const checkAll = checkedGroupList.length === curUtil.myStatic.plainOptions.length;
-                        record = {...record,...recordEditVal};
-                        _this.props.applicationForAdmission.setPageTempObj(_this,{
+                        record = {...record,...recordVal};
+                        fun && fun({
                             record:record,
                             checkedOutsideList,
                             checkedGroupList,
                             indeterminate,
-                            checkAll
+                            checkAll,
+                            ...setStoreVal
                         });
 
                     },

@@ -16,14 +16,15 @@ import InHospAssess from '../../Service/Layout/InHospAssess/InHospAssess';
 import InHospBerg from '../../Service/Layout/InHospBerg/InHospBerg';
 import Static from "@components/KFHL/Utils/Static";
 import KFHLService from "@components/KFHL/Utils/Service";
+import nursingUtils from "@/pages/Nursing/Service/Util";
 
 class ApplicationForAdmission extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            backUrl:'/rehabilitation/search',
             isHidePrint: true,//打印时使用false
         }
+        this.backUrl='/rehabilitation/search',
         this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.currentDay = KFHLService.currentDay();
@@ -33,7 +34,6 @@ class ApplicationForAdmission extends Component {
         this.onCheckAllChange = this.onCheckAllChange.bind(this);
         this.onCheckChange = this.onCheckChange.bind(this);
         this.print = this.print.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.setPageTempObj = this.setPageTempObj.bind(this);
         this.setApplyFile = this.setApplyFile.bind(this);
         this.setBergFile = this.setBergFile.bind(this);
@@ -48,35 +48,12 @@ class ApplicationForAdmission extends Component {
         if(!record.inHospTableId){console.error("页面必须有数据")}
         else{
             this.setPageTempObj({tabValue: record.lookType});
-            this.props.common.getInfo(this,record.inHospTableId);
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId},this.setPageTempObj);
+
         }
     }
 
-    handleSubmit(isSubmit){
-        //是否提交 否则保存
-        // if(!this.props.state.btnRequest) return
-        let {record} = this.props.state.pageTempObj;
-        record.type = '0';//0 = 入院，1 = 出院
-        // console.log("record",this.props.state.pageTempObj.record)
-        this.props.form.validateFields((err, values) => {
-            if (!err) {
-                let title = "是否保存？"
-                if(isSubmit){
-                    title = `【${curUtil.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${curUtil.myStatic.auditAgree.inHospDocter[1]}】`
-                }
-                Global.showConfirm({title,
-                    onConfirm:()=> {
-                        // let val = {...this.props.state.fromObj.record,...values}
-                        this.props.applicationForAdmission.handleOperate(record,()=>{
-                            this.goBack();
-                        })
-                    }
-                });
-            }else{
-                message.error("请检查必选项！");
-            }
-        });
-    }
+
 
     setPageTempObj(object={}){
         this.props.applicationForAdmission.setPageTempObj(this,{...object});
@@ -86,16 +63,16 @@ class ApplicationForAdmission extends Component {
         // 表单变更立即触发的事件
         let {record ={},sumScore} = this.props.state.pageTempObj;
         record[field] = val;
+       /* //平衡量表总分数
         let isCheckChange = curUtil.myStatic.checkTitle.find(res=>res.name == field);
         let _sumScore = 0;
-        //平衡量表总分数
         if(isCheckChange){
             curUtil.myStatic.checkTitle.map(res=>{
                 let tempScore = record[res.name] ? Number(record[res.name]) : 0 ;
                 _sumScore += tempScore;
             })
         }
-        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});
+        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});*/         this.setPageTempObj({record});
     }
 
     onRadioChange(value, name) {
@@ -188,16 +165,16 @@ class ApplicationForAdmission extends Component {
     }
 
     render() {
-        let {tabValue="0",uploadBergFiles,uploadApplyFiles} = this.props.state.pageTempObj;
+        let {tabValue="0",uploadBergFiles,uploadApplyFiles,record={}} = this.props.state.pageTempObj;
         const { isHidePrint } = this.state;
         const { getFieldDecorator } = this.props.form;
         const { removeBergFile,setBergFile,removeApplayFile,setApplyFile  } = this.props.applicationForAdmission;
-        const uploadBergFileDataSource = (uploadBergFiles && uploadBergFiles.length>0 ? uploadBergFiles : curUtil.myStatic.defaultUploadInfo);
-        const uploadApplyFileDataSource = (uploadApplyFiles && uploadApplyFiles.length>0 ? uploadApplyFiles : curUtil.myStatic.defaultUploadInfo);
+        const uploadBergFileDataSource = (uploadBergFiles && uploadBergFiles.length>0 ? uploadBergFiles : Static.defaultUploadInfo);
+        const uploadApplyFileDataSource = (uploadApplyFiles && uploadApplyFiles.length>0 ? uploadApplyFiles : Static.defaultUploadInfo);
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="康复" second="查询" third="康复入院查看" secondUrl={this.state.backUrl}/>
+                    <BreadcrumbCustom first="康复" second="查询" third="康复入院查看" secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={true}></Step>
                     <Divider/>
@@ -210,7 +187,7 @@ class ApplicationForAdmission extends Component {
                     {/*</Radio.Group>*/}
 
                     <div className={style.seatDiv}></div>
-                        <Form onSubmit={this.handleSubmit}>
+                        <Form >
                         <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
                             <div name="tab1" className={(tabValue == "0") ? '' : style.hidden}
                                  style={{"pageBreakAfter": "always"}}>
@@ -236,6 +213,7 @@ class ApplicationForAdmission extends Component {
                                             getFieldDecorator ={getFieldDecorator}
                                             isHidePrint ={isHidePrint}
                                             uploadBergFileDataSource ={uploadBergFileDataSource}
+                                            record={record}
                                 />
                             </div>
                         </div>

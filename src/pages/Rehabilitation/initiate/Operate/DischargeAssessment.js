@@ -17,13 +17,14 @@ import OutHospAssess from '../../Service/Layout/OutHospAssess/OutHospAssess';
 import OutHospBerg from '../../Service/Layout/OutHospBerg/OutHospBerg';
 import Static from "@components/KFHL/Utils/Static";
 import KFHLService from "@components/KFHL/Utils/Service";
+import {message} from "antd/lib/index";
 class DischargeAssessment extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            backUrl:'/rehabilitation/initiate',
             isHidePrint: true//true是隐藏所有Tabs, 打印时使用false
         }
+        this.backUrl='/rehabilitation/initiate';
         this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.currentDay = KFHLService.currentDay();
@@ -51,13 +52,16 @@ class DischargeAssessment extends Component {
             record.doctorSignDate = KFHLService.currentDay();
             this.setPageTempObj({canEdit: true,record:record});
         }else{
-            if ((record.flowStatus == curUtil.myStatic.flowStatus.agree || record.flowStatus == curUtil.myStatic.flowStatus.awaitAudit)) {
+            let recordVal={};
+            let setStoreVal={};
+            if ((record.flowStatus == Static.flowStatus.agree || record.flowStatus == Static.flowStatus.awaitAudit)) {
                 //已通过 或 待审核 不可做任何操作
-                this.setPageTempObj({canEdit: false});
+                setStoreVal={canEdit: false}
             }else{
-                this.props.common.getInfo(this,record.inHospTableId,{doctorSignDate:KFHLService.currentDay()});
-                this.setPageTempObj({canEdit: true});
+                setStoreVal={canEdit: true}
+                recordVal={doctorSignDate:KFHLService.currentDay()};
             }
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,recordVal,setStoreVal},this.setPageTempObj);
         }
     }
 
@@ -66,15 +70,16 @@ class DischargeAssessment extends Component {
     }
     handleSubmit(e){
         // if(!this.props.state.btnRequest) return
-        let {record} = this.props.state.pageTempObj;
-        record.type = '1';//0 = 入院，1 = 出院
-        console.log("record",this.props.state.pageTempObj.record)
+        let {record} = this.props.state.pageTempObjCY;
+        record.type = curUtil.myStatic.type.outHosp;//0 = 入院，1 = 出院
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 // let val = {...this.props.state.fromObj.record,...values}
                 this.props.applicationForAdmission.handleOperate(record,()=>{
-                    this.goBack();
+                    KFHLService.goBackUrl(this,this.backUrl);
                 })
+            }else{
+                message.error("请检查必选项！");
             }
         });
     }
@@ -88,7 +93,7 @@ class DischargeAssessment extends Component {
         // 表单变更立即触发的事件
         let {record ={},sumScore} = this.props.state.pageTempObjCY;
         record[field] = val;
-        let isCheckChange = curUtil.myStatic.checkTitle.find(res=>res.name == field);
+        /*let isCheckChange = curUtil.myStatic.checkTitle.find(res=>res.name == field);
         let _sumScore = 0;
         //平衡量表总分数
         if(isCheckChange){
@@ -97,7 +102,7 @@ class DischargeAssessment extends Component {
                 _sumScore += tempScore;
             })
         }
-        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});
+        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});*/         this.setPageTempObj({record});
     }
     onRadioChange(value, name) {
         if (name == curUtil.myStatic.radioType.imIsTab) {
@@ -135,13 +140,13 @@ class DischargeAssessment extends Component {
         const { isHidePrint } = this.state;
         const { getFieldDecorator } = this.props.form;
         const { removeBergFile,setBergFile } = this.props.dischargeAssessment;
-        const uploadBergFileDataSource = (uploadBergFiles && uploadBergFiles.length>0 ? uploadBergFiles : curUtil.myStatic.defaultUploadInfo);
+        const uploadBergFileDataSource = (uploadBergFiles && uploadBergFiles.length>0 ? uploadBergFiles : Static.defaultUploadInfo);
 
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
 
-                    <BreadcrumbCustom first="康复" second="发起流程" third="康复出院申请" secondUrl={this.state.backUrl}/>
+                    <BreadcrumbCustom first="康复" second="发起流程" third="康复出院申请" secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>
@@ -162,7 +167,7 @@ class DischargeAssessment extends Component {
 
                             <div name="tab2" className={(tabValue == "2") ? '' : style.hidden}
                                  style={{"pageBreakAfter": "always"}}>
-                                <OutHospBerg self={this}isDocter={false} canEdit={false}
+                                <OutHospBerg self={this}isDocter={true} canEdit={canEdit} record={record}
                                              getFieldDecorator ={getFieldDecorator}
                                              isHidePrint ={isHidePrint}
                                              removeBergFile ={removeBergFile}

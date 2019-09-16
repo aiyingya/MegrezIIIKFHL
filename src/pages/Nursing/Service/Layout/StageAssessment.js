@@ -11,6 +11,8 @@ import {Global} from "winning-megreziii-utils";
 import Sign from '@components/KFHL/Sign/Sign';
 import _ from "lodash";
 import Static from "@components/KFHL/Utils/Static";
+import moment from "moment/moment";
+import KFHLService from "@/components/KFHL/Utils/Service";
 
 class StageAssessment  extends Component {
     constructor(props) {
@@ -32,7 +34,7 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...nursingUtils.myStatic.rulesConfig.rules
+                                            initialValue: record.personName,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -48,15 +50,14 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('sex', {
-                                            initialValue: (record.sex && record.sex=="女") ? "1":"0",...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.sex ? record.sex : Static.myEnum.sex.man,...Static.rulesConfig.required
                                         })(
                                             <Select onChange={(event)=> {handleChange(event, "sex")}}>
-                                                <Option value="0">男</Option>
-                                                <Option value="1">女</Option>
+                                                {Static.myDict.sex.map(res=><Option value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.personName}</Fragment>
+                                    <Fragment>{KFHLService.getSexName(record.sex)}</Fragment>
                             }
                         </Fragment>
                     </Descriptions.Item>
@@ -65,7 +66,7 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('age', {
-                                            initialValue: record.age,...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.age,...Static.rulesConfig.age
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -81,7 +82,7 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('identityCard', {
-                                            initialValue: record.identityCard,...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.identityCard,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -97,7 +98,7 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('bedNumber', {
-                                            initialValue: record.bedNumber,...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.bedNumber,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -113,7 +114,7 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('lesion', {
-                                            initialValue: record.lesion,...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.lesion,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -129,7 +130,7 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('inHospNumber', {
-                                            initialValue: record.inHospNumber,...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.inHospNumber,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -145,9 +146,9 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('inHospDate', {
-                                            initialValue: record.inHospDate,rules: [{required: false, message: '请输入'}]
+                                            initialValue: record.inHospDate && moment(record.inHospDate),rules: [{required: false, message: '请输入'}]
                                         })(
-                                            <DatePicker  format={nursingUtils.myStatic.dateFormat}
+                                            <DatePicker  format={Static.dateFormat}
                                                          onChange={(date, dateString)=>  {handleChange(dateString, "inHospDate")}}/>
                                         )}
                                     </Form.Item>:
@@ -160,7 +161,7 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }} >
                                         {getFieldDecorator('yf', {
-                                            initialValue: record.yf,...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.yf,...Static.rulesConfig.required
                                         })(
                                             <Select onChange={(event)=> {handleChange(event, "yf")}}>
                                                 {monthList.map(item =>
@@ -183,7 +184,7 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...nursingUtils.myStatic.rulesConfig.rules
+                                            initialValue: record.personName,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 onChange={(event)=> {handleChange(event.target.value, "personName")}}/>
@@ -199,7 +200,7 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...nursingUtils.myStatic.rulesConfig.rules
+                                            initialValue: record.personName,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 onChange={(event)=> {handleChange(event.target.value, "personName")}}/>
@@ -215,7 +216,7 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...nursingUtils.myStatic.rulesConfig.rules
+                                            initialValue: record.personName,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 onChange={(event)=> {handleChange(event.target.value, "personName")}}/>
@@ -231,7 +232,7 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...nursingUtils.myStatic.rulesConfig.rules
+                                            initialValue: record.personName,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 onChange={(event)=> {handleChange(event.target.value, "personName")}}/>
@@ -247,7 +248,7 @@ class StageAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...nursingUtils.myStatic.rulesConfig.rules
+                                            initialValue: record.personName,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 onChange={(event)=> {handleChange(event.target.value, "personName")}}/>
@@ -393,12 +394,12 @@ class StageAssessment  extends Component {
                               size="middle">
                     <Descriptions.Item label="评估人员签字">
                         {
-                            (isHidePrint && canEdit && isDocter) ?  <Input defaultValue={record.sicSign} onChange={(event)=> {handleChange(event.target.value, "sicSign")}}/>:
-                                <Fragment>{record.sicSign}</Fragment>
+                            (isHidePrint && canEdit && isDocter) ?  <Input defaultValue={record.doctorSign} onChange={(event)=> {handleChange(event.target.value, "doctorSign")}}/>:
+                                <Fragment>{record.doctorSign}</Fragment>
                         }
                     </Descriptions.Item>
                     <Descriptions.Item label="日期">
-                        <Fragment>{record.sicSignDate}</Fragment>
+                        <Fragment>{record.doctorSignDate}</Fragment>
                     </Descriptions.Item>
                 </Descriptions>
 

@@ -36,9 +36,14 @@ class StageAssessment extends Component {
 
     componentDidMount() {
         new Scrollbar(this.inside.current).show();
-        let {record} = this.props.state.pageTempObj;
-        // 所有人员都可以看的查看页面，只能查看
-        this.setPageTempObj({record:record});
+        //判断当前发起流程是否可以操作；
+        let query = this.props.location.query ||{};
+        const record = query.record ? query.record :{};
+        if(!record.inHospTableId){console.error("页面必须有数据")}
+        else{
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId},this.setPageTempObj);
+        }
+
     }
     handleSubmit(isSubmit){
         //是否提交 否则保存
@@ -47,18 +52,24 @@ class StageAssessment extends Component {
         // console.log("record",this.props.state.pageTempObj.record)
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                let title = "是否保存？"
-                if(isSubmit){
-                    title = `【${nursingUtils.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${nursingUtils.myStatic.auditAgree.inHospDocter[1]}】`
+
+                let handleOperate =()=>{
+                    this.props.stageAssessment.handleOperate(record,()=>{
+                        KFHLService.goBackUrl(this,this.backUrl);
+                    })
                 }
-                Global.showConfirm({title,
-                    onConfirm:()=> {
-                        // let val = {...this.props.state.fromObj.record,...values}
-                        this.props.stageAssessment.handleOperate(record,()=>{
-                            this.goBack();
-                        })
-                    }
-                });
+                if(isSubmit){
+                    let title = `【${nursingUtils.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${nursingUtils.myStatic.auditAgree.inHospDocter[1]}】`;
+                    Global.showConfirm({title,
+                        onConfirm:()=> {
+                            handleOperate();
+                        }
+                    });
+                }else{
+                    handleOperate();
+                }
+
+
             }else{
                 message.error("请检查必选项！");
             }
@@ -95,12 +106,12 @@ class StageAssessment extends Component {
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请" secondUrl={this.backUrl}/>
+                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请"  secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>
 
-                    <Form onSubmit={this.handleSubmit}>
+                    <Form>
                         <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
                             <StageAssessmentLayout self={this} record={record} getFieldDecorator={getFieldDecorator} isHidePrint={isHidePrint}
                                                  canEdit={false} dict={dict} handleChange={this.handleChange} monthList={monthList} isDocter={false}/>

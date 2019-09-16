@@ -1,6 +1,7 @@
 import React from 'react';
 import style from './common.less'
 import curUtil from '../Service/Util';
+import Static from "@components/KFHL/Utils/Static";
 
 export default (self)=>{
     const {state}=self.props;

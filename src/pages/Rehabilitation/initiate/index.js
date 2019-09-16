@@ -71,11 +71,11 @@ class Initiate extends Component {
     componentWillMount(){
         let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
         if (isFrozenPaging) {
-            // this.props.initiate.initTable(this,{isFrozenPaging});
             this.props.initiate.initSearch(this.props.state.tempSearchObj);
+            this.props.initiate.initTable(this,{isFrozenPaging});
         }else{
             this.props.initiate.initSearch();
-            // this.props.initiate.initTable(this);
+            this.props.initiate.initTable(this);
         }
     }
 

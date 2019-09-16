@@ -16,50 +16,47 @@ import InHospAssess from '../../Service/Layout/InHospAssess/InHospAssess';
 import InHospBerg from '../../Service/Layout/InHospBerg/InHospBerg';
 import Static from "@components/KFHL/Utils/Static";
 import KFHLService from "@components/KFHL/Utils/Service";
+import nursingUtils from "@/pages/Nursing/Service/Util";
 class ApplicationForAdmission extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            backUrl:'/rehabilitation/initiate',
             isHidePrint: true,//true是隐藏所有Tabs, 打印时使用false
         }
+        this.backUrl='/rehabilitation/initiate';
         this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.currentDay = KFHLService.currentDay();
-        this.handleChange = this.handleChange.bind(this)
-        this.onRadioChange = this.onRadioChange.bind(this)
+        this.handleChange = this.handleChange.bind(this);
+        this.onRadioChange = this.onRadioChange.bind(this);
         this.onCheckboxGroupChange = this.onCheckboxGroupChange.bind(this);
         this.onCheckAllChange = this.onCheckAllChange.bind(this);
         this.onCheckChange = this.onCheckChange.bind(this);
         this.print = this.print.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.setPageTempObj = this.setPageTempObj.bind(this);
-        this.setApplyFile = this.setApplyFile.bind(this);
-        this.setBergFile = this.setBergFile.bind(this);
     }
 
     componentDidMount() {
-
         new Scrollbar(this.inside.current).show();
         if(Global.isFrozen()) return;
         // 只有医护人员访问的发起流程页面
         let query = this.props.location.query ||{};
         const record = query.record ? query.record :{};
-        debugger
         if(!record.inHospTableId){
             record.doctorSignDate = KFHLService.currentDay();
             this.setPageTempObj({canEdit: true,record:record});
         }else{
-
-            if ((record.flowStatus == curUtil.myStatic.flowStatus.agree || record.flowStatus == curUtil.myStatic.flowStatus.awaitAudit)) {
+            let recordVal={};
+            let setStoreVal={};
+            if ((record.flowStatus == Static.flowStatus.agree || record.flowStatus == Static.flowStatus.awaitAudit)) {
                 //已通过 或 待审核 不可做任何操作
-                this.setPageTempObj({canEdit: false});
-                this.props.common.getInfo(this,record.inHospTableId);
+                setStoreVal={canEdit: false}
             }else{
-                this.setPageTempObj({canEdit: true});
-                this.props.common.getInfo(this,record.inHospTableId,{doctorSignDate:KFHLService.currentDay()});
+                setStoreVal={canEdit: true}
+                recordVal={doctorSignDate:KFHLService.currentDay()};
             }
-
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,recordVal,setStoreVal},this.setPageTempObj);
         }
     }
 
@@ -67,22 +64,27 @@ class ApplicationForAdmission extends Component {
         //是否提交 否则保存
         // if(!this.props.state.btnRequest) return
         let {record} = this.props.state.pageTempObj;
-        record.type = '0';//0 = 入院，1 = 出院
+        record.type = curUtil.myStatic.type.inHosp;//0 = 入院，1 = 出院
         // console.log("record",this.props.state.pageTempObj.record)
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                let title = "是否保存？"
-                if(isSubmit){
-                    title = `【${curUtil.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${curUtil.myStatic.auditAgree.inHospDocter[1]}】`
+                let handleOperate =()=>{
+                    this.props.applicationForAdmission.handleOperate(record,()=>{
+                        KFHLService.goBackUrl(this,this.backUrl);
+                    })
                 }
-                Global.showConfirm({title,
-                    onConfirm:()=> {
-                        // let val = {...this.props.state.fromObj.record,...values}
-                        this.props.applicationForAdmission.handleOperate(record,()=>{
-                            this.goBack();
-                        })
-                    }
-                });
+
+                if(isSubmit){
+                    let title = curUtil.getAuditAgreeTxt(this.user.js_lx,true);
+                    Global.showConfirm({title,
+                        onConfirm:()=> {
+                            handleOperate();
+                        }
+                    });
+                }else{
+                    handleOperate();
+                }
+
             }else{
                 message.error("请检查必选项！");
             }
@@ -95,7 +97,7 @@ class ApplicationForAdmission extends Component {
         // 表单变更立即触发的事件
         let {record ={},sumScore} = this.props.state.pageTempObj;
         record[field] = val;
-        let isCheckChange = curUtil.myStatic.checkTitle.find(res=>res.name == field);
+       /* let isCheckChange = curUtil.myStatic.checkTitle.find(res=>res.name == field);
         let _sumScore = 0;
         //平衡量表总分数
         if(isCheckChange){
@@ -104,7 +106,7 @@ class ApplicationForAdmission extends Component {
                 _sumScore += tempScore;
             })
         }
-        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});
+        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});*/         this.setPageTempObj({record});
     }
     onRadioChange(value, name) {
         if (name == curUtil.myStatic.radioType.imIsTab) {
@@ -156,9 +158,7 @@ class ApplicationForAdmission extends Component {
             record
         });
     };
-    clickDownLoad(url){
-        window.location.href=url;
-    }
+
     print() {
         // 打印
         Global.showLoading();
@@ -169,29 +169,6 @@ class ApplicationForAdmission extends Component {
             this.setState({isHidePrint: true});
         }, 1000);
     }
-    setApplyFile(file={}){
-        let count = Math.floor(Math.random() * (1000 - 1) + 1);
-        this.props.applicationForAdmission.setApplyFile(this,{
-            fileName: file.name,
-            size: (file.size / 1024) + "KB" ,
-            uploadDate:KFHLService.currentDay(),
-            uploadUser: this.user.yh_mc || 'admin',
-            fileId:count,
-            fileUrl:'https://github.com/vuejs/vuepress/archive/master.zip'
-        });
-    }
-    setBergFile(file={}){
-        let user =  Global.localStorage.get(Global.localStorage.key.userInfo) || {};
-        let count = Math.floor(Math.random() * (1000 - 1) + 1);
-        this.props.applicationForAdmission.setBergFile(this,{
-            fileName: file.name,
-            size: (file.size / 1024) + "KB" ,
-            uploadDate: KFHLService.currentDay(),
-            uploadUser: this.user.yh_mc || 'admin',
-            fileId:count,
-            fileUrl:'https://github.com/vuejs/vuepress/archive/master.zip'
-        });
-    }
 
 
     render() {
@@ -199,13 +176,13 @@ class ApplicationForAdmission extends Component {
         const { isHidePrint } = this.state;
         const { getFieldDecorator } = this.props.form;
         const { removeBergFile,setBergFile,removeApplayFile,setApplyFile  } = this.props.applicationForAdmission;
-        const uploadBergFileDataSource = (uploadBergFiles && uploadBergFiles.length>0 ? uploadBergFiles : curUtil.myStatic.defaultUploadInfo);
-        const uploadApplyFileDataSource = (uploadApplyFiles && uploadApplyFiles.length>0 ? uploadApplyFiles : curUtil.myStatic.defaultUploadInfo);
+        const uploadBergFileDataSource = (uploadBergFiles && uploadBergFiles.length>0 ? uploadBergFiles : Static.defaultUploadInfo);
+        const uploadApplyFileDataSource = (uploadApplyFiles && uploadApplyFiles.length>0 ? uploadApplyFiles : Static.defaultUploadInfo);
 
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="康复" second="发起流程" third="康复入院申请" secondUrl={this.state.backUrl}/>
+                    <BreadcrumbCustom first="康复" second="发起流程" third="康复入院申请" secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>
@@ -245,6 +222,7 @@ class ApplicationForAdmission extends Component {
                                             removeBergFile ={removeBergFile}
                                             setBergFile ={setBergFile}
                                             uploadBergFileDataSource ={uploadBergFileDataSource}
+                                            record={record}
                                 />
                             </div>
                         </div>

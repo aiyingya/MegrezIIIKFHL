@@ -8,16 +8,24 @@ import CheckScore from '@components/KFHL/CheckScore/CheckScore';
 import columnsUpload from "@/components/KFHL/Columns/columnsUpload";
 import UploadFile from '@components/UploadFile/UploadFile';
 import Static from "@components/KFHL/Utils/Static";
-
+import moment from 'moment';
+import KFHLService from "@/components/KFHL/Utils/Service";
+import {Global} from "winning-megreziii-utils";
+import nursingUtils from "@/pages/Nursing/Service/Util";
 class InHospBerg  extends Component {
     constructor(props) {
         super(props);
     }
 
     render() {
-        let {self,canEdit,isDocter,getFieldDecorator,isHidePrint,uploadBergFileDataSource,removeBergFile,setBergFile} = this.props;
-        let {record={},sumScore} = self.props.state.pageTempObj;
-
+        let {self,record={},canEdit,isDocter,getFieldDecorator,isHidePrint,uploadBergFileDataSource,removeBergFile,setBergFile} = this.props;
+        // let {sumScore} = self.props.state.pageTempObj;
+        let newCheckTitle = Global.setFormsValue(curUtil.myStatic.checkTitle,record);
+        let sumScore = 0;
+        //平衡量表总分数
+        newCheckTitle.map(res=>{
+            sumScore +=  Number(res.value);
+        })
         return (
             <div className={isHidePrint ?  style.tabSelf : style.tabSelf +' '+style.showPrint}>
                 <Descriptions title="Berg平衡量表" column={2} bordered className={style.descriptions}
@@ -43,16 +51,15 @@ class InHospBerg  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?   <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('sex', {
-                                            initialValue: (record.sex && record.sex=="女") ? "1":"0"
+                                            initialValue: record.sex ? record.sex : Static.myEnum.sex.man,...Static.rulesConfig.required
                                         })(
 
                                             <Select onChange={(event)=> {self.handleChange(event, "sex")}}>
-                                                <Option value="0">男</Option>
-                                                <Option value="1">女</Option>
+                                                {Static.myDict.sex.map(res=><Option value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.sex}</Fragment>
+                                    <Fragment>{KFHLService.getSexName(record.sex)}</Fragment>
                             }
                         </Fragment>
 
@@ -62,7 +69,7 @@ class InHospBerg  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('age', {
-                                            initialValue: record.age,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.age,...Static.rulesConfig.age
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -78,7 +85,7 @@ class InHospBerg  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('identityCard', {
-                                            initialValue: record.identityCard,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.identityCard,...Static.rulesConfig.identityCard
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -94,7 +101,7 @@ class InHospBerg  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('bedNumber', {
-                                            initialValue: record.bedNumber,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.bedNumber,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -110,7 +117,7 @@ class InHospBerg  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('inHospNumber', {
-                                            initialValue: record.inHospNumber,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.inHospNumber,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -126,9 +133,10 @@ class InHospBerg  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('fbrq', {
-                                            initialValue: record.fbrq, rules: [{required: true,  message: '请输入'}]
+                                            initialValue: record.fbrq && moment(record.fbrq),
+                                            rules: [{required: true,  message: '请输入'}]
                                         })(
-                                            <DatePicker  format={curUtil.myStatic.dateFormat}
+                                            <DatePicker  format={Static.dateFormat}
                                                          onChange={(date, dateString)=>{self.handleChange(dateString, "fbrq")}}/>
                                         )}
                                     </Form.Item>:
@@ -141,9 +149,9 @@ class InHospBerg  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('inHospDate', {
-                                            initialValue: record.inHospDate, rules: [{required: true,  message: '请输入'}]
+                                            initialValue: record.inHospDate && moment(record.inHospDate), rules: [{required: true,  message: '请输入'}]
                                         })(
-                                            <DatePicker  format={curUtil.myStatic.dateFormat}
+                                            <DatePicker  format={Static.dateFormat}
                                                          onChange={(date, dateString)=>{self.handleChange(dateString, "inHospDate")}}/>
                                         )}
                                     </Form.Item>:
@@ -156,7 +164,7 @@ class InHospBerg  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?<Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('clinicalDiagnose', {
-                                            initialValue: record.clinicalDiagnose,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.clinicalDiagnose,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -191,9 +199,9 @@ class InHospBerg  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('evaDate', {
-                                            initialValue: record.evaDate
+                                            initialValue: record.evaDate && moment(record.evaDate)
                                         })(
-                                            <DatePicker  format={curUtil.myStatic.dateFormat}
+                                            <DatePicker  format={Static.dateFormat}
                                                          onChange={(date, dateString)=>  {self.handleChange(dateString, "evaDate")}}/>
                                         )}
                                     </Form.Item>:
@@ -205,7 +213,7 @@ class InHospBerg  extends Component {
 
                 <div className={style.propThreeList}>
                     <header><title>检查序号</title><title>检查内容</title><title>得分(0-4)</title></header>
-                    <CheckScore data={curUtil.myStatic.checkTitle} score={curUtil.myStatic.checkScore}
+                    <CheckScore data={newCheckTitle} score={curUtil.myStatic.checkScore}
                                 onChange={self.handleChange} canEdit={canEdit}></CheckScore>
                     <div className={style.sumScore}>
                         <span>总分</span>

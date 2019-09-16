@@ -1,5 +1,8 @@
+import React from 'react';
 import {message} from "antd/lib/index";
 import {Global} from 'winning-megreziii-utils';
+import Static from "@components/KFHL/Utils/Static";
+
 const myStatic = {
     radios:{
         // 意识
@@ -131,7 +134,7 @@ const myStatic = {
             {label: '溃疡', value: '1'},
             {label: '假膜', value: '2'},
         ],
-        ss: [
+        xs: [
             {label: '正常', value: '0'},
             {label: '左偏', value: '1'},
             {label: '右偏', value: '2'},
@@ -177,7 +180,7 @@ const myStatic = {
             {label: '出院后康复护理', value: '1'},
             {label: '临终关怀', value: '2'},
         ],
-        czyj: [
+        clyj: [
             {label: '暂不收治入院治疗', value: '0'},
             {label: '收治本院', value: '1'},
             {label: '建议转送上级护理院或医院治疗', value: '2'},
@@ -193,11 +196,6 @@ const myStatic = {
         uploadDate: '',
         uploadUser: '',
     }],
-    // 验证规则
-    rulesConfig: {
-        rules: [{required: true,  message: '请输入', whitespace: true}]
-    },
-    dateFormat : 'YYYY-MM-DD',
     //据此考虑
     outHospResult: [
         {label: '出院', value: '0'},
@@ -234,19 +232,6 @@ const myStatic = {
         // 社保中心提交
         socialInsurance:['社保中心审核','归档'],
     },
-    // 对应数据字典中的 KFHL_ST 属性
-    flowStatus:{
-        agree: "0",//通过
-        reject: "1",//不通过
-        awaitAudit:'2',//待审核
-        awaitSubmit:'4'//待提交
-    },
-    // 对应数据字典中的 KFHL_JS 属性
-    currentRole:{
-        docter: "0",//医护人员
-        medicalInstitution: "1",//医疗机构
-        socialInsurance:'2',//社保中心
-    },
     //0=入院评估，1=出院评估，2 = 阶段性评估
     flowType:{
         AdmissionAssessment:"0",
@@ -280,16 +265,7 @@ const currentDay = ()=>{
     day = day >= 10 ? day: '0'+day;
     return date.getFullYear()+"-"+month+"-"+day;
 }
-function renderOption(item) {
-    return (
-        <Option key={item.ID}  value={item}>
-            <div className="global-search-item">
-                <span className="global-search-item-desc">{item.nurseMonthFrom}</span>
-                <span className="global-search-item-count">{item.nurseMonthTo}</span>
-            </div>
-        </Option>
-    );
-}
+
 const uploader =(self,{method})=>{
     return  {
         showUploadList:false,
@@ -328,11 +304,35 @@ const uploader =(self,{method})=>{
         }
     }
 };
+
+const getAuditAgreeTxt = (role,isInHosp = true)=>{
+    let currentRole = Static.currentRole;
+    let txt= '';
+    switch (role){
+        case currentRole.medicalInstitution:
+            txt =`【${myStatic.auditAgree.medicalInstitution[0]}】已完成，确认要发送到下一步【${myStatic.auditAgree.medicalInstitution[1]}】`
+            break;
+        case currentRole.socialInsurance:
+            txt =`【${myStatic.auditAgree.socialInsurance[0]}】已完成，确认要发送到下一步【${myStatic.auditAgree.socialInsurance[1]}】`
+            break;
+        default:
+            // 默认当做医生提交
+            if(!isInHosp){
+                // 出院
+                txt =`【${myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${myStatic.auditAgree.inHospDocter[1]}】`
+            }else{
+                txt =`【${myStatic.auditAgree.outHospDocter[0]}】已完成，确认要发送到下一步【${myStatic.auditAgree.outHospDocter[1]}】`
+            }
+            break;
+
+    }
+}
 export default {
     myStatic,
     // 初始化编辑中机构列表的选中数据
     currentDay,
     // 初始化编辑中机构列表的选中数据
     uploader,
-    renderOption
+    //获取提交文本
+    getAuditAgreeTxt
 }

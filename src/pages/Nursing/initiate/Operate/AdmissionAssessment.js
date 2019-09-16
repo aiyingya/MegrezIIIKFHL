@@ -39,13 +39,16 @@ class AdmissionAssessment extends Component {
             record.doctorSignDate = KFHLService.currentDay();
             this.setPageTempObj({canEdit: true,record:record});
         }else{
-            if ((record.flowStatus == curUtil.myStatic.flowStatus.agree || record.flowStatus == curUtil.myStatic.flowStatus.awaitAudit)) {
+            let recordVal={};
+            let setStoreVal={};
+            if ((record.flowStatus == Static.flowStatus.agree || record.flowStatus == Static.flowStatus.awaitAudit)) {
                 //已通过 或 待审核 不可做任何操作
-                this.setPageTempObj({canEdit: false});
+                setStoreVal={canEdit: false}
             }else{
-                this.props.common.getInfo(this,record.inHospTableId,{doctorSignDate:KFHLService.currentDay()});
-                this.setPageTempObj({canEdit: true});
+                setStoreVal={canEdit: true}
+                recordVal={doctorSignDate:KFHLService.currentDay()};
             }
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,recordVal,setStoreVal},this.setPageTempObj);
         }
     }
 
@@ -53,22 +56,25 @@ class AdmissionAssessment extends Component {
         //是否提交 否则保存
         // if(!this.props.state.btnRequest) return
         let {record} = this.props.state.pageTempObj;
-        record.type = '0';//0 = 入院，1 = 出院
         // console.log("record",this.props.state.pageTempObj.record)
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                let title = "是否保存？"
-                if(isSubmit){
-                    title = `【${nursingUtils.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${nursingUtils.myStatic.auditAgree.inHospDocter[1]}】`
+                let handleOperate =()=>{
+                    this.props.admissionAssessment.handleOperate(record,()=>{
+                        KFHLService.goBackUrl(this,this.backUrl);
+                    })
                 }
-                Global.showConfirm({title,
-                    onConfirm:()=> {
-                        // let val = {...this.props.state.fromObj.record,...values}
-                        this.props.admissionAssessment.handleOperate(record,()=>{
-                            this.goBack();
-                        })
-                    }
-                });
+
+                if(isSubmit){
+                    let title = `【${curUtil.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${curUtil.myStatic.auditAgree.inHospDocter[1]}】`;
+                    Global.showConfirm({title,
+                        onConfirm:()=> {
+                            handleOperate();
+                        }
+                    });
+                }else{
+                    handleOperate();
+                }
             }else{
                 message.error("请检查必选项！");
             }
@@ -81,16 +87,16 @@ class AdmissionAssessment extends Component {
         // 表单变更立即触发的事件
         let {record ={},sumScore} = this.props.state.pageTempObj;
         record[field] = val;
+       /* //平衡量表总分数
         let isCheckChange = nursingUtils.myStatic.checkTitle.find(res=>res.name == field);
         let _sumScore = 0;
-        //平衡量表总分数
         if(isCheckChange){
             nursingUtils.myStatic.checkTitle.map(res=>{
                 let tempScore = record[res.name] ? Number(record[res.name]) : 0 ;
                 _sumScore += tempScore;
             })
         }
-        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});
+        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});*/         this.setPageTempObj({record});
     }
     clickDownLoad(url){
         window.location.href=url;
@@ -115,7 +121,7 @@ class AdmissionAssessment extends Component {
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请" secondUrl={this.backUrl}/>
+                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请"  secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>

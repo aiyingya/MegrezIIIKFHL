@@ -1,4 +1,8 @@
+import React from 'react';
 import {Global} from 'winning-megreziii-utils';
+import Static from './Static';
+import curUtil from "@/pages/Rehabilitation/Service/Util";
+
 let getButton =(_this,{canEdit,print,handleSubmit,showReject,isDocter = true})=>{
     let isHideReject  = isDocter ? true : !canEdit;
     return {
@@ -51,10 +55,38 @@ const currentDay = ()=>{
     day = day >= 10 ? day: '0'+day;
     return date.getFullYear()+"-"+month+"-"+day;
 }
+
+const goBackUrl= (_this,backUrl)=>{
+    _this.props.history.push({pathname:backUrl, query: {frozenPaging:true}})
+}
+
+const renderOption=(item)=> {
+    return (
+        <Option key={item.identityCard} text={item.personName}>
+            <div className="global-search-item">
+                <span className="global-search-item-desc">{item.personName}</span>
+                <span className="global-search-item-count">{item.identityCard}</span>
+            </div>
+        </Option>
+    );
+}
+
+const getSexName = (value)=>{
+    const sex = Static.myDict.sex.find(res=>res.value == value);
+    if(sex){
+        return sex.name;
+    }
+    return "";
+}
+
+// curUtil.myStatic.checkTitle
 export default {
     // 初始化编辑中机构列表的选中数据
     currentDay,
     // 获取按钮列表
-    getButton
+    getButton,
+    goBackUrl,
+    renderOption,
+    getSexName
 }
 

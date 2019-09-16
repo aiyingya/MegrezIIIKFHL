@@ -1,6 +1,6 @@
 import React,{Component,Fragment} from 'react';
 import * as PropTypes from 'prop-types';
-import BasicSelect from '@components/BasicSelect/BasicSelect';
+import { Select } from 'antd';
 import style from '../common.less'
 
 class CheckScore extends Component {
@@ -11,11 +11,16 @@ class CheckScore extends Component {
         let {data,score,canEdit} =  this.props;
         return (
             <Fragment>
-            {data.map((item,index) => (
+            {data && data.map((item,index) => (
                 <div key={item.text}>
                     <title>{index+1}</title><title>{item.text}</title>
                     <div>{
-                        canEdit ? <BasicSelect data={score} defaultValue={item.value} onChange={(val)=>{this.props.onChange(val,item.name)}}> </BasicSelect>:
+                        canEdit ?
+                            <Select style={{ width: '100%' }} value={item.value} onChange={(val)=>{this.props.onChange(val,item.name)}}>
+                                {score.map(d => (
+                                    <Select.Option key={d.value}>{d.text}</Select.Option>
+                                ))}
+                            </Select> :
                         <div className={style.tRightScore}>{item.value}</div>
                     }
                     </div>

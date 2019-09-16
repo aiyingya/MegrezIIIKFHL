@@ -2,11 +2,12 @@ import React, {Component} from 'react';
 import { Table, Badge, Menu, Dropdown, Icon,Divider  } from 'antd';
 import {store, mapStateToProps, mapDispatchToProps} from './Redux/Store';
 import style from './common.less'
-import {Global,Utils,ReduxWarpper,BasicFormComponent, BasicGroupComponent,AuthComponent,Scrollbar} from 'winning-megreziii-utils';
+import {Global,Utils,ReduxWarpper,BasicFormComponent, BasicGroupComponent,AuthComponent,Scrollbar,Loader} from 'winning-megreziii-utils';
 import columns from './columns'
 import columnsExpandeRow from './columnsExpandeRow'
 import columnsExpandeRowChild from './columnsExpandeRowChild'
 import curUtil from "@/pages/Rehabilitation/Service/Util";
+import api from "@/api/RehabilitationApi";
 
 class User extends Component {
     constructor(props) {
@@ -19,6 +20,19 @@ class User extends Component {
         this.goApplicationForAdmission = this.goApplicationForAdmission.bind(this);
         this.goDischargeAssessment = this.goDischargeAssessment.bind(this);
         this.inside = React.createRef();
+        this.button ={
+            direction : Global.Direction.UP,
+            datas:[
+                {
+                    type : 'primary',
+                    className: Global.BottomCss.ADD,
+                    text:'导出',
+                    onClick:()=>{
+                        Loader.download(api.excel_export,this.props.state.tempSearchObj);
+                    }
+                }
+            ]
+        }
     }
     componentWillMount(){
         let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
@@ -141,6 +155,7 @@ class User extends Component {
                     <BasicFormComponent forms={this.props.state.formItems} handleSearch={this.handleSearch} handleChange={this.handleChange}/>
                     <Divider />
                     <div className={'Table40 TableMain'}>
+                        <BasicGroupComponent {...this.button}/>
                         <Table
                             className="winning-table-spe-nested"
                             loading={this.props.state.loading}

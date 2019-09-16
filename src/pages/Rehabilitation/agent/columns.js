@@ -4,6 +4,7 @@ import {Global,Uc} from 'winning-megreziii-utils';
 import {Badge} from 'antd';
 import style from './common.less';
 import curUtil from "@/pages/Rehabilitation/Service/Util";
+import Static from "@components/KFHL/Utils/Static";
 
 export default (self)=>{
     const {initiate,state}=self.props;
@@ -49,16 +50,16 @@ export default (self)=>{
                 const objct = _flowStatus.find(res=>res.value == texts) || {};
                 let color = '';
                 switch (objct.value){
-                    case curUtil.myStatic.flowStatus.agree:
+                    case Static.flowStatus.agree:
                         color ="green"
                         break;
-                    case curUtil.myStatic.flowStatus.reject:
+                    case Static.flowStatus.reject:
                         color ="red"
                         break;
-                    case curUtil.myStatic.flowStatus.awaitAudit:
+                    case Static.flowStatus.awaitAudit:
                         color ="blue"
                         break;
-                    case curUtil.myStatic.flowStatus.awaitSubmit:
+                    case Static.flowStatus.awaitSubmit:
                         color ="gray"
                         break;
                     default:
@@ -113,7 +114,7 @@ export default (self)=>{
                     });
                 }
 
-                if(record.flowStatus == curUtil.myStatic.flowStatus.reject){
+                if(record.flowStatus == Static.flowStatus.reject){
                     return <div onClick={()=>{info(record.backCause)}} className={style.alertText}>退回原因</div>
                 }
                 return <div></div>

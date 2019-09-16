@@ -5,6 +5,7 @@ import license_view from './mock/UserCentre/license_view';
 import license_edit from './mock/UserCentre/license_edit';
 import dictionary from './mock/UserCentre/dict';
 import userInfo from './mock/UserCentre/useinfo';
+import uploadFile from './mock/UserCentre/uploadFile';
 
 const api = {
     Login: '/rest/bs/auth/login',
@@ -13,10 +14,11 @@ const api = {
     license_view:"/rest/bs/auth/license_view",
     license_edit:"/rest/bs/auth/license_edit",
     Dictionary: '/rest/bs/auth/dict_type',
-    UserInfo: '/KFHL/user_info'
+    UserInfo: '/KFHL/user_info',
+    UploadFile: '/KFHL/inHospApply/upload'
 };
 
 export default {
     api:api,
-    mock:[login,logout,userModule,license_view,license_edit,dictionary,userInfo]
+    mock:[login,logout,userModule,license_view,license_edit,dictionary,userInfo,uploadFile]
 }

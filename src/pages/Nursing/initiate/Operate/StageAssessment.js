@@ -41,13 +41,16 @@ class StageAssessment extends Component {
             record.doctorSignDate = KFHLService.currentDay();
             this.setPageTempObj({canEdit: true,record:record});
         }else{
-            if ((record.flowStatus == curUtil.myStatic.flowStatus.agree || record.flowStatus == curUtil.myStatic.flowStatus.awaitAudit)) {
+            let recordVal={};
+            let setStoreVal={};
+            if ((record.flowStatus == Static.flowStatus.agree || record.flowStatus == Static.flowStatus.awaitAudit)) {
                 //已通过 或 待审核 不可做任何操作
-                this.setPageTempObj({canEdit: false});
+                setStoreVal={canEdit: false};
             }else{
-                this.props.common.getInfo(this,record.inHospTableId,{doctorSignDate:KFHLService.currentDay()});
-                this.setPageTempObj({canEdit: true});
+                setStoreVal={canEdit: true};
+                recordVal={doctorSignDate:KFHLService.currentDay()};
             }
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,recordVal,setStoreVal},this.setPageTempObj);
         }
     }
     handleSubmit(isSubmit){
@@ -57,18 +60,23 @@ class StageAssessment extends Component {
         // console.log("record",this.props.state.pageTempObj.record)
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                let title = "是否保存？"
-                if(isSubmit){
-                    title = `【${nursingUtils.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${nursingUtils.myStatic.auditAgree.inHospDocter[1]}】`
+                let handleOperate =()=>{
+                    this.props.stageAssessment.handleOperate(record,()=>{
+                        KFHLService.goBackUrl(this,this.backUrl);
+                    })
                 }
-                Global.showConfirm({title,
-                    onConfirm:()=> {
-                        // let val = {...this.props.state.fromObj.record,...values}
-                        this.props.stageAssessment.handleOperate(record,()=>{
-                            this.goBack();
-                        })
-                    }
-                });
+
+                if(isSubmit){
+                    let title = `【${nursingUtils.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${nursingUtils.myStatic.auditAgree.inHospDocter[1]}】`;
+                    Global.showConfirm({title,
+                        onConfirm:()=> {
+                            handleOperate();
+                        }
+                    });
+                }else{
+                    handleOperate();
+                }
+
             }else{
                 message.error("请检查必选项！");
             }
@@ -102,7 +110,7 @@ class StageAssessment extends Component {
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请" secondUrl={this.backUrl}/>
+                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请"  secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>

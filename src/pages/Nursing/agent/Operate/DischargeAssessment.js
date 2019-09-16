@@ -47,12 +47,15 @@ class DischargeAssessment extends Component {
             if ((record.flowStatus == nursingUtils.myStatic.flowStatus.agree || record.flowStatus == nursingUtils.myStatic.flowStatus.awaitAudit)) {
                 //已通过 或 待审核 不可做任何操作
                 this.setPageTempObj({canEdit: false});
+                this.props.common.getInfo(this,{inHospTableId:record.inHospTableId},this.setPageTempObj);
             }else{
                 switch (this.user.js_lx){
                     case Static.currentRole.medicalInstitution:
-                        this.props.common.getInfo(this,record.inHospTableId,{hospSignDate: Static.currentDay()});
+                        this.props.common.getInfo(this,{inHospTableId:record.inHospTableId, recordVal:{hospSignDate:KFHLService.currentDay()}},this.setPageTempObj);
+                        break;
                     case Static.currentRole.socialInsurance:
-                        this.props.common.getInfo(this,record.inHospTableId,{sicSignDate: Static.currentDay()});
+                        this.props.common.getInfo(this,{inHospTableId:record.inHospTableId, recordVal:{sicSignDate:KFHLService.currentDay()}},this.setPageTempObj);
+                        break;
                 }
                 this.setPageTempObj({canEdit: true});
             }
@@ -63,22 +66,25 @@ class DischargeAssessment extends Component {
         //是否提交 否则保存
         // if(!this.props.state.btnRequest) return
         let {record} = this.props.state.pageTempObjDischarge;
-        record.type = '0';//0 = 入院，1 = 出院
         // console.log("record",this.props.state.pageTempObjDischarge.record)
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                let title = "是否保存？"
-                if(isSubmit){
-                    title = `【${nursingUtils.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${nursingUtils.myStatic.auditAgree.inHospDocter[1]}】`
+
+                let handleOperate =()=>{
+                    this.props.dischargeAssessment.handleOperate(record,()=>{
+                        KFHLService.goBackUrl(this,this.backUrl);
+                    })
                 }
-                Global.showConfirm({title,
-                    onConfirm:()=> {
-                        // let val = {...this.props.state.fromObj.record,...values}
-                        this.props.dischargeAssessment.handleOperate(record,()=>{
-                            this.goBack();
-                        })
-                    }
-                });
+                if(isSubmit){
+                    let title = `【${nursingUtils.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${nursingUtils.myStatic.auditAgree.inHospDocter[1]}】`;
+                    Global.showConfirm({title,
+                        onConfirm:()=> {
+                            handleOperate();
+                        }
+                    });
+                }else{
+                    handleOperate();
+                }
             }else{
                 message.error("请检查必选项！");
             }
@@ -91,16 +97,16 @@ class DischargeAssessment extends Component {
         // 表单变更立即触发的事件
         let {record ={},sumScore} = this.props.state.pageTempObjDischarge;
         record[field] = val;
+        /*//平衡量表总分数
         let isCheckChange = nursingUtils.myStatic.checkTitle.find(res=>res.name == field);
         let _sumScore = 0;
-        //平衡量表总分数
         if(isCheckChange){
             nursingUtils.myStatic.checkTitle.map(res=>{
                 let tempScore = record[res.name] ? Number(record[res.name]) : 0 ;
                 _sumScore += tempScore;
             })
         }
-        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});
+        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});*/         this.setPageTempObj({record});
     }
     clickDownLoad(url){
         window.location.href=url;
@@ -145,12 +151,12 @@ class DischargeAssessment extends Component {
         const {record={},outHopsFiles,pharmacyFiles,canEdit} = this.props.state.pageTempObjDischarge;
         const { getFieldDecorator } = this.props.form;
         const { removeOutHopsFile,removePharmacyFile,setOutHopsFile,setPharmacyFile } = self.props.dischargeAssessment;
-        const outHopsFileDataSource = (outHopsFiles && outHopsFiles.length>0 ? outHopsFiles : nursingUtils.myStatic.defaultUploadInfo);
-        const pharmacyFileDataSource = (pharmacyFiles && pharmacyFiles.length>0 ? pharmacyFiles : nursingUtils.myStatic.defaultUploadInfo);
+        const outHopsFileDataSource = (outHopsFiles && outHopsFiles.length>0 ? outHopsFiles : Static.defaultUploadInfo);
+        const pharmacyFileDataSource = (pharmacyFiles && pharmacyFiles.length>0 ? pharmacyFiles : Static.defaultUploadInfo);
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请" secondUrl={this.backUrl}/>
+                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请"  secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>

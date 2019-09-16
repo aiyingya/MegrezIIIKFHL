@@ -8,6 +8,8 @@ import UploadFile from '@components/UploadFile/UploadFile';
 import style from '../../../../../components/KFHL/common.less'
 import columnsUpload from '../../../../../components/KFHL/Columns/columnsUpload'
 import Sign from '@components/KFHL/Sign/Sign';
+import Static from "@components/KFHL/Utils/Static";
+import KFHLService from "@/components/KFHL/Utils/Service";
 
 class InHospApplication  extends Component {
     constructor(props) {
@@ -18,7 +20,7 @@ class InHospApplication  extends Component {
         let {self,isDocter,canEdit,getFieldDecorator,isHidePrint,uploadApplyFileDataSource,removeApplayFile,setApplyFile} = this.props;
         let {record={},checkedOutsideList,indeterminate,checkedGroupList,checkAll} = self.props.state.pageTempObj;
         /*const { removeApplayFile,setApplyFile } = self.props.applicationForAdmission;
-        const uploadApplyFileDataSource = (uploadApplyFiles && uploadApplyFiles.length>0 ? uploadApplyFiles : curUtil.myStatic.defaultUploadInfo);*/
+        const uploadApplyFileDataSource = (uploadApplyFiles && uploadApplyFiles.length>0 ? uploadApplyFiles : Static.defaultUploadInfo);*/
         return (
             <div className={isHidePrint ?  style.tabSelf : style.tabSelf +' '+style.showPrint}>
                     <Descriptions title="无锡市康复医院2019年05月张三康复入院申请表" column={2} bordered
@@ -29,7 +31,7 @@ class InHospApplication  extends Component {
                                 {
                                     (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('personName', {
-                                                initialValue: record.personName,...curUtil.myStatic.rulesConfig.rules
+                                                initialValue: record.personName,...Static.rulesConfig.required
                                             })(
                                                 <Input
                                                     placeholder="请输入"
@@ -45,16 +47,15 @@ class InHospApplication  extends Component {
                                 {
                                     (isHidePrint && canEdit && isDocter) ?   <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('sex', {
-                                                initialValue: (record.sex && record.sex=="女") ? "1":"0"
+                                                initialValue: record.sex ? record.sex : Static.myEnum.sex.man,...Static.rulesConfig.required
                                             })(
 
                                                 <Select onChange={(event)=> {self.handleChange(event, "sex")}}>
-                                                    <Option value="0">男</Option>
-                                                    <Option value="1">女</Option>
+                                                    {Static.myDict.sex.map(res=><Option value={res.value}>{res.name}</Option>)}
                                                 </Select>
                                             )}
                                         </Form.Item>:
-                                        <Fragment>{record.sex}</Fragment>
+                                        <Fragment>{KFHLService.getSexName(record.sex)}</Fragment>
                                 }
                             </Fragment>
 
@@ -64,7 +65,7 @@ class InHospApplication  extends Component {
                                 {
                                     (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('age', {
-                                                initialValue: record.age,...curUtil.myStatic.rulesConfig
+                                                initialValue: record.age,...Static.rulesConfig.age
                                             })(
                                                 <Input
                                                     placeholder="请输入"
@@ -80,7 +81,7 @@ class InHospApplication  extends Component {
                                 {
                                     (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('diagnoseDept', {
-                                                initialValue: record.diagnoseDept,...curUtil.myStatic.rulesConfig
+                                                initialValue: record.diagnoseDept,...Static.rulesConfig.required
                                             })(
                                                 <Input
                                                     placeholder="请输入"
@@ -96,7 +97,7 @@ class InHospApplication  extends Component {
                                 {
                                     (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('illnessName', {
-                                                initialValue: record.illnessName,...curUtil.myStatic.rulesConfig
+                                                initialValue: record.illnessName,...Static.rulesConfig.required
                                             })(
                                                 <Input
                                                     placeholder="请输入"
@@ -112,7 +113,7 @@ class InHospApplication  extends Component {
                                 {
                                     (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('personId', {
-                                                initialValue: record.personId,...curUtil.myStatic.rulesConfig
+                                                initialValue: record.personId,...Static.rulesConfig.required
                                             })(
                                                 <Input
                                                     placeholder="请输入"
@@ -123,12 +124,12 @@ class InHospApplication  extends Component {
                                 }
                             </Fragment>
                         </Descriptions.Item>
-                        <Descriptions.Item label="身份证号">
+                        <Descriptions.Item label="证件号码">
                             <Fragment>
                                 {
                                     (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('identityCard', {
-                                                initialValue: record.identityCard,...curUtil.myStatic.rulesConfig
+                                                initialValue: record.identityCard,...Static.rulesConfig.identityCard
                                             })(
                                                 <Input
                                                     placeholder="请输入"
@@ -191,7 +192,7 @@ class InHospApplication  extends Component {
                                                   onChange={(event)=> {self.handleChange(event.target.value, "checkup")}}></TextArea>
                                     )}
                                 </Form.Item>:
-                                <div className={style.textArea}>{record.clinicalMani}</div>
+                                <div className={style.textArea}>{record.checkup}</div>
                         }
                     </div>
                     <div className={style.rowStyle}>
@@ -205,7 +206,7 @@ class InHospApplication  extends Component {
                                                   onChange={(event)=> {self.handleChange(event.target.value, "labCheckup")}}></TextArea>
                                     )}
                                 </Form.Item>:
-                                <div className={style.textArea}>{record.clinicalMani}</div>
+                                <div className={style.textArea}>{record.labCheckup}</div>
                         }
                     </div>
                     <Descriptions column={2} bordered className={style.descriptions}
@@ -214,18 +215,18 @@ class InHospApplication  extends Component {
                             <Fragment>
                                 {
                                     (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
-                                            {getFieldDecorator('initPerson', {
-                                                initialValue: record.initPerson
+                                            {getFieldDecorator('doctorSign', {
+                                                initialValue: record.doctorSign
                                             })(
-                                                <Input onChange={(event)=> {self.handleChange(event.target.value, "initPerson")}}/>
+                                                <Input onChange={(event)=> {self.handleChange(event.target.value, "doctorSign")}}/>
                                             )}
                                         </Form.Item>:
-                                        <Fragment>{record.initPerson}</Fragment>
+                                        <Fragment>{record.doctorSign}</Fragment>
                                 }
                             </Fragment>
                         </Descriptions.Item>
                         <Descriptions.Item label="日期">
-                            <Fragment>{record.sicSignDate}</Fragment>
+                            <Fragment>{record.doctorSignDate}</Fragment>
                         </Descriptions.Item>
                     </Descriptions>
                     <Sign isHidePrint={isHidePrint} record={record} handleChange={self.handleChange}

@@ -68,27 +68,27 @@
       "children": [
         {
           "href": "/rehabilitation/initiate",
-          "title": "发起流程",
+          "title": "康复发起流程",
           "treeid": "84",
-          "context": "发起流程",
+          "context": "康复发起流程",
           "icon": "fa fa-signal",
           "page_code": "basicService_module",
           "dropdown": false
         },
         {
           "href": "/rehabilitation/agent",
-          "title": "流程代办",
+          "title": "康复流程代办",
           "treeid": "40",
-          "context": "流程代办",
+          "context": "康复流程代办",
           "icon": "fa fa-eercast",
           "page_code": "basicService_organization",
           "dropdown": false
         },
         {
           "href": "/rehabilitation/search",
-          "title": "查询",
+          "title": "康复查询",
           "treeid": "126",
-          "context": "查询",
+          "context": "康复查询",
           "icon": "fa-user-circle",
           "page_code": "null",
           "dropdown": false

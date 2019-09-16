@@ -10,6 +10,8 @@ import {Global} from "winning-megreziii-utils";
 import UploadFile from '@components/UploadFile/UploadFile';
 import columnsUpload from "@/components/KFHL/Columns/columnsUpload";
 import Static from "@components/KFHL/Utils/Static";
+import moment from "moment/moment";
+import KFHLService from "@/components/KFHL/Utils/Service";
 
 class DischargeAssessment  extends Component {
     constructor(props) {
@@ -35,7 +37,7 @@ class DischargeAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('personName', {
-                                            initialValue: record.personName,...nursingUtils.myStatic.rulesConfig.rules
+                                            initialValue: record.personName,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -51,15 +53,14 @@ class DischargeAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('sex', {
-                                            initialValue: (record.sex && record.sex=="女") ? "1":"0",...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.sex ? record.sex : Static.myEnum.sex.man,...Static.rulesConfig
                                         })(
                                             <Select onChange={(event)=> {handleChange(event, "sex")}}>
-                                                <Option value="0">男</Option>
-                                                <Option value="1">女</Option>
+                                                {Static.myDict.sex.map(res=><Option value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.personName}</Fragment>
+                                    <Fragment>{KFHLService.getSexName(record.sex)}</Fragment>
                             }
                         </Fragment>
                     </Descriptions.Item>
@@ -68,7 +69,7 @@ class DischargeAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('age', {
-                                            initialValue: record.age,...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.age,...Static.rulesConfig.age
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -84,7 +85,7 @@ class DischargeAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('identityCard', {
-                                            initialValue: record.identityCard,...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.identityCard,...Static.rulesConfig.identityCard
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -100,7 +101,7 @@ class DischargeAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('bedNumber', {
-                                            initialValue: record.bedNumber,...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.bedNumber,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -116,7 +117,7 @@ class DischargeAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('lesion', {
-                                            initialValue: record.lesion,...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.lesion,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -132,7 +133,7 @@ class DischargeAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('inHospNumber', {
-                                            initialValue: record.inHospNumber,...nursingUtils.myStatic.rulesConfig
+                                            initialValue: record.inHospNumber,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -148,7 +149,7 @@ class DischargeAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('inHospDate', {
-                                            initialValue: record.inHospDate,rules: [{required: false, message: '请输入'}]
+                                            initialValue: record.inHospDate && moment(record.inHospDate),rules: [{required: false, message: '请输入'}]
                                         })(
                                             <DatePicker  format={nursingUtils.myStatic.dateFormat}
                                                          onChange={(date, dateString)=>  {handleChange(dateString, "inHospDate")}}/>

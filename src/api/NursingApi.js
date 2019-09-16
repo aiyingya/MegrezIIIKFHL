@@ -9,6 +9,7 @@ import agent_list from './mock/Nursing/Agent/initiate_list';
 import search_tree from './mock/Nursing/Search/search_tree';
 import look from  './mock/success';
 import file_upload from './mock/success';
+import excel_export from './mock/success';
 
 const api = {
     // 发起流程 - 列表
@@ -31,10 +32,12 @@ const api = {
     look: '/KFHL/nurse/queryBut',
     // 文件上传
     file_upload: '/KFHL/inHospApply/upload',
+    // Excel导出
+    excel_export: '/KFHL/nurse/export',
 };
 // 退回？？？
 
 export default Loader.batchExport(
     api,
-    [initiate_list,in_hosp_assess,stage_assessment,out_hosp_record,nurse_month,person_infos,agent_list,search_tree,look,file_upload]
+    [initiate_list,in_hosp_assess,stage_assessment,out_hosp_record,nurse_month,person_infos,agent_list,search_tree,look,file_upload,excel_export]
 );

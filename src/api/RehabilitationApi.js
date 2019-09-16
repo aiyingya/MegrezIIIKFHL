@@ -8,6 +8,7 @@ import file_upload from './mock/success';
 import agent_list from './mock/Rehabilitation/Agent/initiate_list';
 import search_tree from './mock/Rehabilitation/Search/search_tree';
 import reject from  './mock/success';
+import excel_export from './mock/success';
 
 const api = {
     // 发起流程 - 列表
@@ -16,8 +17,8 @@ const api = {
     in_hosp_apply: '/KFHL/inHospApply/add',
     // 发起流程 - 康复出院评估 - 提交/保存
     out_hosp_apply: '/KFHL/outHospApply/assess',
-    // 发起流程/待办/查询 - 入院/出院 - 查看
-    look_hosp_apply: '/KFHL/recoveryFlow/1queryBut',
+    // 发起流程/待办/查询 - 入院/出院 - 查看 //TODO 注意developde的时候这里要改名字
+    look_hosp_apply: '/KFHL/recoveryFlow/queryBut',
     // 住院人员查询
     person_infos: '/KFHL/inHospApply/personInfo',
     // 文件上传
@@ -28,9 +29,11 @@ const api = {
     search_tree: '/KFHL/recovery/query',
     // 退回
     reject: '/KFHL/flow/back',
+    // Excel导出
+    excel_export: '/KFHL/recovery/export',
 };
 
 export default Loader.batchExport(
     api,
-    [initiate_list,in_hosp_apply,out_hosp_apply,look_hosp_apply,person_infos,file_upload,agent_list,search_tree,reject]
+    [initiate_list,in_hosp_apply,out_hosp_apply,look_hosp_apply,person_infos,file_upload,agent_list,search_tree,reject,excel_export]
 );

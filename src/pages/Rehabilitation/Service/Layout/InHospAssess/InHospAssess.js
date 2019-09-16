@@ -6,6 +6,8 @@ import curUtil from '../../Util'
 import style from '../../../../../components/KFHL/common.less'
 import Assess from '../Assess/Assess';
 import Static from "@components/KFHL/Utils/Static";
+import moment from "moment/moment";
+import KFHLService from "@/components/KFHL/Utils/Service";
 
 class InHospAssess  extends Component {
     constructor(props) {
@@ -41,16 +43,15 @@ class InHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?   <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('sex', {
-                                            initialValue: (record.sex && record.sex=="女") ? "1":"0"
+                                            initialValue: record.sex ? record.sex : Static.myEnum.sex.man,...Static.rulesConfig.required
                                         })(
 
                                             <Select onChange={(event)=> {self.handleChange(event, "sex")}}>
-                                                <Option value="0">男</Option>
-                                                <Option value="1">女</Option>
+                                                {Static.myDict.sex.map(res=><Option value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.sex}</Fragment>
+                                    <Fragment>{KFHLService.getSexName(record.sex)}</Fragment>
                             }
                         </Fragment>
 
@@ -60,7 +61,7 @@ class InHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('age', {
-                                            initialValue: record.age,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.age,...Static.rulesConfig.age
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -76,7 +77,7 @@ class InHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('identityCard', {
-                                            initialValue: record.identityCard,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.identityCard,...Static.rulesConfig.identityCard
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -92,7 +93,7 @@ class InHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('bedNumber', {
-                                            initialValue: record.bedNumber,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.bedNumber,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -108,7 +109,7 @@ class InHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('lesion', {
-                                            initialValue: record.lesion,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.lesion,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -124,7 +125,7 @@ class InHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('inHospNumber', {
-                                            initialValue: record.inHospNumber,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.inHospNumber,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
@@ -140,9 +141,9 @@ class InHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('inHospDate', {
-                                            initialValue: record.inHospDate,rules: [{required: false, message: '请输入'}]
+                                            initialValue: record.inHospDate && moment(record.inHospDate),rules: [{required: false, message: '请输入'}]
                                         })(
-                                            <DatePicker  format={curUtil.myStatic.dateFormat}
+                                            <DatePicker  format={Static.dateFormat}
                                                          onChange={(date, dateString)=>  {self.handleChange(dateString, "inHospDate")}}/>
                                         )}
                                     </Form.Item>:
@@ -155,7 +156,7 @@ class InHospAssess  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('inHospDiagnose', {
-                                            initialValue: record.inHospDiagnose,...curUtil.myStatic.rulesConfig
+                                            initialValue: record.inHospDiagnose,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"

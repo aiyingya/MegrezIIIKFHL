@@ -3,6 +3,7 @@ import {Global,Uc} from 'winning-megreziii-utils';
 import {Badge} from 'antd';
 import style from './common.less';
 import curUtil from '../Service/Util';
+import Static from "@components/KFHL/Utils/Static";
 
 export default (self)=>{
     const {state}=self.props;
@@ -50,16 +51,16 @@ export default (self)=>{
                 let color = '';
                 console.log(objct.value,_flowStatus)
                 switch (objct.value){
-                    case curUtil.myStatic.flowStatus.agree:
+                    case Static.flowStatus.agree:
                         color ="green"
                         break;
-                    case curUtil.myStatic.flowStatus.reject:
+                    case Static.flowStatus.reject:
                         color ="red"
                         break;
-                    case curUtil.myStatic.flowStatus.awaitAudit:
+                    case Static.flowStatus.awaitAudit:
                         color ="blue"
                         break;
-                    case curUtil.myStatic.flowStatus.awaitSubmit:
+                    case Static.flowStatus.awaitSubmit:
                         color ="gray"
                         break;
                     default:

@@ -6,7 +6,8 @@ let initialState = {
     typeDatas: [],
     datas: [],
     pagination: {
-        current: 10,
+        current: 1,
+        pageSize:10,
         showSizeChanger: true,
         showQuickJumper: true,
         showTotal: (total, range) => `总共${total}条 显示${range[0]}-${range[1]}条`,
@@ -24,6 +25,8 @@ let initialState = {
     tempSearchObj:{},
     // 查看康复入院申请
     pageTempObj:{
+        // 显示哪个tab页
+        tabValue:'0',
         // 显示哪些数据
         record:{},
         // 诊断依据的上端依据['0', "1",'2', "3", "4"]
@@ -37,7 +40,9 @@ let initialState = {
         // 是否显示退回Modal
         showRejectModal:false,
         // 退回节点的名称集合
-        rejectTxts:[]
+        rejectTxts:[],
+        // 在院人员模糊用户信息列表
+        personUserList:[],
     },
     // 康复出院申请
     pageTempObjCY:{
@@ -47,8 +52,6 @@ let initialState = {
         record:{},
         // 在院人员模糊用户信息列表
         personUserList:[],
-        // 平很量表中的总分数
-        sumScore:"",
         // 上传的评估文件
         uploadBergFiles:[],
         // 是否显示退回Modal

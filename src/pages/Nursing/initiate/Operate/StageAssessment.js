@@ -11,11 +11,7 @@ import nursingUtils from '../../Service/Util';
 import Step from '@components/Step/Step';
 import {store, mapStateToProps, mapDispatchToProps} from '../Redux/Store';
 import style from '../common.less'
-import InHospApplication from '../../../Rehabilitation/Service/Layout/InHospApplication/InHospApplication';
-import InHospAssess from '../../../Rehabilitation/Service/Layout/InHospAssess/InHospAssess';
-import InHospBerg from '../../../Rehabilitation/Service/Layout/InHospBerg/InHospBerg';
 import StageAssessmentLayout from '../../Service/Layout/StageAssessment';
-import curUtil from "@/pages/Nursing/Service/Util";
 import Static from "@components/KFHL/Utils/Static";
 import KFHLService from "@components/KFHL/Utils/Service";
 class StageAssessment extends Component {
@@ -31,9 +27,12 @@ class StageAssessment extends Component {
         this.print = this.print.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.setPageTempObj = this.setPageTempObj.bind(this);
+        this.handleAutoSearch = this.handleAutoSearch.bind(this);
     }
-    componentDidMount() {
-        new Scrollbar(this.inside.current).show();
+    componentWillMount(){
+        // 页面回退显示提交的数据，刷新页面
+        let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
+        if(isFrozenPaging) return;
         let query = this.props.location.query ||{};
         const record = query.record ? query.record :{}
         //只有医护人员访问的发起流程页面
@@ -50,24 +49,30 @@ class StageAssessment extends Component {
                 setStoreVal={canEdit: true};
                 recordVal={doctorSignDate:KFHLService.currentDay()};
             }
-            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,recordVal,setStoreVal},this.setPageTempObj);
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.flowType.StageAssessment,recordVal,setStoreVal},this.setPageTempObj);
         }
     }
+    componentDidMount() {
+        new Scrollbar(this.inside.current).show();
+
+    }
+    handleAutoSearch (personName) {
+        this.props.common.getUser(this,personName,this.setPageTempObj);
+    };
     handleSubmit(isSubmit){
         //是否提交 否则保存
         // if(!this.props.state.btnRequest) return
         let {record} = this.props.state.pageTempObj;
-        // console.log("record",this.props.state.pageTempObj.record)
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 let handleOperate =()=>{
-                    this.props.stageAssessment.handleOperate(record,()=>{
+                    this.props.stageAssessment.handleOperate(record,isSubmit,()=>{
                         KFHLService.goBackUrl(this,this.backUrl);
                     })
                 }
 
                 if(isSubmit){
-                    let title = `【${nursingUtils.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${nursingUtils.myStatic.auditAgree.inHospDocter[1]}】`;
+                    let title = nursingUtils.getAuditAgreeTxt(this.user.js_lx,true);
                     Global.showConfirm({title,
                         onConfirm:()=> {
                             handleOperate();
@@ -122,7 +127,8 @@ class StageAssessment extends Component {
                         </div>
                         <div className={style.buttons}>
                             <ReactToPrint trigger={() => <Button id="print-application" style={{display:'none'}}>打印</Button>} content={() => this.refs}/>
-                            <BasicGroupComponent {...KFHLService.getButton(this,{canEdit:canEdit,print:this.print,handleSubmit:this.handleSubmit})}/>
+                            <BasicGroupComponent {...KFHLService.getButton(this,{canEdit:canEdit,print:this.print,handleSubmit:this.handleSubmit,showReject:this.handleReject})}
+                            />
                         </div>
                     </Form>
                 </div>

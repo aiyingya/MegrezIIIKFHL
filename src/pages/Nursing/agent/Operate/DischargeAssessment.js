@@ -3,20 +3,16 @@
 import React, {Component, Fragment} from 'react';
 import {message} from "antd/lib/index";
 import { Input, Button, Divider, Icon, Checkbox, Radio, Descriptions, Table, Select,Form,DatePicker} from 'antd';
-const CheckboxGroup = Checkbox.Group;
-const {TextArea} = Input;
 import ReactToPrint from 'react-to-print'
 import {Global, ReduxWarpper, BasicGroupComponent, Scrollbar, BreadcrumbCustom} from 'winning-megreziii-utils';
 import nursingUtils from '../../Service/Util';
 import Step from '@components/Step/Step';
 import {store, mapStateToProps, mapDispatchToProps} from '../Redux/Store';
 import style from '../common.less'
-import InHospApplication from '../../../Rehabilitation/Service/Layout/InHospApplication/InHospApplication';
-import InHospAssess from '../../../Rehabilitation/Service/Layout/InHospAssess/InHospAssess';
-import InHospBerg from '../../../Rehabilitation/Service/Layout/InHospBerg/InHospBerg';
 import DischargeAssessmentLayout from '../../Service/Layout/DischargeAssessment';
 import Static from "@components/KFHL/Utils/Static";
 import KFHLService from "@components/KFHL/Utils/Service";
+import RejectModal from './RejectModal';
 
 class DischargeAssessment extends Component {
     constructor(props) {
@@ -31,60 +27,66 @@ class DischargeAssessment extends Component {
         this.print = this.print.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.setPageTempObj = this.setPageTempObj.bind(this);
-        this.setApplyFile = this.setApplyFile.bind(this);
-        this.setBergFile = this.setBergFile.bind(this);
+        this.handleReject = this.handleReject.bind(this);
+        this.hideReject = this.hideReject.bind(this);
+        this.showReject = this.showReject.bind(this);
     }
 
-    componentDidMount() {
-        new Scrollbar(this.inside.current).show();
-        if(Global.isFrozen()) return;
+    componentWillMount(){
+        // 页面回退显示提交的数据，刷新页面
+        let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
+        if(isFrozenPaging) return;
         //机构和社保人员访问的待办流程页面
         let query = this.props.location.query ||{};
         const record = query.record ? query.record :{};
 
         if(!record.inHospTableId){console.error("页面必须有数据")}
         else{
+            let recordVal={};
+            let setStoreVal={};
             if ((record.flowStatus == nursingUtils.myStatic.flowStatus.agree || record.flowStatus == nursingUtils.myStatic.flowStatus.awaitAudit)) {
                 //已通过 或 待审核 不可做任何操作
-                this.setPageTempObj({canEdit: false});
+                setStoreVal={canEdit: false};
                 this.props.common.getInfo(this,{inHospTableId:record.inHospTableId},this.setPageTempObj);
             }else{
+                setStoreVal={canEdit: true};
                 switch (this.user.js_lx){
                     case Static.currentRole.medicalInstitution:
-                        this.props.common.getInfo(this,{inHospTableId:record.inHospTableId, recordVal:{hospSignDate:KFHLService.currentDay()}},this.setPageTempObj);
+                        recordVal={hospSignDate:KFHLService.currentDay()};
                         break;
                     case Static.currentRole.socialInsurance:
-                        this.props.common.getInfo(this,{inHospTableId:record.inHospTableId, recordVal:{sicSignDate:KFHLService.currentDay()}},this.setPageTempObj);
+                        recordVal={sicSignDate:KFHLService.currentDay()};
                         break;
                 }
-                this.setPageTempObj({canEdit: true});
             }
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.flowType.DischargeAssessment, recordVal,setStoreVal},this.setPageTempObj);
+
         }
     }
 
+    componentDidMount() {
+        new Scrollbar(this.inside.current).show();
+
+    }
     handleSubmit(isSubmit){
-        //是否提交 否则保存
+        // 只能提交不能保存
         // if(!this.props.state.btnRequest) return
         let {record} = this.props.state.pageTempObjDischarge;
         // console.log("record",this.props.state.pageTempObjDischarge.record)
         this.props.form.validateFields((err, values) => {
             if (!err) {
-
-                let handleOperate =()=>{
-                    this.props.dischargeAssessment.handleOperate(record,()=>{
+                const handleOperate =()=>{
+                    this.props.common.handleCommit({...record,commitType:Static.commitType.hlDischargeAssessment},()=>{
                         KFHLService.goBackUrl(this,this.backUrl);
                     })
                 }
-                if(isSubmit){
-                    let title = `【${nursingUtils.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${nursingUtils.myStatic.auditAgree.inHospDocter[1]}】`;
-                    Global.showConfirm({title,
-                        onConfirm:()=> {
-                            handleOperate();
-                        }
-                    });
-                }else{
-                    handleOperate();
-                }
+                let title = nursingUtils.getAuditAgreeTxt(this.user.js_lx,true);
+                Global.showConfirm({title,
+                    onConfirm:()=> {
+                        handleOperate();
+                    }
+                });
+
             }else{
                 message.error("请检查必选项！");
             }
@@ -95,22 +97,11 @@ class DischargeAssessment extends Component {
     }
     handleChange(val, field) {
         // 表单变更立即触发的事件
-        let {record ={},sumScore} = this.props.state.pageTempObjDischarge;
+        let {record ={}} = this.props.state.pageTempObjDischarge;
         record[field] = val;
-        /*//平衡量表总分数
-        let isCheckChange = nursingUtils.myStatic.checkTitle.find(res=>res.name == field);
-        let _sumScore = 0;
-        if(isCheckChange){
-            nursingUtils.myStatic.checkTitle.map(res=>{
-                let tempScore = record[res.name] ? Number(record[res.name]) : 0 ;
-                _sumScore += tempScore;
-            })
-        }
-        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});*/         this.setPageTempObj({record});
+        this.setPageTempObj({record});
     }
-    clickDownLoad(url){
-        window.location.href=url;
-    }
+
     print() {
         // 打印
         Global.showLoading();
@@ -121,34 +112,23 @@ class DischargeAssessment extends Component {
             this.setState({isHidePrint: true});
         }, 1000);
     }
-    setApplyFile(file={}){
-        let count = Math.floor(Math.random() * (1000 - 1) + 1);
-        this.props.dischargeAssessment.setApplyFile(this,{
-            fileName: file.name,
-            fileSize: (file.size / 1024) + "KB" ,
-            uploadDate:KFHLService.currentDay(),
-            uploadUser: this.user.yh_mc || 'admin',
-            fileId:count,
-            fileUrl:'https://github.com/vuejs/vuepress/archive/master.zip'
-        });
+    handleReject(rejectContent){
+        let {record={}} = this.props.state.pageTempObj;
+        this.props.common.handleReject(this,{inHospTableId:record.inHospTableId,backCause:rejectContent,fun:()=>{
+                this.hideReject();
+            }});
     }
-    setBergFile(file={}){
-        let user =  Global.localStorage.get(Global.localStorage.key.userInfo) || {};
-        let count = Math.floor(Math.random() * (1000 - 1) + 1);
-        this.props.dischargeAssessment.setBergFile(this,{
-            fileName: file.name,
-            fileSize: (file.size / 1024) + "KB" ,
-            uploadDate: KFHLService.currentDay(),
-            uploadUser: this.user.yh_mc || 'admin',
-            fileId:count,
-            fileUrl:'https://github.com/vuejs/vuepress/archive/master.zip'
-        });
+    hideReject(){
+        this.setPageTempObj({showRejectModal: false});
     }
-
+    showReject(){
+        let rejectTxts = nursingUtils.getAuditRejectTxt(this.user.js_lx,false);
+        this.setPageTempObj({showRejectModal: true,rejectTxts});
+    }
     render() {
         const { isHidePrint } = this.state;
         const {dict} = this.props.state.staticStatus;
-        const {record={},outHopsFiles,pharmacyFiles,canEdit} = this.props.state.pageTempObjDischarge;
+        const {record={},outHopsFiles,pharmacyFiles,canEdit,showRejectModal,rejectTxts} = this.props.state.pageTempObjDischarge;
         const { getFieldDecorator } = this.props.form;
         const { removeOutHopsFile,removePharmacyFile,setOutHopsFile,setPharmacyFile } = self.props.dischargeAssessment;
         const outHopsFileDataSource = (outHopsFiles && outHopsFiles.length>0 ? outHopsFiles : Static.defaultUploadInfo);
@@ -167,15 +147,18 @@ class DischargeAssessment extends Component {
                                                  canEdit={canEdit} dict={dict}
                                                  outHopsFileDataSource ={outHopsFileDataSource}
                                                  pharmacyFileDataSource = {pharmacyFileDataSource}
-                                                 isDocter={false}
+                                                 isDocter={false} handleChange={this.handleChange}
+
                             />
                         </div>
                         <div className={style.buttons}>
                             <ReactToPrint trigger={() => <Button id="print-application" style={{display:'none'}}>打印</Button>} content={() => this.refs}/>
-                            <BasicGroupComponent {...KFHLService.getButton(this,{canEdit:canEdit,print:this.print,handleSubmit:this.handleSubmit})}/>
+                            <BasicGroupComponent {...KFHLService.getButton(this,{canEdit:canEdit,print:this.print,handleSubmit:this.handleSubmit,showReject:this.showReject})}/>
                         </div>
                     </Form>
                 </div>
+                {showRejectModal && <RejectModal isShow={showRejectModal} close={this.hideReject} rejectCallback={(context)=>{this.handleReject(context)}} confirmLoading={this.props.state.btnRequestLoading}
+                                                 rejectTxts={rejectTxts}/>}
             </div>
         );
     }

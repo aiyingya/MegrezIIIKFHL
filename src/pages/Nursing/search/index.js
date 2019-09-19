@@ -21,6 +21,7 @@ import api from "@/api/NursingApi";
 class User extends Component {
     constructor(props) {
         super(props);
+        this.state={};
         this.goLook = this.goLook.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -44,14 +45,17 @@ class User extends Component {
         }
     }
     componentWillMount(){
-        let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
+        // 切换临时页面也冰冻，不需要刷新页面
+        let isFrozenTabPaging =  Global.isFrozen();
+        // 页面回退显示提交的数据，刷新页面
+        let isFrozenPaging =  isFrozenTabPaging || (this.props.location.query ? this.props.location.query.frozenPaging : false);
         if (isFrozenPaging) {
-            // this.props.initiate.initTable(this,{isFrozenPaging});
+            !isFrozenTabPaging && this.props.initiate.initTable(this,{isFrozenPaging});
             this.props.search.initSearch(this.props.state.tempSearchObj);
         }else{
-            this.props.search.initSearch();
-            // this.props.initiate.initTable(this);
+            this.props.search.initSearch(false);
         }
+        this.setState({isFrozenValue:(isFrozenPaging)});
     }
 
     componentDidMount(){
@@ -105,7 +109,6 @@ class User extends Component {
     render() {
 
         const expandedRowRender1 = (record) => {
-            console.log(1,record.key)
             const columns = [
                 { title: 'Date', dataIndex: 'date', key: 'date', render: (text) => (
                         <span>
@@ -161,7 +164,7 @@ class User extends Component {
             <div className={`winning-body ${style.speTable}`} ref={this.inside}>
                 <div className='winning-content'>
                     {/*搜索条件*/}
-                    <BasicFormComponent forms={this.props.state.formItems} handleSearch={this.handleSearch} handleChange={this.handleChange}/>
+                    <BasicFormComponent forms={this.props.state.formItems} handleSearch={this.handleSearch} handleChange={this.handleChange} isFrozenValue={this.state.isFrozenValue}/>
                     <Divider />
                     <div className={'Table40 TableMain'}>
                         <BasicGroupComponent {...this.button}/>

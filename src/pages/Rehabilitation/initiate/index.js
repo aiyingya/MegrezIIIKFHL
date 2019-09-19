@@ -3,13 +3,13 @@ import React, {Component} from 'react';
 import { Table, Badge, Menu, Dropdown, Icon,Divider } from 'antd';
 import {Global,Utils,ReduxWarpper,BasicFormComponent, BasicGroupComponent,AuthComponent,Scrollbar} from 'winning-megreziii-utils';
 import {store, mapStateToProps, mapDispatchToProps} from './Redux/Store';
-import style from './common.less'
 import Columns from './columns';
 import curUtil from "@/pages/Rehabilitation/Service/Util";
 
 class Initiate extends Component {
     constructor(props) {
         super(props);
+        this.state={};
         this.goApplicationForAdmission = this.goApplicationForAdmission.bind(this);
         this.goDischargeAssessment = this.goDischargeAssessment.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
@@ -65,18 +65,23 @@ class Initiate extends Component {
         this.props.initiate.initTable(this,{value});
     }
 
-    handleChange(value){
-        this.props.initiate.setTempSearchObj(this,value);
+    handleChange(values){
+        //forms 是临时所有的数据
+        this.props.initiate.setTempSearchObj(this,values);
     }
     componentWillMount(){
-        let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
+        // 切换临时页面也冰冻，不需要刷新页面
+        let isFrozenTabPaging =  Global.isFrozen();
+        // 页面回退显示提交的数据，刷新页面
+        let isFrozenPaging =  isFrozenTabPaging || (this.props.location.query ? this.props.location.query.frozenPaging : false);
         if (isFrozenPaging) {
+            !isFrozenTabPaging && this.props.initiate.initTable(this,{isFrozenPaging:true});
             this.props.initiate.initSearch(this.props.state.tempSearchObj);
-            this.props.initiate.initTable(this,{isFrozenPaging});
         }else{
-            this.props.initiate.initSearch();
-            this.props.initiate.initTable(this);
+            // this.props.initiate.initTable(this);
+            this.props.initiate.initSearch(false);
         }
+        this.setState({isFrozenValue:(isFrozenPaging)});
     }
 
     componentDidMount(){
@@ -90,7 +95,7 @@ class Initiate extends Component {
             <div className={`winning-body`} ref={this.inside}>
                 <div className='winning-content'>
                     {/*搜索条件*/}
-                    <BasicFormComponent forms={this.props.state.formItems} handleSearch={this.handleSearch} handleChange={this.handleChange}/>
+                    <BasicFormComponent forms={this.props.state.formItems} handleSearch={this.handleSearch} handleChange={this.handleChange} isFrozenValue={this.state.isFrozenValue}/>
                     <Divider />
                     <div className={'Table40 TableMain'}>
                         <BasicGroupComponent {...this.button}/>

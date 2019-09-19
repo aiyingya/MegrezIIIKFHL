@@ -4,6 +4,7 @@ import {Badge} from 'antd';
 import style from './common.less';
 import curUtil from '../Service/Util';
 import Static from "@components/KFHL/Utils/Static";
+import moment from "moment";
 
 export default (self)=>{
     const {state}=self.props;
@@ -28,7 +29,6 @@ export default (self)=>{
             render: (texts, record) => {
                 let _node = state.staticStatus.node || [];
                 const objct = _node.find(res=>res.value == texts) || {};
-                console.log(objct.value,_node)
                 return <span>{objct.name}</span>
             }
         }, {
@@ -40,7 +40,10 @@ export default (self)=>{
         },
         {
             title: '审核日期',
-            dataIndex:'auditDate'
+            dataIndex:'auditDate',
+            render:(text, record, index) =>{
+                moment(text,"YYYY-MM-DD")
+            }
         },
         {
             title: '状态',

@@ -16,7 +16,6 @@ class RejectModal extends React.Component {
     }
     render() {
         let {close,rejectCallback,confirmLoading,rejectTxts,isShow} = this.props;
-        const txt = `${rejectTxts[0]}=>${rejectTxts[1]}`
         return (
             <Modal
                 visible={isShow}
@@ -28,7 +27,7 @@ class RejectModal extends React.Component {
             >
                 <div className={style.rejectModal}>
                     <div>退回节点：</div>
-                    <Input disabled={true} value={txt}/>
+                    <Input disabled={true} value={rejectTxts}/>
                     <br/>
                     <div>请填写退回原因：</div>
                     <TextArea rows={3}

@@ -1,12 +1,14 @@
 import {handleActions} from 'redux-actions';
 import types from "./ActionTypes";
+import Static from "@/components/KFHL/Utils/Static";
 
 let initialState = {
     loading: false,
     typeDatas: [],
     datas: [],
     pagination: {
-        current: 10,
+        current: 1,
+        pageSize:10,
         showSizeChanger: true,
         showQuickJumper: true,
         showTotal: (total, range) => `总共${total}条 显示${range[0]}-${range[1]}条`,
@@ -25,34 +27,29 @@ let initialState = {
     tempSearchObj:{},
     //
     pageTempObj:{
-        // 显示哪个tab页
-        tabValue:'0',
         // 显示哪些数据
         record:{},
-        // 诊断依据的上端依据['0','1', '2', '3', '4']
-        checkedOutsideList:[],
-        // 诊断依据的下端骨科组选择依据 ['6', '7','8', '9', '10']
-        checkedGroupList:[],
-        // 诊断依据的下端骨科组选择依据 全选设置,默认不全选
-        indeterminate:false,
-        // 诊断依据的下端骨科组选择依据 是否显示全选['5']
-        checkAll:false,
-        // 平很量表中的总分数
-        sumScore:"",
-        // 上传的申请文件
-        uploadApplyFiles:[],
-        // 上传的评估文件
-        uploadBergFiles:[],
+        // 上传的出院小结或死亡记录的文件
+        outHopsFiles:[],
+        // 上传的用药记录文件
+        pharmacyFiles:[],
         // 是否可以编辑页面
         canEdit:true,
-
+        // 在院人员模糊用户信息列表
+        personUserList:[],
     },
     //护理出院记录
     pageTempObjDischarge:{
+        // 显示哪些数据
+        record:{},
         // 上传的出院文件
         outHopsFiles:[],
         // 上传的用药文件
         pharmacyFiles:[],
+        // 是否可以编辑页面
+        canEdit:true,
+        // 在院人员模糊用户信息列表
+        personUserList:[],
     },
     // 护理阶段性评估
     pageTempObjStag:{
@@ -60,6 +57,10 @@ let initialState = {
         record:{},
         // 评估月份
         monthList:[],
+        // 是否可以编辑页面
+        canEdit:true,
+        // 在院人员模糊用户信息列表
+        personUserList:[],
     }
 };
 

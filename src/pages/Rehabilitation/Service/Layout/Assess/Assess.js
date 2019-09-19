@@ -4,6 +4,8 @@ import {Upload, Input, Button, Divider, Icon, Checkbox, Radio, Descriptions, Tab
 const {TextArea} = Input;
 import style from '../../../../../components/KFHL/common.less'
 import Sign from '@components/KFHL/Sign/Sign';
+import Static from "@/components/KFHL/Utils/Static";
+import moment from "moment";
 
 class Assess  extends Component {
     constructor(props) {
@@ -194,7 +196,7 @@ class Assess  extends Component {
                 <div className={style.rowStyle}>
                     康复科评估意见：<br/>
                     { (isHidePrint && canEdit && isDocter) ?
-                        <TextArea className={style.noneBorder} rows={5}
+                        <TextArea value={record.doctorRemark} className={style.noneBorder} rows={5}
                                   onChange={(event)=> {handleChange(event.target.value, "doctorRemark")}}></TextArea>:
                         <div className={style.textArea}>{record.doctorRemark}</div>
                     }
@@ -203,11 +205,18 @@ class Assess  extends Component {
                               size="middle">
                     <Descriptions.Item label="护理人员签字">
                         { (isHidePrint && canEdit && isDocter) ?
-                            <Input value={record.doctorSign} onChange={(event)=> {handleChange(event.target.value, "doctorSign")}}/>:
-                            <div className={style.textArea}>{record.doctorSign}</div>
+                            <Input value={record.evaPerson} onChange={(event)=> {handleChange(event.target.value, "evaPerson")}}/>:
+                            <div className={style.textArea}>{record.evaPerson}</div>
                         }
                     </Descriptions.Item>
-                    <Descriptions.Item label="日期">{record.doctorSignDate}</Descriptions.Item>
+                    <Descriptions.Item label="日期">
+                        {
+                            (isHidePrint && canEdit && isDocter) ?
+                                <DatePicker  value={moment(record.evaDate)} format={Static.dateFormat}
+                                             onChange={(date, dateString)=>  {handleChange(dateString, "evaDate")}}/>:
+                                <Fragment>{record.evaDate}</Fragment>
+                        }
+                    </Descriptions.Item>
                 </Descriptions>
                 <Sign isHidePrint={isHidePrint} record={record} handleChange={handleChange}
                       canEdit={canEdit}/>

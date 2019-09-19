@@ -166,7 +166,7 @@ export default [
                 authority: ['admin'],
                 hidden: true,
                 parentPath:'/rehabilitation/initiate',
-                component: require('@pages/Rehabilitation/initiate/Operate/applicationForAdmission').default
+                component: require('@pages/Rehabilitation/initiate/Operate/ApplicationForAdmission').default
             },
             {
                 path: '/rehabilitation/initiate/dischargeAssessment',
@@ -174,7 +174,7 @@ export default [
                 authority: ['admin'],
                 hidden: true,
                 parentPath:'/rehabilitation/initiate',
-                component: require('@pages/Rehabilitation/initiate/Operate/dischargeAssessment').default
+                component: require('@pages/Rehabilitation/initiate/Operate/DischargeAssessment').default
             },
             {
                 path: '/rehabilitation/agent',
@@ -189,7 +189,7 @@ export default [
                 authority: ['admin'],
                 hidden: true,
                 parentPath:'/rehabilitation/agent',
-                component: require('@pages/Rehabilitation/agent/Operate/applicationForAdmission').default
+                component: require('@pages/Rehabilitation/agent/Operate/ApplicationForAdmission').default
             },
             {
                 path: '/rehabilitation/agent/dischargeAssessment',
@@ -197,7 +197,7 @@ export default [
                 authority: ['admin'],
                 hidden: true,
                 parentPath:'/rehabilitation/agent',
-                component: require('@pages/Rehabilitation/agent/Operate/dischargeAssessment').default
+                component: require('@pages/Rehabilitation/agent/Operate/DischargeAssessment').default
             },
             {
                 path: '/rehabilitation/search',
@@ -212,7 +212,7 @@ export default [
                 authority: ['admin'],
                 hidden: true,
                 parentPath:'/rehabilitation/search',
-                component: require('@pages/Rehabilitation/search/Operate/applicationForAdmission').default
+                component: require('@pages/Rehabilitation/search/Operate/ApplicationForAdmission').default
             },
             {
                 path: '/rehabilitation/search/dischargeAssessment',
@@ -220,7 +220,7 @@ export default [
                 authority: ['admin'],
                 hidden: true,
                 parentPath:'/rehabilitation/search',
-                component: require('@pages/Rehabilitation/search/Operate/dischargeAssessment').default
+                component: require('@pages/Rehabilitation/search/Operate/DischargeAssessment').default
             },
         ]
     },

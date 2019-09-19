@@ -12,7 +12,6 @@ import Step from '@components/Step/Step';
 import {store, mapStateToProps, mapDispatchToProps} from '../Redux/Store';
 import style from '../common.less'
 import AdmissionAssessmentLayout from '../../Service/Layout/AdmissionAssessment';
-import curUtil from "@/pages/Nursing/Service/Util";
 import Static from "@components/KFHL/Utils/Static";
 import KFHLService from "@components/KFHL/Utils/Service";
 class AdmissionAssessment extends Component {
@@ -28,10 +27,12 @@ class AdmissionAssessment extends Component {
         this.print = this.print.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.setPageTempObj = this.setPageTempObj.bind(this);
+        this.handleAutoSearch = this.handleAutoSearch.bind(this);
     }
-
-    componentDidMount() {
-        new Scrollbar(this.inside.current).show();
+    componentWillMount(){
+        // 页面回退显示提交的数据，刷新页面
+        let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
+        if(isFrozenPaging) return;
         let query = this.props.location.query ||{};
         const record = query.record ? query.record :{}
         //只有医护人员访问的发起流程页面
@@ -48,10 +49,16 @@ class AdmissionAssessment extends Component {
                 setStoreVal={canEdit: true}
                 recordVal={doctorSignDate:KFHLService.currentDay()};
             }
-            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,recordVal,setStoreVal},this.setPageTempObj);
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.flowType.AdmissionAssessment,recordVal,setStoreVal},this.setPageTempObj);
         }
     }
+    componentDidMount() {
+        new Scrollbar(this.inside.current).show();
 
+    }
+    handleAutoSearch (personName) {
+        this.props.common.getUser(this,personName,this.setPageTempObj);
+    };
     handleSubmit(isSubmit){
         //是否提交 否则保存
         // if(!this.props.state.btnRequest) return
@@ -60,13 +67,13 @@ class AdmissionAssessment extends Component {
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 let handleOperate =()=>{
-                    this.props.admissionAssessment.handleOperate(record,()=>{
+                    this.props.admissionAssessment.handleOperate(record,isSubmit,()=>{
                         KFHLService.goBackUrl(this,this.backUrl);
                     })
                 }
 
                 if(isSubmit){
-                    let title = `【${curUtil.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${curUtil.myStatic.auditAgree.inHospDocter[1]}】`;
+                    let title = nursingUtils.getAuditAgreeTxt(this.user.js_lx,true);
                     Global.showConfirm({title,
                         onConfirm:()=> {
                             handleOperate();
@@ -85,18 +92,9 @@ class AdmissionAssessment extends Component {
     }
     handleChange(val, field) {
         // 表单变更立即触发的事件
-        let {record ={},sumScore} = this.props.state.pageTempObj;
+        let {record ={}} = this.props.state.pageTempObj;
         record[field] = val;
-       /* //平衡量表总分数
-        let isCheckChange = nursingUtils.myStatic.checkTitle.find(res=>res.name == field);
-        let _sumScore = 0;
-        if(isCheckChange){
-            nursingUtils.myStatic.checkTitle.map(res=>{
-                let tempScore = record[res.name] ? Number(record[res.name]) : 0 ;
-                _sumScore += tempScore;
-            })
-        }
-        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});*/         this.setPageTempObj({record});
+        this.setPageTempObj({record});
     }
     clickDownLoad(url){
         window.location.href=url;
@@ -129,11 +127,13 @@ class AdmissionAssessment extends Component {
                     <Form onSubmit={this.handleSubmit}>
                         <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
                                 <AdmissionAssessmentLayout self={this} record={record} getFieldDecorator={getFieldDecorator} isHidePrint={isHidePrint}
-                                                     canEdit={canEdit} dict={dict} isDocter={true}/>
+                                                     canEdit={canEdit} dict={dict} isDocter={true}  handleChange={this.handleChange}
+                                                    handleAutoSearch={this.handleAutoSearch}
+                                />
                         </div>
                         <div className={style.buttons}>
                             <ReactToPrint trigger={() => <Button id="print-application" style={{display:'none'}}>打印</Button>} content={() => this.refs}/>
-                            <BasicGroupComponent {...KFHLService.getButton(this,{canEdit:canEdit,print:this.print,handleSubmit:this.handleSubmit})}/>
+                            <BasicGroupComponent {...KFHLService.getButton(this,{canEdit:canEdit,print:this.print,handleSubmit:this.handleSubmit,showReject:this.handleReject})}/>
                         </div>
                     </Form>
                 </div>

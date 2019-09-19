@@ -1,9 +1,9 @@
 import React from 'react';
 import {Global} from 'winning-megreziii-utils';
 import Static from './Static';
-import curUtil from "@/pages/Rehabilitation/Service/Util";
 
-let getButton =(_this,{canEdit,print,handleSubmit,showReject,isDocter = true})=>{
+let getButton =(_this,{canEdit,print,handleSubmit,showReject,isDocter = true,
+       saveLoading=false,rejectLoading=false,submitLoading=false})=>{
     let isHideReject  = isDocter ? true : !canEdit;
     return {
         direction: Global.Direction.DOWN,
@@ -20,9 +20,10 @@ let getButton =(_this,{canEdit,print,handleSubmit,showReject,isDocter = true})=>
                 type: 'primary',
                 className: Global.BottomCss.ADD,
                 text: '保存',
-                disabled:!canEdit,
+                disabled:!isDocter || !canEdit,
+                loading:saveLoading,
                 onClick: (e) => {
-                    handleSubmit();
+                    handleSubmit && handleSubmit();
                 }
             },
             {
@@ -30,8 +31,9 @@ let getButton =(_this,{canEdit,print,handleSubmit,showReject,isDocter = true})=>
                 className: Global.BottomCss.REMOVE,
                 text: '退回',
                 disabled:isHideReject,
+                loading:rejectLoading,
                 onClick: (e) => {
-                    showReject();
+                    showReject && showReject();
                 }
             },
             {
@@ -39,8 +41,9 @@ let getButton =(_this,{canEdit,print,handleSubmit,showReject,isDocter = true})=>
                 className: Global.BottomCss.ADD,
                 text: '提交',
                 disabled:!canEdit,
+                loading:submitLoading,
                 onClick: (e) => {
-                    handleSubmit(true);
+                    handleSubmit && handleSubmit(true);
                 }
             }
         ]

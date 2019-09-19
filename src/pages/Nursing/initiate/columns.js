@@ -4,6 +4,7 @@ import {Badge} from 'antd';
 import style from './common.less';
 import curUtil from '../Service/Util';
 import Static from "@components/KFHL/Utils/Static";
+import moment from "moment";
 
 export default (self)=>{
     const {state}=self.props;
@@ -39,7 +40,10 @@ export default (self)=>{
         },
         {
             title: '审核日期',
-            dataIndex:'auditDate'
+            dataIndex:'auditDate',
+            render:(text, record, index) =>{
+                moment(text,"YYYY-MM-DD")
+            }
         },
         {
             title: '状态',
@@ -72,24 +76,18 @@ export default (self)=>{
             title: '类型',
             dataIndex:'flowType',
             render:(text, record, index) =>{
-                 /* // TODO:护理显示的类型flowType?????
-                let _flowType = state.staticStatus.flowType || [];
-                const objct = _flowType.find(res=>res.value == text) || {};*/
-                let objct={}
-                // KFHL_TB 内的字典
-                let badge = null;
+                let _flowType = Static.myDict.hlFlowType;
+                const objct = _flowType.find(res=>res.value == text) || {};
+                let badge = "error";
                 switch (text){
                     case curUtil.myStatic.flowType.AdmissionAssessment:
                         badge ="processing";
-                        objct.name="护理入院评估";
                         break;
                     case curUtil.myStatic.flowType.DischargeAssessment:
-                        badge ="success";
-                        objct.name="护理出院记录";
+                        badge ="warning";
                         break;
                     case curUtil.myStatic.flowType.StageAssessment:
                         badge ="success";
-                        objct.name="护理阶段性评估";
                         break;
                     default:
                         break;

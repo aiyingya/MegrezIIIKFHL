@@ -10,22 +10,31 @@ import {Global} from "winning-megreziii-utils";
 import UploadFile from '@components/UploadFile/UploadFile';
 import columnsUpload from "@/components/KFHL/Columns/columnsUpload";
 import Static from "@components/KFHL/Utils/Static";
-import moment from "moment/moment";
+import moment from "moment";
 import KFHLService from "@/components/KFHL/Utils/Service";
+import _ from "lodash";
 
 class DischargeAssessment  extends Component {
     constructor(props) {
         super(props);
         this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
-        this.onCheckChange = this.onCheckChange.bind(this);
+        this.handleCompleteChange = this.handleCompleteChange.bind(this);
     }
-    onCheckChange(checkedValues = [],field) {
-        let value= checkedValues.length ? [_.last(checkedValues)] : [];
-        this.props.self.handleChange(value, field)
+    handleCompleteChange(key) {
+        // key可能为选中的身份证号码，或者用户输入的个名称
+        let {handleChange,personUserList=[]} = this.props;
+        const finded = personUserList.find(item=>item.identityCard===key);
+        if(finded){
+            handleChange && handleChange(finded.personName,"personName");
+            handleChange && handleChange(finded.identityCard,"identityCard");
+            return
+        }
+        handleChange && handleChange(key,"personName");
     }
+
     render() {
-        let {self,isHidePrint,record,getFieldDecorator,dict,canEdit,outHopsFileDataSource,pharmacyFileDataSource,
-            setOutHopsFile,setPharmacyFile,removeOutHopsFile,removePharmacyFile,isDocter} = this.props;
+        let {self,isHidePrint,record,getFieldDecorator,dict,canEdit,outHopsFileDataSource,pharmacyFileDataSource,personUserList=[],
+            setOutHopsFile,setPharmacyFile,removeOutHopsFile,removePharmacyFile,isDocter,handleChange=()=>{}} = this.props;
 
         return (
             <div className={isHidePrint ?  style.tabSelf : style.tabSelf +' '+style.showPrint}>
@@ -35,13 +44,20 @@ class DischargeAssessment  extends Component {
                     <Descriptions.Item label="姓名">
                         <Fragment>
                             {
-                                (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
+                                (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('personName', {
                                             initialValue: record.personName,...Static.rulesConfig.required
                                         })(
-                                            <Input
+                                            <AutoComplete
+                                                className="global-search"
+                                                style={{ width: '100%' }}
+                                                dataSource={personUserList.map(KFHLService.renderOption)}
+                                                onSearch={_.debounce((e)=>{handleAutoSearch(e)}, 1000)}
+                                                onChange={this.handleCompleteChange}
                                                 placeholder="请输入"
-                                                onChange={(event)=> {handleChange(event.target.value, "personName")}}/>
+                                                optionLabelProp="text"
+                                            >
+                                            </AutoComplete>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.personName}</Fragment>
@@ -56,7 +72,7 @@ class DischargeAssessment  extends Component {
                                             initialValue: record.sex ? record.sex : Static.myEnum.sex.man,...Static.rulesConfig
                                         })(
                                             <Select onChange={(event)=> {handleChange(event, "sex")}}>
-                                                {Static.myDict.sex.map(res=><Option value={res.value}>{res.name}</Option>)}
+                                                {Static.myDict.sex.map(res=><Option  key={res.value} value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
@@ -151,7 +167,7 @@ class DischargeAssessment  extends Component {
                                         {getFieldDecorator('inHospDate', {
                                             initialValue: record.inHospDate && moment(record.inHospDate),rules: [{required: false, message: '请输入'}]
                                         })(
-                                            <DatePicker  format={nursingUtils.myStatic.dateFormat}
+                                            <DatePicker  value={moment(record.inHospDate)} format={Static.dateFormat}
                                                          onChange={(date, dateString)=>  {handleChange(dateString, "inHospDate")}}/>
                                         )}
                                     </Form.Item>:
@@ -164,31 +180,34 @@ class DischargeAssessment  extends Component {
                 <footer className={style.cysw}>
                     <div>
                         <Form.Item style={{ marginBottom: 0 }}>
-                            {getFieldDecorator('isOutHosp', {
-                                initialValue: record.isOutHosp || "0"
+                            {getFieldDecorator('outHospType', {
+                                initialValue: record.outHospType || nursingUtils.myStatic.myEnum.yysw.cyxj
                             })(
                                 <RadioGroup
                                     className={style.checkboxFlex}
                                     options={nursingUtils.myStatic.yysw}
-                                    onChange={(e)=>handleChange(e,"isOutHosp")}
+                                    onChange={(e)=>handleChange(e,"outHospType")}
                                 />
                             )}
                         </Form.Item>
                     </div>
                 </footer>
                 <div className={style.tableStyle}>
-                    <title>上级医院病历</title>
                     <UploadFile disabled ={!canEdit || !isDocter}
                                 successCallback ={(fileData={})=>{setOutHopsFile && setOutHopsFile(self,fileData)}}
                                 dataSource={outHopsFileDataSource}
-                                columns={columnsUpload({remove:(fileData={})=>{removeOutHopsFile && removeOutHopsFile(self,fileData)}})}/>
+                                columns={columnsUpload({remove:(fileData={})=>{removeOutHopsFile && removeOutHopsFile(self,fileData)}})}
+                                expandParams = {{fileType: record.outHospType == nursingUtils.myStatic.myEnum.yysw.swjl ?  Static.fileUseType.swjl: Static.fileUseType.cyxj}}
+                    />
                 </div>
                 <div className={style.tableStyle}>
                     <title>用药记录</title>
                     <UploadFile disabled ={!canEdit || !isDocter}
                                 successCallback ={(fileData={})=>{setPharmacyFile && setPharmacyFile(self,fileData)}}
                                 dataSource={pharmacyFileDataSource}
-                                columns={columnsUpload({remove:(fileData={})=>{removePharmacyFile && removePharmacyFile(self,fileData)}})}/>
+                                columns={columnsUpload({remove:(fileData={})=>{removePharmacyFile && removePharmacyFile(self,fileData)}})}
+                                expandParams = {{fileType:Static.fileUseType.yyjl}}
+                    />
                 </div>
             </div>
         );

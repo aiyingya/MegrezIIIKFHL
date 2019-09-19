@@ -7,6 +7,7 @@ import {Global,Uc} from 'winning-megreziii-utils';
 import jsonApi from "userCentre";
 import api from "@/api/RehabilitationApi";
 import {loadingEnd, search, setSearchObj} from "@/pages/Rehabilitation/initiate/Redux/Actions";
+import KFHLService from "@/components/KFHL/Utils/Service";
 
 class UploadFile extends Component {
     constructor(props) {
@@ -18,20 +19,22 @@ class UploadFile extends Component {
     }
     render() {
         const { uploading } = this.state;
-        let { successCallback,dataSource=[],columns,disabled} =  this.props;
-
+        let { successCallback,dataSource=[],columns,disabled,expandParams={}} =  this.props;
+        //expandParams 扩展参数
         const props = {
             showUploadList:false,
             beforeUpload: (file) => {
                 const formData = new FormData();
-                let fileList =  [file];
+                /*let fileList =  [file];
                 fileList.forEach(file => {
-                    formData.append('files', file);
+                    formData.append('file', file);
                     formData.append('fileName', file.name);
-                });
-                // formData.append('file', file);
-                // formData.append('fileName', file.name);
-
+                });*/
+                formData.append('file', file);
+                formData.append('fileName', file.name);
+                Object.keys(expandParams).map(key=>{
+                    formData.append(key, expandParams[key]);
+                })
                 this.setState({uploading: true,});
                 // You can use any AJAX library you like
                 // url ='https://www.mocky.io/v2/5cc8019d300000980a055e76'// mock上传地址需要使用此地址
@@ -65,6 +68,17 @@ class UploadFile extends Component {
                         //         this.setState({uploading: false});
                         //         // message.success(`${file.name} 文件上传成功！`);
                         // }});
+
+
+                           /* let count = Math.floor(Math.random() * (1000 - 1) + 1);
+                            this.props.applicationForAdmission.setBergFile(this,{
+                                fileName: file.name,
+                                size: (file.size / 1024) + "KB" ,
+                                uploadDate: KFHLService.currentDay(),
+                                uploadUser: this.user.yh_mc || 'admin',
+                                fileId:count,
+                                fileUrl:'https://github.com/vuejs/vuepress/archive/master.zip'
+                            });*/
                     },
                     error: () => {
                         this.setState({uploading: false});

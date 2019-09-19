@@ -29,25 +29,19 @@ class DischargeAssessment extends Component {
         this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.currentDay = KFHLService.currentDay();
-        this.checkUser = this.checkUser.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.handleAutoSearch = this.handleAutoSearch.bind(this);
         this.onRadioChange = this.onRadioChange.bind(this);
         this.print = this.print.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.setPageTempObj = this.setPageTempObj.bind(this);
-        this.setApplyFile = this.setApplyFile.bind(this);
-        this.hideModal = this.hideModal.bind(this);
+        this.hideReject = this.hideReject.bind(this);
         this.handleReject = this.handleReject.bind(this);
         this.showReject = this.showReject.bind(this);
     }
-
-    handleAutoSearch (personName) {
-        this.props.dischargeAssessment.getUser(this,personName);
-    };
-    componentDidMount() {
-        new Scrollbar(this.inside.current).show();
-        if(Global.isFrozen()) return;
+    componentWillMount(){
+        // 页面回退显示提交的数据，刷新页面
+        let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
+        if(isFrozenPaging) return;
         //机构和社保人员访问的待办流程页面
         let query = this.props.location.query ||{};
         const record = query.record ? query.record :{};
@@ -72,52 +66,48 @@ class DischargeAssessment extends Component {
             this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,recordVal,setStoreVal},this.setPageTempObj);
         }
     }
-
-    checkUser(name){
-        this.props.dischargeAssessment.getUser(name);
+    componentDidMount() {
+        new Scrollbar(this.inside.current).show();
     }
-    handleSubmit(e){
+
+    handleSubmit(){
+        // 只能提交不能保存
         // if(!this.props.state.btnRequest) return
-        let {record} = this.props.state.pageTempObj;
-        record.type = curUtil.myStatic.type.outHosp;//0 = 入院，1 = 出院
-        console.log("record",this.props.state.pageTempObj.record)
+        let {record} = this.props.state.pageTempObjCY;
+        record.type = curUtil.myStatic.type.outHosp;
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                // let val = {...this.props.state.fromObj.record,...values}
-                this.props.applicationForAdmission.handleOperate(record,()=>{
-                    KFHLService.goBackUrl(this,this.backUrl);
-                })
+                const handleOperate =()=>{
+                    this.props.common.handleCommit(record,()=>{
+                        KFHLService.goBackUrl(this,this.backUrl);
+                    })
+                }
+                let title = curUtil.getAuditAgreeTxt(this.user.js_lx,false);
+                Global.showConfirm({title,
+                    onConfirm:()=> {
+                        handleOperate();
+                    }
+                });
             }else{
                 message.error("请检查必选项！");
             }
         });
     }
     setPageTempObj(object={}){
-        this.props.dischargeAssessment.setPageTempObjCY(this,{...object});
+        this.props.dischargeAssessment.setPageTempObj(this,{...object});
     }
     handleChange(val, field) {
         // 表单变更立即触发的事件
-        let {record ={},sumScore} = this.props.state.pageTempObjCY;
+        let {record ={}} = this.props.state.pageTempObjCY;
         record[field] = val;
-      /*  let isCheckChange = curUtil.myStatic.checkTitle.find(res=>res.name == field);
-        let _sumScore = 0;
-        //平衡量表总分数
-        if(isCheckChange){
-            curUtil.myStatic.checkTitle.map(res=>{
-                let tempScore = record[res.name] ? Number(record[res.name]) : 0 ;
-                _sumScore += tempScore;
-            })
-        }
-        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});*/         this.setPageTempObj({record});
+      this.setPageTempObj({record});
     }
     onRadioChange(value, name) {
         if (name == curUtil.myStatic.radioType.imIsTab) {
             this.setPageTempObj({tabValue: value});
         }
     }
-    clickDownLoad(url){
-        window.location.href=url;
-    }
+
     print() {
         // 打印
         Global.showLoading();
@@ -128,44 +118,25 @@ class DischargeAssessment extends Component {
             this.setState({isHidePrint: true});
         }, 1000);
     }
-    setApplyFile(file={}){
-        let count = Math.floor(Math.random() * (1000 - 1) + 1);
-        this.props.applicationForAdmission.setApplyFile(this,{
-            fileName: file.name,
-            size: (file.size / 1024) + "KB" ,
-            uploadDate:KFHLService.currentDay(),
-            uploadUser: this.user.yh_mc || 'admin',
-            fileId:count,
-            fileUrl:'https://github.com/vuejs/vuepress/archive/master.zip'
-        });
-    }
+
     handleReject(rejectContent){
         let {record={}} = this.props.state.pageTempObjCY;
         this.props.common.handleReject(this,{inHospTableId:record.inHospTableId,backCause:rejectContent,fun:()=>{
-           this.hideModal();
+           this.hideReject();
         }});
     }
     showReject(){
-        let rejectTxts = [];
-        switch (this.user.js_lx){
-            case( Static.currentRole.medicalInstitution):
-                rejectTxts = curUtil.myStatic.auditReject.inHospMedicalInstitution;
-                break;
-            case( Static.currentRole.socialInsurance):
-                rejectTxts = curUtil.myStatic.auditReject.socialInsurance;
-                break;
-        }
-        this.setPageTempObj({showRejectModal: true,rejectTxts:rejectTxts});
+        let rejectTxts = curUtil.getAuditRejectTxt(this.user.js_lx,false);
+        this.setPageTempObj({showRejectModal: true,rejectTxts});
     }
-    hideModal(){
+    hideReject(){
         this.setPageTempObj({showRejectModal: false});
     }
 
     render() {
-        let {tabValue,canEdit,record={},showRejectModal,rejectTxts,uploadBergFiles} = this.props.state.pageTempObjCY;
+        let {tabValue,canEdit,record={},showRejectModal,rejectTxts,uploadBergFiles,personUserList} = this.props.state.pageTempObjCY;
         const { isHidePrint } = this.state;
         const { getFieldDecorator } = this.props.form;
-        const { removeBergFile,setBergFile } = this.props.dischargeAssessment;
         const uploadBergFileDataSource = (uploadBergFiles && uploadBergFiles.length>0 ? uploadBergFiles : Static.defaultUploadInfo);
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
@@ -186,7 +157,10 @@ class DischargeAssessment extends Component {
                                  style={{"pageBreakAfter": "always"}}>
                                 <OutHospAssess self={this}isDocter={false}canEdit={canEdit}
                                                getFieldDecorator ={getFieldDecorator}
-                                               isHidePrint ={isHidePrint}/>
+                                               isHidePrint ={isHidePrint}
+                                               handleChange={this.handleChange}
+                                               record={record}
+                                />
                             </div>
 
                             <div name="tab2" className={(tabValue == "2") ? '' : style.hidden}
@@ -194,8 +168,6 @@ class DischargeAssessment extends Component {
                                 <OutHospBerg self={this}isDocter={false} canEdit={false} record={record}
                                              getFieldDecorator ={getFieldDecorator}
                                              isHidePrint ={isHidePrint}
-                                             removeBergFile ={removeBergFile}
-                                             setBergFile ={setBergFile}
                                              uploadBergFileDataSource ={uploadBergFileDataSource}
                                 />
                             </div>
@@ -208,7 +180,7 @@ class DischargeAssessment extends Component {
                         </div>
                     </Form>
                 </div>
-                {showRejectModal && <RejectModal isShow={showRejectModal} close={this.hideModal} rejectCallback={(context)=>{this.handleReject(context)}} confirmLoading={this.props.state.btnRequestLoading}
+                {showRejectModal && <RejectModal isShow={showRejectModal} close={this.hideReject} rejectCallback={(context)=>{this.handleReject(context)}} confirmLoading={this.props.state.btnRequestLoading}
                              rejectTxts={rejectTxts}/>}
             </div>
         );

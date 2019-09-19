@@ -17,29 +17,23 @@ import KFHLService from "@components/KFHL/Utils/Service";
 class OutHospBerg  extends Component {
     constructor(props) {
         super(props);
-        this.handleChange = this.handleChange.bind(this);
-
+        this.handleCompleteChange = this.handleCompleteChange.bind(this);
     }
-
-    componentDidMount() {
-        let {record={}} =  this.props;
-        this.newCheckTitle = Global.setFormsValue(curUtil.myStatic.checkTitle,record);
-    }
-    handleChange(key) {
+    handleCompleteChange(key) {
         // key可能为选中的身份证号码，或者用户输入的个名称
-        let {self} = this.props;
-        let {personUserList} = self.props.state.pageTempObjCY;
+        let {handleChange,personUserList=[]} = this.props;
         const finded = personUserList.find(item=>item.identityCard===key);
         if(finded){
-            self.handleChange(finded.personName,"personName");
-            self.handleChange(finded.identityCard,"identityCard");
-            return
+            handleChange && handleChange(finded.personName,"personName");
+            handleChange && handleChange(finded.identityCard,"identityCard");
+            return;
         }
-        self.handleChange(key,"personName");
+        handleChange && handleChange(key,"personName");
     }
+
     render() {
         let {self,isDocter,canEdit,getFieldDecorator,isHidePrint,record={}} = this.props;
-        let {personUserList,removeBergFile,setBergFile,uploadBergFileDataSource} = self.props.state.pageTempObjCY;
+        let {personUserList=[],removeBergFile,setBergFile,uploadBergFileDataSource} = self.props.state.pageTempObjCY;
         let newCheckTitle = Global.setFormsValue(curUtil.myStatic.checkTitle,record);
         let sumScore = 0;
         //平衡量表总分数
@@ -61,7 +55,7 @@ class OutHospBerg  extends Component {
                                                 style={{ width: '100%' }}
                                                 dataSource={personUserList.map(KFHLService.renderOption)}
                                                 onSearch={_.debounce((e)=>{self.handleAutoSearch(e)}, 1000)}
-                                                onChange={this.handleChange}
+                                                onChange={this.handleCompleteChange}
                                                 placeholder="请输入"
                                                 optionLabelProp="text"
                                             >
@@ -81,7 +75,7 @@ class OutHospBerg  extends Component {
                                         })(
 
                                             <Select onChange={(event)=> {self.handleChange(event, "sex")}}>
-                                                {Static.myDict.sex.map(res=><Option value={res.value}>{res.name}</Option>)}
+                                                {Static.myDict.sex.map(res=><Option key={res.value} value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
@@ -269,7 +263,9 @@ class OutHospBerg  extends Component {
                                 dataSource={uploadBergFileDataSource}
                                 columns={columnsUpload({remove:(fileData={})=>{
                                         removeBergFile && removeBergFile(self,fileData)
-                                }})}/>
+                                }})}
+                                expandParams = {{fileType:Static.fileUseType.cyxj}}
+                    />
                 </div>
             </div>
         );

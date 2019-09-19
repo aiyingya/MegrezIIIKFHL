@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import * as PropTypes from 'prop-types';
-import { Input, Checkbox, Descriptions, Select,Form} from 'antd';
+import { Input, Checkbox, Descriptions, Select,Form,AutoComplete} from 'antd';
 const CheckboxGroup = Checkbox.Group;
 const {TextArea} = Input;
 import curUtil from '../../Util'
@@ -10,32 +10,54 @@ import columnsUpload from '../../../../../components/KFHL/Columns/columnsUpload'
 import Sign from '@components/KFHL/Sign/Sign';
 import Static from "@components/KFHL/Utils/Static";
 import KFHLService from "@/components/KFHL/Utils/Service";
+import _ from "lodash";
 
 class InHospApplication  extends Component {
     constructor(props) {
         super(props);
+        this.handleCompleteChange = this.handleCompleteChange.bind(this);
     }
-
+    handleCompleteChange(key) {
+        // key可能为选中的身份证号码，或者用户输入的个名称
+        let {handleChange,personUserList=[]} = this.props;
+        const finded = personUserList.find(item=>item.identityCard===key);
+        if(finded){
+            handleChange && handleChange(finded.personName,"personName");
+            handleChange && handleChange(finded.identityCard,"identityCard");
+            return
+        }
+        handleChange && handleChange(key,"personName");
+    }
     render() {
-        let {self,isDocter,canEdit,getFieldDecorator,isHidePrint,uploadApplyFileDataSource,removeApplayFile,setApplyFile} = this.props;
+        let {self,isDocter,canEdit,getFieldDecorator,isHidePrint,uploadApplyFileDataSource,removeApplayFile,setApplyFile,onCheckAllChange,onCheckChange,personUserList=[],
+            handleChange=()=>{},
+            handleAutoSearch=()=>{},
+        } = this.props;
         let {record={},checkedOutsideList,indeterminate,checkedGroupList,checkAll} = self.props.state.pageTempObj;
         /*const { removeApplayFile,setApplyFile } = self.props.applicationForAdmission;
         const uploadApplyFileDataSource = (uploadApplyFiles && uploadApplyFiles.length>0 ? uploadApplyFiles : Static.defaultUploadInfo);*/
         return (
             <div className={isHidePrint ?  style.tabSelf : style.tabSelf +' '+style.showPrint}>
-                    <Descriptions title="无锡市康复医院2019年05月张三康复入院申请表" column={2} bordered
+                    <Descriptions title={record.title} column={2} bordered
                                   className={style.descriptions}
                                   size="middle">
                         <Descriptions.Item label="姓名">
                             <Fragment>
                                 {
-                                    (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
+                                    (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('personName', {
                                                 initialValue: record.personName,...Static.rulesConfig.required
                                             })(
-                                                <Input
+                                                <AutoComplete
+                                                    className="global-search"
+                                                    style={{ width: '100%' }}
+                                                    dataSource={personUserList.map(KFHLService.renderOption)}
+                                                    onSearch={_.debounce((e)=>{handleAutoSearch(e)}, 1000)}
+                                                    onChange={this.handleCompleteChange}
                                                     placeholder="请输入"
-                                                    onChange={(event)=> {self.handleChange(event.target.value, "personName")}}/>
+                                                    optionLabelProp="text"
+                                                >
+                                                </AutoComplete>
                                             )}
                                         </Form.Item>:
                                         <Fragment>{record.personName}</Fragment>
@@ -50,8 +72,8 @@ class InHospApplication  extends Component {
                                                 initialValue: record.sex ? record.sex : Static.myEnum.sex.man,...Static.rulesConfig.required
                                             })(
 
-                                                <Select onChange={(event)=> {self.handleChange(event, "sex")}}>
-                                                    {Static.myDict.sex.map(res=><Option value={res.value}>{res.name}</Option>)}
+                                                <Select onChange={(event)=> {handleChange(event, "sex")}}>
+                                                    {Static.myDict.sex.map(res=><Option key={res.value} value={res.value}>{res.name}</Option>)}
                                                 </Select>
                                             )}
                                         </Form.Item>:
@@ -69,7 +91,7 @@ class InHospApplication  extends Component {
                                             })(
                                                 <Input
                                                     placeholder="请输入"
-                                                    onChange={(event)=> {self.handleChange(event.target.value, "age")}}/>
+                                                    onChange={(event)=> {handleChange(event.target.value, "age")}}/>
                                             )}
                                         </Form.Item>:
                                         <Fragment>{record.age}</Fragment>
@@ -85,7 +107,7 @@ class InHospApplication  extends Component {
                                             })(
                                                 <Input
                                                     placeholder="请输入"
-                                                    onChange={(event)=> {self.handleChange(event.target.value, "diagnoseDept")}}/>
+                                                    onChange={(event)=> {handleChange(event.target.value, "diagnoseDept")}}/>
                                             )}
                                         </Form.Item>:
                                         <Fragment>{record.diagnoseDept}</Fragment>
@@ -101,7 +123,7 @@ class InHospApplication  extends Component {
                                             })(
                                                 <Input
                                                     placeholder="请输入"
-                                                    onChange={(event)=> {self.handleChange(event.target.value, "illnessName")}}/>
+                                                    onChange={(event)=> {handleChange(event.target.value, "illnessName")}}/>
                                             )}
                                         </Form.Item>:
                                         <Fragment>{record.personName}</Fragment>
@@ -117,7 +139,7 @@ class InHospApplication  extends Component {
                                             })(
                                                 <Input
                                                     placeholder="请输入"
-                                                    onChange={(event)=> {self.handleChange(event.target.value, "personId")}}/>
+                                                    onChange={(event)=> {handleChange(event.target.value, "personId")}}/>
                                             )}
                                         </Form.Item>:
                                         <Fragment>{record.personId}</Fragment>
@@ -133,7 +155,7 @@ class InHospApplication  extends Component {
                                             })(
                                                 <Input
                                                     placeholder="请输入"
-                                                    onChange={(event)=> {self.handleChange(event.target.value, "identityCard")}}/>
+                                                    onChange={(event)=> {handleChange(event.target.value, "identityCard")}}/>
                                             )}
                                         </Form.Item>:
                                         <Fragment>{record.identityCard}</Fragment>
@@ -148,11 +170,11 @@ class InHospApplication  extends Component {
                             className={style.checkboxFlex}
                             options={curUtil.myStatic.outsideOptions}
                             value={checkedOutsideList}
-                            onChange={(e)=>self.onCheckChange(e,"diagnoseGists")}
+                            onChange={(e)=>onCheckChange&&onCheckChange(e,"diagnoseGists")}
                         />
                         <Checkbox
                             indeterminate={indeterminate}
-                            onChange={(e)=>self.onCheckAllChange(e,"diagnoseGists")}
+                            onChange={(e)=>onCheckAllChange&&onCheckAllChange(e,"diagnoseGists")}
                             checked={checkAll}
                             value="5"
                         >
@@ -174,7 +196,7 @@ class InHospApplication  extends Component {
                                         initialValue: record.clinicalMani,
                                     })(
                                         <TextArea className={style.noneBorder} placeholder="患者表现正常" rows={5}
-                                                  onChange={(event)=> {self.handleChange(event.target.value, "clinicalMani")}}></TextArea>
+                                                  onChange={(event)=> {handleChange(event.target.value, "clinicalMani")}}></TextArea>
                                     )}
                                 </Form.Item>:
                                 <div className={style.textArea}>{record.clinicalMani}</div>
@@ -189,7 +211,7 @@ class InHospApplication  extends Component {
                                         initialValue: record.checkup,
                                     })(
                                         <TextArea className={style.noneBorder} placeholder="患者表现正常" rows={5}
-                                                  onChange={(event)=> {self.handleChange(event.target.value, "checkup")}}></TextArea>
+                                                  onChange={(event)=> {handleChange(event.target.value, "checkup")}}></TextArea>
                                     )}
                                 </Form.Item>:
                                 <div className={style.textArea}>{record.checkup}</div>
@@ -203,7 +225,7 @@ class InHospApplication  extends Component {
                                         initialValue: record.labCheckup,
                                     })(
                                         <TextArea className={style.noneBorder} placeholder="患者表现正常" rows={5}
-                                                  onChange={(event)=> {self.handleChange(event.target.value, "labCheckup")}}></TextArea>
+                                                  onChange={(event)=> {handleChange(event.target.value, "labCheckup")}}></TextArea>
                                     )}
                                 </Form.Item>:
                                 <div className={style.textArea}>{record.labCheckup}</div>
@@ -218,7 +240,7 @@ class InHospApplication  extends Component {
                                             {getFieldDecorator('doctorSign', {
                                                 initialValue: record.doctorSign
                                             })(
-                                                <Input onChange={(event)=> {self.handleChange(event.target.value, "doctorSign")}}/>
+                                                <Input onChange={(event)=> {handleChange(event.target.value, "doctorSign")}}/>
                                             )}
                                         </Form.Item>:
                                         <Fragment>{record.doctorSign}</Fragment>
@@ -229,7 +251,7 @@ class InHospApplication  extends Component {
                             <Fragment>{record.doctorSignDate}</Fragment>
                         </Descriptions.Item>
                     </Descriptions>
-                    <Sign isHidePrint={isHidePrint} record={record} handleChange={self.handleChange}
+                    <Sign isHidePrint={isHidePrint} record={record} handleChange={handleChange}
                       canEdit={canEdit} />
 
                     <div className={style.rowStyle}>
@@ -253,7 +275,9 @@ class InHospApplication  extends Component {
                                     dataSource={uploadApplyFileDataSource}
                                     columns={columnsUpload({remove:(fileData={})=>{
                                             removeApplayFile && removeApplayFile(self,fileData)
-                                    }})}/>
+                                    }})}
+                                    expandParams = {{fileType:Static.fileUseType.yybl}}
+                        />
                     </div>
             </div>
         );

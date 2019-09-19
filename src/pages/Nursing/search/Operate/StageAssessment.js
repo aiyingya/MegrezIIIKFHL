@@ -26,68 +26,28 @@ class StageAssessment extends Component {
         this.backUrl='/nursing/initiate';
         this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
-        this.handleChange = this.handleChange.bind(this)
         this.print = this.print.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.setPageTempObj = this.setPageTempObj.bind(this);
-        this.setApplyFile = this.setApplyFile.bind(this);
-        this.setBergFile = this.setBergFile.bind(this);
     }
-
-    componentDidMount() {
-        new Scrollbar(this.inside.current).show();
+    componentWillMount(){
+        // 页面回退显示提交的数据，刷新页面
+        let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
+        if(isFrozenPaging) return;
         //判断当前发起流程是否可以操作；
         let query = this.props.location.query ||{};
         const record = query.record ? query.record :{};
         if(!record.inHospTableId){console.error("页面必须有数据")}
         else{
-            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId},this.setPageTempObj);
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.flowType.StageAssessment},this.setPageTempObj);
         }
-
     }
-    handleSubmit(isSubmit){
-        //是否提交 否则保存
-        // if(!this.props.state.btnRequest) return
-        let {record} = this.props.state.pageTempObj;
-        // console.log("record",this.props.state.pageTempObj.record)
-        this.props.form.validateFields((err, values) => {
-            if (!err) {
-
-                let handleOperate =()=>{
-                    this.props.stageAssessment.handleOperate(record,()=>{
-                        KFHLService.goBackUrl(this,this.backUrl);
-                    })
-                }
-                if(isSubmit){
-                    let title = `【${nursingUtils.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${nursingUtils.myStatic.auditAgree.inHospDocter[1]}】`;
-                    Global.showConfirm({title,
-                        onConfirm:()=> {
-                            handleOperate();
-                        }
-                    });
-                }else{
-                    handleOperate();
-                }
-
-
-            }else{
-                message.error("请检查必选项！");
-            }
-        });
+    componentDidMount() {
+        new Scrollbar(this.inside.current).show();
     }
     setPageTempObj(object={}){
         this.props.stageAssessment.setPageTempObj(this,{...object});
     }
-    handleChange(val, field) {
-        // 表单变更立即触发的事件
-        let {record ={}} = this.props.state.pageTempObj;
-        record[field] = val;
-        console.log(record)
-        this.setPageTempObj({record});
-    }
-    clickDownLoad(url){
-        window.location.href=url;
-    }
+
     print() {
         // 打印
         Global.showLoading();
@@ -101,7 +61,7 @@ class StageAssessment extends Component {
     render() {
         const { isHidePrint } = this.state;
         const {dict} = this.props.state.staticStatus;
-        const {record={},monthList,canEdit} = this.props.state.pageTempObjStag;
+        const {record={},monthList} = this.props.state.pageTempObjStag;
         const { getFieldDecorator } = this.props.form;
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
@@ -114,11 +74,11 @@ class StageAssessment extends Component {
                     <Form>
                         <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
                             <StageAssessmentLayout self={this} record={record} getFieldDecorator={getFieldDecorator} isHidePrint={isHidePrint}
-                                                 canEdit={false} dict={dict} handleChange={this.handleChange} monthList={monthList} isDocter={false}/>
+                                                 canEdit={false} dict={dict} monthList={monthList} isDocter={false}/>
                         </div>
                         <div className={style.buttons}>
                             <ReactToPrint trigger={() => <Button id="print-application" style={{display:'none'}}>打印</Button>} content={() => this.refs}/>
-                            <BasicGroupComponent {...KFHLService.getButton(this,{canEdit:canEdit,print:this.print,handleSubmit:this.handleSubmit})}/>
+                            <BasicGroupComponent {...KFHLService.getButton(this,{canEdit:false,print:this.print})}/>
                         </div>
                     </Form>
                 </div>

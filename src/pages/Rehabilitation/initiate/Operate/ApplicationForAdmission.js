@@ -16,7 +16,6 @@ import InHospAssess from '../../Service/Layout/InHospAssess/InHospAssess';
 import InHospBerg from '../../Service/Layout/InHospBerg/InHospBerg';
 import Static from "@components/KFHL/Utils/Static";
 import KFHLService from "@components/KFHL/Utils/Service";
-import nursingUtils from "@/pages/Nursing/Service/Util";
 class ApplicationForAdmission extends Component {
     constructor(props) {
         super(props);
@@ -35,11 +34,12 @@ class ApplicationForAdmission extends Component {
         this.print = this.print.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.setPageTempObj = this.setPageTempObj.bind(this);
+        this.handleAutoSearch = this.handleAutoSearch.bind(this);
     }
-
-    componentDidMount() {
-        new Scrollbar(this.inside.current).show();
-        if(Global.isFrozen()) return;
+    componentWillMount(){
+        // 页面回退显示提交的数据，刷新页面
+        let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
+        if(isFrozenPaging) return;
         // 只有医护人员访问的发起流程页面
         let query = this.props.location.query ||{};
         const record = query.record ? query.record :{};
@@ -59,21 +59,26 @@ class ApplicationForAdmission extends Component {
             this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,recordVal,setStoreVal},this.setPageTempObj);
         }
     }
-
+    componentDidMount() {
+        new Scrollbar(this.inside.current).show();
+    }
+    handleAutoSearch (personName) {
+        this.props.common.getUser(this,personName,this.setPageTempObj);
+    };
     handleSubmit(isSubmit){
         //是否提交 否则保存
         // if(!this.props.state.btnRequest) return
-        let {record} = this.props.state.pageTempObj;
-        record.type = curUtil.myStatic.type.inHosp;//0 = 入院，1 = 出院
+        let {record,uploadBergFiles=[]} = this.props.state.pageTempObj;
         // console.log("record",this.props.state.pageTempObj.record)
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                let handleOperate =()=>{
-                    this.props.applicationForAdmission.handleOperate(record,()=>{
+                const handleOperate =()=>{
+                    record.type = curUtil.myStatic.type.inHosp;
+                    record.outHospFileIds = uploadBergFiles.map(res=>res.fileId);
+                    this.props.applicationForAdmission.handleOperate(record,isSubmit,()=>{
                         KFHLService.goBackUrl(this,this.backUrl);
                     })
                 }
-
                 if(isSubmit){
                     let title = curUtil.getAuditAgreeTxt(this.user.js_lx,true);
                     Global.showConfirm({title,
@@ -95,18 +100,9 @@ class ApplicationForAdmission extends Component {
     }
     handleChange(val, field) {
         // 表单变更立即触发的事件
-        let {record ={},sumScore} = this.props.state.pageTempObj;
+        let {record ={}} = this.props.state.pageTempObj;
         record[field] = val;
-       /* let isCheckChange = curUtil.myStatic.checkTitle.find(res=>res.name == field);
-        let _sumScore = 0;
-        //平衡量表总分数
-        if(isCheckChange){
-            curUtil.myStatic.checkTitle.map(res=>{
-                let tempScore = record[res.name] ? Number(record[res.name]) : 0 ;
-                _sumScore += tempScore;
-            })
-        }
-        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});*/         this.setPageTempObj({record});
+        this.setPageTempObj({record});
     }
     onRadioChange(value, name) {
         if (name == curUtil.myStatic.radioType.imIsTab) {
@@ -172,7 +168,7 @@ class ApplicationForAdmission extends Component {
 
 
     render() {
-        let {tabValue="0",canEdit,record={},uploadBergFiles,uploadApplyFiles} = this.props.state.pageTempObj;
+        let {tabValue="0",canEdit,record={},uploadBergFiles,uploadApplyFiles,personUserList=[]} = this.props.state.pageTempObj;
         const { isHidePrint } = this.state;
         const { getFieldDecorator } = this.props.form;
         const { removeBergFile,setBergFile,removeApplayFile,setApplyFile  } = this.props.applicationForAdmission;
@@ -203,7 +199,13 @@ class ApplicationForAdmission extends Component {
                                                    isHidePrint ={isHidePrint}
                                                    uploadApplyFileDataSource={uploadApplyFileDataSource}
                                                    removeApplayFile={removeApplayFile}
-                                                   setApplyFile={setApplyFile}/>
+                                                   setApplyFile={setApplyFile}
+                                                   onCheckAllChange={this.onCheckAllChange}
+                                                   onCheckChange={this.onCheckChange}
+                                                   handleChange={this.handleChange}
+                                                   handleAutoSearch ={this.handleAutoSearch}
+                                                   personUserList = {personUserList}
+                                />
                             </div>
 
 
@@ -211,7 +213,11 @@ class ApplicationForAdmission extends Component {
                                  style={{"pageBreakAfter": "always"}}>
                                 <InHospAssess self={this} isDocter={true} canEdit={canEdit}
                                               getFieldDecorator ={getFieldDecorator}
-                                              isHidePrint ={isHidePrint}/>
+                                              isHidePrint ={isHidePrint}
+                                              handleChange={this.handleChange}
+                                              handleAutoSearch ={this.handleAutoSearch}
+                                              personUserList = {personUserList}
+                                />
                             </div>
 
                             <div name="tab3" className={(tabValue == "2") ? '' : style.hidden}
@@ -223,6 +229,10 @@ class ApplicationForAdmission extends Component {
                                             setBergFile ={setBergFile}
                                             uploadBergFileDataSource ={uploadBergFileDataSource}
                                             record={record}
+                                            handleChange={this.handleChange}
+                                            handleAutoSearch ={this.handleAutoSearch}
+                                            personUserList = {personUserList}
+
                                 />
                             </div>
                         </div>

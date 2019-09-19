@@ -8,6 +8,7 @@ import nursingUtils from '../Service/Util';
 class Initiate extends Component {
     constructor(props) {
         super(props);
+        this.state={};
         this.inside = React.createRef();
         this.button ={
             direction : Global.Direction.UP,
@@ -45,20 +46,24 @@ class Initiate extends Component {
         this.handleChange = this.handleChange.bind(this);
     }
     componentWillMount(){
-        let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
+        // 切换临时页面也冰冻，不需要刷新页面
+        let isFrozenTabPaging =  Global.isFrozen();
+        // 页面回退显示提交的数据，刷新页面
+        let isFrozenPaging =  isFrozenTabPaging || (this.props.location.query ? this.props.location.query.frozenPaging : false);
         if (isFrozenPaging) {
-            // this.props.initiate.initTable(this,{isFrozenPaging});
+            !isFrozenTabPaging && this.props.initiate.initTable(this,{isFrozenPaging});
             this.props.initiate.initSearch(this.props.state.tempSearchObj);
         }else{
-            this.props.initiate.initSearch();
-            // this.props.initiate.initTable(this);
+            this.props.initiate.initSearch(false);
         }
+        this.setState({isFrozenValue:(isFrozenPaging)});
     }
     componentDidMount(){
         new Scrollbar(this.inside.current).show()
     }
 
     goLook(record){
+        record.inHospTableId = record.id;
         if(record.flowType == nursingUtils.myStatic.flowType.StageAssessment){
             this.goStageAssessment(record);
             return
@@ -107,7 +112,7 @@ class Initiate extends Component {
             <div className={`winning-body`} ref={this.inside}>
                 <div className='winning-content'>
                     {/*搜索条件*/}
-                    <BasicFormComponent forms={this.props.state.formItems} handleSearch={this.handleSearch} handleChange={this.handleChange}/>
+                    <BasicFormComponent forms={this.props.state.formItems} handleSearch={this.handleSearch} handleChange={this.handleChange} isFrozenValue={this.state.isFrozenValue}/>
                     <Divider />
                     <div className={'Table40 TableMain'}>
                         <BasicGroupComponent {...this.button}/>

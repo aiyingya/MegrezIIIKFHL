@@ -15,27 +15,28 @@ import KFHLService from "@components/KFHL/Utils/Service";
 class OutHospAssess  extends Component {
     constructor(props) {
         super(props);
-        this.handleChange = this.handleChange.bind(this);
+        this.handleCompleteChange = this.handleCompleteChange.bind(this);
     }
-    handleChange(key) {
+    handleCompleteChange(key) {
         // key可能为选中的身份证号码，或者用户输入的个名称
-        let {self} = this.props;
-        let {personUserList} = self.props.state.pageTempObjCY;
+        let {handleChange,personUserList=[]} = this.props;
         const finded = personUserList.find(item=>item.identityCard===key);
         if(finded){
-            self.handleChange(finded.personName,"personName");
-            self.handleChange(finded.identityCard,"identityCard");
+            handleChange && handleChange(finded.personName,"personName");
+            handleChange && handleChange(finded.identityCard,"identityCard");
             return
         }
-        self.handleChange(key,"personName");
+        handleChange && handleChange(key,"personName");
     }
+
     render() {
-        let {self,isDocter,canEdit,getFieldDecorator,isHidePrint} = this.props;
-        let {record={},personUserList} = self.props.state.pageTempObjCY;
+        let {self,isDocter,canEdit,getFieldDecorator,isHidePrint,personUserList=[],record={},
+            handleChange=()=>{},
+            handleAutoSearch=()=>{}} = this.props;
 
         return (
             <div className={isHidePrint ?  style.tabSelf : style.tabSelf +' '+style.showPrint}>
-                <Descriptions title="无锡市康复医院2019年05月张三康复入院评估表" column={2} bordered
+                <Descriptions title={record.title} column={2} bordered
                               className={style.descriptions}>
                     <Descriptions.Item label="姓名">
                         <Fragment>
@@ -48,8 +49,8 @@ class OutHospAssess  extends Component {
                                                 className="global-search"
                                                 style={{ width: '100%' }}
                                                 dataSource={personUserList.map(KFHLService.renderOption)}
-                                                onSearch={_.debounce((e)=>{self.handleAutoSearch(e)}, 1000)}
-                                                onChange={this.handleChange}
+                                                onSearch={_.debounce((e)=>{handleAutoSearch(e)}, 1000)}
+                                                onChange={this.handleCompleteChange}
                                                 placeholder="请输入"
                                                 optionLabelProp="text"
                                             >
@@ -67,8 +68,8 @@ class OutHospAssess  extends Component {
                                         {getFieldDecorator('sex', {
                                             initialValue: record.sex ? record.sex : Static.myEnum.sex.man,...Static.rulesConfig.required
                                         })(
-                                            <Select onChange={(event)=> {self.handleChange(event, "sex")}}>
-                                                {Static.myDict.sex.map(res=><Option value={res.value}>{res.name}</Option>)}
+                                            <Select onChange={(event)=> {handleChange(event, "sex")}}>
+                                                {Static.myDict.sex.map(res=><Option key={res.value} value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
@@ -85,7 +86,7 @@ class OutHospAssess  extends Component {
                                         })(
                                             <Input
                                                 placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "age")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "age")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.age}</Fragment>
@@ -101,7 +102,7 @@ class OutHospAssess  extends Component {
                                         })(
                                             <Input
                                                 placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "identityCard")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "identityCard")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.identityCard}</Fragment>
@@ -117,7 +118,7 @@ class OutHospAssess  extends Component {
                                         })(
                                             <Input
                                                 placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "bedNumber")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "bedNumber")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.bedNumber}</Fragment>
@@ -133,7 +134,7 @@ class OutHospAssess  extends Component {
                                         })(
                                             <Input
                                                 placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "lesion")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "lesion")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.lesion}</Fragment>
@@ -149,7 +150,7 @@ class OutHospAssess  extends Component {
                                         })(
                                             <Input
                                                 placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "inHospNumber")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "inHospNumber")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.inHospNumber}</Fragment>
@@ -164,7 +165,7 @@ class OutHospAssess  extends Component {
                                             initialValue: record.inHospDate && moment(record.inHospDate),rules: [{required: false, message: '请输入'}]
                                         })(
                                             <DatePicker  format={Static.dateFormat}
-                                                         onChange={(date, dateString)=>  {self.handleChange(dateString, "inHospDate")}}/>
+                                                         onChange={(date, dateString)=>  {handleChange(dateString, "inHospDate")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.inHospDate}</Fragment>
@@ -180,7 +181,7 @@ class OutHospAssess  extends Component {
                                         })(
                                             <Input
                                                 placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "inHospDiagnose")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "inHospDiagnose")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.inHospDiagnose}</Fragment>
@@ -189,29 +190,37 @@ class OutHospAssess  extends Component {
                     </Descriptions.Item>
                 </Descriptions>
                 <Assess self={self} pageTempObj ={self.props.state.pageTempObjCY} isDocter={isDocter}
-                        canEdit={canEdit} record={record} isHidePrint={isHidePrint} handleChange={self.handleChange}/>
+                        canEdit={canEdit} record={record} isHidePrint={isHidePrint} handleChange={handleChange}/>
                 <footer className={style.footer}><title className={style.tRight}>备注</title>
                     <div>
                         <Form.Item style={{ marginBottom: 0 }}>
-                            {getFieldDecorator('remake', {
-                                initialValue: record.remake
-                            })(
-                                <Input onChange={(event)=> {self.handleChange(event.target.value, "remake")}}/>
-                            )}
+                            {
+                                (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
+                                        {getFieldDecorator('remake', {
+                                            initialValue: record.remake
+                                        })(
+                                            <Input
+                                                placeholder="请输入"
+                                                onChange={(event)=> {handleChange(event.target.value, "remake")}}/>
+                                        )}
+                                    </Form.Item>:
+                                    <Fragment>{record.remake}</Fragment>
+                            }
                         </Form.Item>
                     </div>
                 </footer>
                 <footer className={style.footer}><title className={style.tRight}>据此考虑</title>
                     <div>
+
                         <Form.Item style={{ marginBottom: 0 }}>
                             {getFieldDecorator('isOutHosp', {
                                 initialValue: record.isOutHosp || "0"
                             })(
                                 <RadioGroup
-                                    disabled ={!canEdit && !isDocter}
+                                    disabled ={!canEdit || !isDocter}
                                     className={style.checkboxFlex}
                                     options={curUtil.myStatic.outHospResult}
-                                    onChange={(e)=>self.handleChange(e,"isOutHosp")}
+                                    onChange={(e)=>handleChange(e,"isOutHosp")}
                                 />
                             )}
                         </Form.Item>
@@ -222,7 +231,4 @@ class OutHospAssess  extends Component {
     }
 }
 
-PropTypes.propTypes = {
-    self: PropTypes.string.isRequired
-};
 export default OutHospAssess;

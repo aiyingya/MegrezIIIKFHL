@@ -7,6 +7,7 @@ import {loadingStart,loadingEnd,setDatas,search,getFormItems, setSearchObj,setSt
 import api from "@/api/RehabilitationApi";
 import {Global,Uc} from 'winning-megreziii-utils';
 import curUtil from "../../Service/Util";
+import Static from "@/components/KFHL/Utils/Static";
 export const store = createStore(reducer);
 
 export const mapStateToProps = (state, ownProps) => {
@@ -19,22 +20,49 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         common:{
             getInfo:async (_this,param={},fun)=>{
-                let {inHospTableId,recordVal ={},setStoreVal={}} = param;
+                let {inHospTableId,tableType = curUtil.myStatic.flowType.inHosp,recordVal ={},setStoreVal={}} = param;
                 Global.showLoading();
                 let result = await api.look_hosp_apply({inHospTableId}).finally(() => {
                     Global.hideLoading();
                 });
                 Global.alert(result,{
                     successFun:()=>{
-                        let record = result.data|| {};
+                        let record = result.data || {};
                         const diagnoseGists = record.diagnoseGists || [];
                         const checkedOutsideList = _.difference(diagnoseGists, ['5','6', '7','8', '9', '10']);
                         const checkedGroupList = _.difference(diagnoseGists, ['0','1', '2', '3', '4','5']);
                         const indeterminate =   !!checkedGroupList.length && checkedGroupList.length < curUtil.myStatic.plainOptions.length;
                         const checkAll = checkedGroupList.length === curUtil.myStatic.plainOptions.length;
-                        record = {...record,...recordVal};
+                        if(tableType == curUtil.myStatic.flowType.outHosp){
+                            // 初始化入院上传文件
+                            let uploadBergFiles=[];// 入院Berg平衡量表的 出院小结
+                            const  files = record.files;
+                            files && files.length>0 &&  files.map(file=>{
+                                //文件类型：0=出院小结，1=死亡证明，2=用药记录，3=医院病历
+                                if(file.fileType == Static.fileUseType.yyjl){
+                                    // 用药记录
+                                    uploadBergFiles.push(file);
+                                }
+                            });
+                            _this.applicationForAdmission.setPageTempObj(_this,{uploadBergFiles})
+                        }else{
+                            // 初始化入院上传文件
+                            let uploadApplyFiles=[];// 入院申请的 医院病历
+                            let uploadBergFiles=[];// 入院Berg平衡量表的 出院小结
+                            const  files = record.files;
+                            files && files.length>0 &&  files.map(file=>{
+                                //文件类型：0=出院小结，1=死亡证明，2=用药记录，3=医院病历
+                                if(file.fileType == Static.fileUseType.yybl){
+                                    uploadApplyFiles.push(file);
+                                }else if(file.fileType == Static.fileUseType.yyjl){
+                                    // 用药记录
+                                    uploadBergFiles.push(file);
+                                }
+                            });
+                            _this.props.dischargeAssessment.setPageTempObj(_this,{uploadApplyFiles,uploadBergFiles})
+                        }
                         fun && fun({
-                            record:record,
+                            record:{...record,...recordVal},
                             checkedOutsideList,
                             checkedGroupList,
                             indeterminate,
@@ -82,7 +110,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
             },
             initSearch:async (searchVal)=>{
                 let toData = moment();
-                let dateFormat = "YYYY/MM/DD";
                 let fromData = moment().subtract(3, "months");
                 let _dict = await Uc.getDict();
                 // 初始化查询条件
@@ -91,12 +118,16 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                     {labelName: '患者', formType: Global.SelectEnum.INPUT, name: 'personName'},
                     {labelName: '入院机构', formType: Global.SelectEnum.INPUT, name: 'inHosp'},
                     {labelName: '证件号码', formType: Global.SelectEnum.INPUT, name: 'identityCard'},
-                    {labelName: '入院日期', formType: Global.SelectEnum.RangePickerSplit, name: 'dataTimes', dateFormat:dateFormat,outName:['inHospDateFrom','inHospDateTo'],outFormat:'YYYY-MM-DD',
-                        initialValue:[moment(fromData,dateFormat), moment(toData,dateFormat)]},
+                    {labelName: '入院日期', formType: Global.SelectEnum.RangePickerSplit, name: 'dataTimes', dateFormat:Static.dateFormat,outName:['inHospDateFrom','inHospDateTo'],outFormat:'YYYY-MM-DD',
+                        initialValue:[moment(fromData,Static.dateFormat), moment(toData,Static.dateFormat)]},
                     {labelName: '发起人', formType: Global.SelectEnum.INPUT, name: 'initPerson'},
                     {labelName: '审核状态', formType: Global.SelectEnum.SELECT, name: 'auditStatus', children: _dict.KFHL_ST},
                     {labelName: '填报状态', formType: Global.SelectEnum.INPUT, name: 'fillStatus'}
                 ]
+                // 为了冰冻页面 特殊处理 代表第一次初始化serach的时候，初始数据需要保存在临时对象中，用于页面切换页面时能显示临时数据使用
+                if(searchVal == false){
+                    dispatch(setTempSearchObj({inHospDateFrom:fromData,inHospDateTo:toData}));
+                }
                 // 写入查询初始值
                 if (searchVal) {
                     forms = Global.setFormsValue(forms,searchVal);
@@ -107,8 +138,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 dispatch(setStaticStatus({flowStatus:_dict.KFHL_ST,tableStatus:_dict.KFHL_TAB_S}));
             },
             setTempSearchObj:(_this,searchObj={})=>{
-                let result = {..._this.props.state.searchObj,..._this.props.state.tempSearchObj,...searchObj};
-                dispatch(setTempSearchObj(result));
+                dispatch(setTempSearchObj(searchObj));
             },
         },
         applicationForAdmission:{
@@ -153,7 +183,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
             },
         },
         dischargeAssessment:{
-            setPageTempObjCY:(_this,objs)=>{
+            setPageTempObj:(_this,objs)=>{
                 let result = {..._this.props.state.pageTempObjCY,...objs};
                 dispatch(pageTempObjCY(result));
             },
@@ -162,22 +192,22 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 Global.alert(result,{
                     successFun:()=>{
                         let personUserList = result.datas || [];
-                        _this.props.dischargeAssessment.setPageTempObjCY(_this,{personUserList});
+                        _this.props.dischargeAssessment.setPageTempObj(_this,{personUserList});
                     },
                     isSuccessAlert:false
                 });
             },
             setBergFile:(_this,fileRecord={})=>{
-                let {setPageTempObjCY} = _this.props.dischargeAssessment;
+                let {setPageTempObj} = _this.props.dischargeAssessment;
                 let {uploadBergFiles =[]} = _this.props.state.pageTempObjCY;
                 uploadBergFiles.push(fileRecord);
-                setPageTempObjCY(_this,{uploadBergFiles});
+                setPageTempObj(_this,{uploadBergFiles});
             },
             removeBergFile:(_this,fileRecord)=>{
-                let {setPageTempObjCY} = _this.props.applicationForAdmission;
+                let {setPageTempObj} = _this.props.applicationForAdmission;
                 let {uploadBergFiles} = _this.props.state.pageTempObjCY;
                 let array = uploadBergFiles.filter(res=>res.fileId != fileRecord.fileId);
-                setPageTempObjCY(_this,{uploadBergFiles:array});
+                setPageTempObj(_this,{uploadBergFiles:array});
             },
         }
     }

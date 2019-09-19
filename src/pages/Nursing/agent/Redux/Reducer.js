@@ -6,7 +6,8 @@ let initialState = {
     typeDatas: [],
     datas: [],
     pagination: {
-        current: 10,
+        current: 1,
+        pageSize:10,
         showSizeChanger: true,
         showQuickJumper: true,
         showTotal: (total, range) => `总共${total}条 显示${range[0]}-${range[1]}条`,
@@ -22,40 +23,40 @@ let initialState = {
         node:[]
     },
     tempSearchObj:{},
-    // 查看康复入院申请
+    // 1
     pageTempObj:{
         // 显示哪些数据
         record:{},
-        // 诊断依据的上端依据['0', "1",'2', "3", "4"]
-        checkedOutsideList:[],
-        // 诊断依据的下端骨科组选择依据
-        checkedGroupList:[],
-        // 诊断依据的下端骨科组选择依据 全选设置,默认不全选
-        indeterminate:false,
-        // 诊断依据的下端骨科组选择依据 是否显示全选
-        checkAll:false,
-        // 是否显示退回Modal
-        showRejectModal:false,
-        // 退回节点的名称集合
-        rejectTxts:[]
-    },
-    // 康复出院申请
-    pageTempObjCY:{
-        // 显示哪个tab页
-        tabValue:'1',
-        // 显示哪些数据
-        record:{},
+        // 上传的出院小结或死亡记录的文件
+        outHopsFiles:[],
+        // 上传的用药记录文件
+        pharmacyFiles:[],
+        // 是否可以编辑页面
+        canEdit:true,
         // 在院人员模糊用户信息列表
         personUserList:[],
-        // 平很量表中的总分数
-        sumScore:"",
-        // 上传的评估文件
-        uploadBergFiles:[],
-        // 是否显示退回Modal
-        showRejectModal:false,
-        // 退回节点的名称集合
-        rejectTxts:[]
+    },
+    //护理出院记录
+    pageTempObjDischarge:{
+        // 显示哪些数据
+        record:{},
+        // 上传的出院文件
+        outHopsFiles:[],
+        // 上传的用药文件
+        pharmacyFiles:[],
+        // 是否可以编辑页面
+        canEdit:true,
+        // 在院人员模糊用户信息列表
+        personUserList:[],
+    },
+    // 护理阶段性评估
+    pageTempObjStag:{
+        // 显示哪些数据
+        record:{},
+        // 是否可以编辑页面
+        canEdit:true,
     }
+
 };
 
 const actions={};

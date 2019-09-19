@@ -208,6 +208,12 @@ const myStatic = {
         {label: '是', value: '0'},
         {label: '否', value: '1'},
     ],
+    myEnum:{
+        yysw:{
+            cyxj:"0",//出院小结
+            swjl:"1"//死亡记录
+        }
+    },
     yysw:[
         {label: '出院小结', value: '0'},
         {label: '死亡记录', value: '1'},
@@ -305,7 +311,8 @@ const uploader =(self,{method})=>{
     }
 };
 
-const getAuditAgreeTxt = (role,isInHosp = true)=>{
+
+const getAuditAgreeTxt = (role,isInHosp=true)=>{
     let currentRole = Static.currentRole;
     let txt= '';
     switch (role){
@@ -324,15 +331,41 @@ const getAuditAgreeTxt = (role,isInHosp = true)=>{
                 txt =`【${myStatic.auditAgree.outHospDocter[0]}】已完成，确认要发送到下一步【${myStatic.auditAgree.outHospDocter[1]}】`
             }
             break;
-
     }
+    return txt;
 }
+
+const getAuditRejectTxt =(role,isInHosp=true)=>{
+    let currentRole = Static.currentRole;
+    let txt= '';
+    switch (role){
+        case currentRole.medicalInstitution:
+            txt =`${myStatic.auditReject.outHospMedicalInstitution[0]}=>${myStatic.auditReject.outHospMedicalInstitution[1]}`
+            break;
+        case currentRole.socialInsurance:
+            txt =`${myStatic.auditReject.socialInsurance[0]}=>${myStatic.auditReject.socialInsurance[1]}`
+            break;
+        default:
+            // 默认当做医生提交
+            if(!isInHosp){
+                // 出院
+                txt =`${myStatic.auditReject.inHospMedicalInstitution[0]}=>${myStatic.auditReject.inHospMedicalInstitution[1]}`
+            }else{
+                txt =`${myStatic.auditReject.outHospMedicalInstitution[0]}=>${myStatic.auditReject.outHospMedicalInstitution[1]}`
+            }
+            break;
+    }
+    return txt;
+}
+
 export default {
     myStatic,
     // 初始化编辑中机构列表的选中数据
     currentDay,
     // 初始化编辑中机构列表的选中数据
     uploader,
-    //获取提交文本
-    getAuditAgreeTxt
+    // 获取提交文本
+    getAuditAgreeTxt,
+    // 获取驳回文本
+    getAuditRejectTxt
 }

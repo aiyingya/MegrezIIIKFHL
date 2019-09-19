@@ -28,107 +28,29 @@ class ApplicationForAdmission extends Component {
         this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.currentDay = KFHLService.currentDay();
-        this.handleChange = this.handleChange.bind(this)
-        this.onRadioChange = this.onRadioChange.bind(this)
-        this.onCheckboxGroupChange = this.onCheckboxGroupChange.bind(this);
-        this.onCheckAllChange = this.onCheckAllChange.bind(this);
-        this.onCheckChange = this.onCheckChange.bind(this);
         this.print = this.print.bind(this);
         this.setPageTempObj = this.setPageTempObj.bind(this);
-        this.setApplyFile = this.setApplyFile.bind(this);
-        this.setBergFile = this.setBergFile.bind(this);
     }
-
-    componentDidMount() {
-        new Scrollbar(this.inside.current).show();
-        if(Global.isFrozen()) return;
+    componentWillMount(){
+        // 页面回退显示提交的数据，刷新页面
+        let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
+        if(isFrozenPaging) return;
         //判断当前发起流程是否可以操作；
         let query = this.props.location.query ||{};
         const record = query.record ? query.record :{};
         if(!record.inHospTableId){console.error("页面必须有数据")}
         else{
-            this.setPageTempObj({tabValue: record.lookType});
             this.props.common.getInfo(this,{inHospTableId:record.inHospTableId},this.setPageTempObj);
-
         }
     }
-
-
+    componentDidMount() {
+        new Scrollbar(this.inside.current).show();
+    }
 
     setPageTempObj(object={}){
         this.props.applicationForAdmission.setPageTempObj(this,{...object});
     }
 
-    handleChange(val, field) {
-        // 表单变更立即触发的事件
-        let {record ={},sumScore} = this.props.state.pageTempObj;
-        record[field] = val;
-       /* //平衡量表总分数
-        let isCheckChange = curUtil.myStatic.checkTitle.find(res=>res.name == field);
-        let _sumScore = 0;
-        if(isCheckChange){
-            curUtil.myStatic.checkTitle.map(res=>{
-                let tempScore = record[res.name] ? Number(record[res.name]) : 0 ;
-                _sumScore += tempScore;
-            })
-        }
-        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});*/         this.setPageTempObj({record});
-    }
-
-    onRadioChange(value, name) {
-        if (name == curUtil.myStatic.radioType.imIsTab) {
-            this.setPageTempObj({tabValue: value});
-        }
-    }
-
-    onCheckChange(checkedValues,field) {
-        // 其他障碍选择
-        let {record,checkedGroupList,checkAll} = this.props.state.pageTempObj;
-        let _checkedValues = [...checkedValues,...checkedGroupList];
-        if(checkAll){
-            _checkedValues = [..._checkedValues,curUtil.myStatic.plainParentOptions.value]
-        }
-        record[field] =_checkedValues;
-        this.setPageTempObj({checkedOutsideList:checkedValues,record});
-    }
-    onCheckAllChange(e,field) {
-        // 骨关节功能障碍 全选
-        const checkAll = e.target.checked;
-        let checkedGroupList = checkAll ? curUtil.myStatic.plainOptions.map(res => res.value) : [];
-        let {record,checkedOutsideList} = this.props.state.pageTempObj;
-        let _checkedValues = [...checkedOutsideList,...checkedGroupList];
-        if(checkAll){
-            _checkedValues = [..._checkedValues,curUtil.myStatic.plainParentOptions.value]
-        }
-        record[field] =_checkedValues;
-        this.setPageTempObj({
-            checkedGroupList: checkedGroupList,
-            indeterminate: false,
-            checkAll: checkAll,
-            record
-        });
-    };
-    onCheckboxGroupChange(checkedList,field) {
-        // 骨头关节子选
-        let {record,checkedOutsideList} = this.props.state.pageTempObj;
-        const checkAll = checkedList.length === curUtil.myStatic.plainOptions.length;
-        let _checkedValues = [...checkedOutsideList,...checkedList];
-        if(!!checkedList.length){
-            _checkedValues = [..._checkedValues,curUtil.myStatic.plainParentOptions.value]
-        }
-        record[field] =_checkedValues;
-        // 骨关节功能障碍 子选
-        this.setPageTempObj({
-            checkedGroupList:checkedList,
-            indeterminate: !!checkedList.length && checkedList.length < curUtil.myStatic.plainOptions.length,
-            checkAll: checkAll,
-            record
-        });
-    };
-
-    clickDownLoad(url){
-        window.location.href=url;
-    }
     print() {
         // 打印
         Global.showLoading();
@@ -140,35 +62,10 @@ class ApplicationForAdmission extends Component {
         }, 1000);
     }
 
-    setApplyFile(file={}){
-        let count = Math.floor(Math.random() * (1000 - 1) + 1);
-        this.props.applicationForAdmission.setApplyFile(this,{
-            fileName: file.name,
-            size: (file.size / 1024) + "KB" ,
-            uploadDate:KFHLService.currentDay(),
-            uploadUser: this.user.yh_mc || 'admin',
-            fileId:count,
-            fileUrl:'https://github.com/vuejs/vuepress/archive/master.zip'
-        });
-    }
-    setBergFile(file={}){
-        let user =  Global.localStorage.get(Global.localStorage.key.userInfo) || {};
-        let count = Math.floor(Math.random() * (1000 - 1) + 1);
-        this.props.applicationForAdmission.setBergFile(this,{
-            fileName: file.name,
-            size: (file.size / 1024) + "KB" ,
-            uploadDate: KFHLService.currentDay(),
-            uploadUser: this.user.yh_mc || 'admin',
-            fileId:count,
-            fileUrl:'https://github.com/vuejs/vuepress/archive/master.zip'
-        });
-    }
-
     render() {
         let {tabValue="0",uploadBergFiles,uploadApplyFiles,record={}} = this.props.state.pageTempObj;
         const { isHidePrint } = this.state;
         const { getFieldDecorator } = this.props.form;
-        const { removeBergFile,setBergFile,removeApplayFile,setApplyFile  } = this.props.applicationForAdmission;
         const uploadBergFileDataSource = (uploadBergFiles && uploadBergFiles.length>0 ? uploadBergFiles : Static.defaultUploadInfo);
         const uploadApplyFileDataSource = (uploadApplyFiles && uploadApplyFiles.length>0 ? uploadApplyFiles : Static.defaultUploadInfo);
         return (
@@ -178,13 +75,6 @@ class ApplicationForAdmission extends Component {
                     <Divider/>
                     <Step isShow={true}></Step>
                     <Divider/>
-
-                    {/*<Radio.Group className={style.raioTab} defaultValue={tabValue}*/}
-                                 {/*onChange={(e) => this.onRadioChange(e.target.value, curUtil.myStatic.radioType.imIsTab)}>*/}
-                        {/*<Radio.Button value='0'>康复入院申请</Radio.Button>*/}
-                        {/*<Radio.Button value='1'>康复入院评估</Radio.Button>*/}
-                        {/*<Radio.Button value='2'>Berg平衡量表</Radio.Button>*/}
-                    {/*</Radio.Group>*/}
 
                     <div className={style.seatDiv}></div>
                         <Form >

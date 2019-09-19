@@ -28,23 +28,23 @@ class DischargeAssessment extends Component {
         this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.currentDay = KFHLService.currentDay();
-        this.checkUser = this.checkUser.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleAutoSearch = this.handleAutoSearch.bind(this);
         this.onRadioChange = this.onRadioChange.bind(this);
         this.print = this.print.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.setPageTempObj = this.setPageTempObj.bind(this);
-        this.setApplyFile = this.setApplyFile.bind(this);
     }
 
 
     handleAutoSearch (personName) {
-        this.props.dischargeAssessment.getUser(this,personName);
+        this.props.common.getUser(this,personName,this.setPageTempObj);
     };
-    componentDidMount() {
-        new Scrollbar(this.inside.current).show();
-        if(Global.isFrozen()) return;
+
+    componentWillMount(){
+        // 页面回退显示提交的数据，刷新页面
+        let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
+        if(isFrozenPaging) return;
         // 只有医护人员访问的发起流程页面
         let query = this.props.location.query ||{};
         const record = query.record ? query.record :{};
@@ -65,19 +65,36 @@ class DischargeAssessment extends Component {
         }
     }
 
-    checkUser(name){
-        this.props.dischargeAssessment.getUser(name);
+    componentDidMount() {
+        new Scrollbar(this.inside.current).show();
+
     }
-    handleSubmit(e){
+
+    handleSubmit(isSubmit){
         // if(!this.props.state.btnRequest) return
         let {record} = this.props.state.pageTempObjCY;
         record.type = curUtil.myStatic.type.outHosp;//0 = 入院，1 = 出院
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                // let val = {...this.props.state.fromObj.record,...values}
-                this.props.applicationForAdmission.handleOperate(record,()=>{
-                    KFHLService.goBackUrl(this,this.backUrl);
-                })
+
+                const handleOperate =()=>{
+                    this.props.dischargeAssessment.handleOperate(record,isSubmit,()=>{
+                        KFHLService.goBackUrl(this,this.backUrl);
+                    })
+                }
+
+                if(isSubmit){
+                    let title = curUtil.getAuditAgreeTxt(this.user.js_lx,false);
+                    Global.showConfirm({title,
+                        onConfirm:()=> {
+                            handleOperate();
+                        },
+                        className:style.blue
+                    });
+                }else{
+                    handleOperate();
+                }
+
             }else{
                 message.error("请检查必选项！");
             }
@@ -85,24 +102,14 @@ class DischargeAssessment extends Component {
     }
 
     setPageTempObj(object={}){
-        this.props.dischargeAssessment.setPageTempObjCY(this,{...object});
+        this.props.dischargeAssessment.setPageTempObj(this,{...object});
     }
-
 
     handleChange(val, field) {
         // 表单变更立即触发的事件
-        let {record ={},sumScore} = this.props.state.pageTempObjCY;
+        let {record ={}} = this.props.state.pageTempObjCY;
         record[field] = val;
-        /*let isCheckChange = curUtil.myStatic.checkTitle.find(res=>res.name == field);
-        let _sumScore = 0;
-        //平衡量表总分数
-        if(isCheckChange){
-            curUtil.myStatic.checkTitle.map(res=>{
-                let tempScore = record[res.name] ? Number(record[res.name]) : 0 ;
-                _sumScore += tempScore;
-            })
-        }
-        this.setPageTempObj({record,sumScore: _sumScore === 0? "" :_sumScore});*/         this.setPageTempObj({record});
+        this.setPageTempObj({record});
     }
     onRadioChange(value, name) {
         if (name == curUtil.myStatic.radioType.imIsTab) {
@@ -110,9 +117,6 @@ class DischargeAssessment extends Component {
         }
     }
 
-    clickDownLoad(url){
-        window.location.href=url;
-    }
     print() {
         // 打印
         Global.showLoading();
@@ -123,20 +127,9 @@ class DischargeAssessment extends Component {
             this.setState({isHidePrint: true});
         }, 1000);
     }
-    setApplyFile(file={}){
-        let count = Math.floor(Math.random() * (1000 - 1) + 1);
-        this.props.applicationForAdmission.setApplyFile(this,{
-            fileName: file.name,
-            size: (file.size / 1024) + "KB" ,
-            uploadDate:KFHLService.currentDay(),
-            uploadUser: this.user.yh_mc || 'admin',
-            fileId:count,
-            fileUrl:'https://github.com/vuejs/vuepress/archive/master.zip'
-        });
-    }
 
     render() {
-        let {tabValue,canEdit,record={},uploadBergFiles} = this.props.state.pageTempObjCY;
+        let {tabValue,canEdit,record={},uploadBergFiles,personUserList=[]} = this.props.state.pageTempObjCY;
         const { isHidePrint } = this.state;
         const { getFieldDecorator } = this.props.form;
         const { removeBergFile,setBergFile } = this.props.dischargeAssessment;
@@ -160,9 +153,14 @@ class DischargeAssessment extends Component {
                         <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
                             <div name="tab1" className={(tabValue == "1") ? '' : style.hidden}
                                  style={{"pageBreakAfter": "always"}}>
-                                <OutHospAssess self={this}isDocter={true} canEdit={canEdit}
+                                <OutHospAssess self={this} isDocter={true} canEdit={canEdit}
                                                getFieldDecorator ={getFieldDecorator}
-                                               isHidePrint ={isHidePrint}/>
+                                               isHidePrint ={isHidePrint}
+                                               handleChange={this.handleChange}
+                                               personUserList = {personUserList}
+                                               record={record}
+                                               handleAutoSearch ={this.handleAutoSearch}
+                                />
                             </div>
 
                             <div name="tab2" className={(tabValue == "2") ? '' : style.hidden}
@@ -173,6 +171,9 @@ class DischargeAssessment extends Component {
                                              removeBergFile ={removeBergFile}
                                              setBergFile ={setBergFile}
                                              uploadBergFileDataSource ={uploadBergFileDataSource}
+                                             handleChange={this.handleChange}
+                                             handleAutoSearch ={this.handleAutoSearch}
+                                             personUserList = {personUserList}
                                 />
 
                             </div>

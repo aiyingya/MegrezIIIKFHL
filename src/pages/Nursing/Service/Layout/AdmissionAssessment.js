@@ -8,22 +8,38 @@ import style from './common.less'
 import {Global} from "winning-megreziii-utils";
 import Sign from '@components/KFHL/Sign/Sign';
 import Static from "@components/KFHL/Utils/Static";
-import moment from "moment/moment";
+import moment from "moment";
 import KFHLService from "@components/KFHL/Utils/Service";
+import _ from "lodash";
 
 class AdmissionAssessment  extends Component {
     constructor(props) {
         super(props);
         this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.onCheckChange = this.onCheckChange.bind(this);
+        this.handleCompleteChange = this.handleCompleteChange.bind(this);
+    }
+    handleCompleteChange(key) {
+        // key可能为选中的身份证号码，或者用户输入的个名称
+        let {handleChange,personUserList=[]} = this.props;
+        const finded = personUserList.find(item=>item.identityCard===key);
+        if(finded){
+            handleChange && handleChange(finded.personName,"personName");
+            handleChange && handleChange(finded.identityCard,"identityCard");
+            return
+        }
+        handleChange && handleChange(key,"personName");
     }
     onCheckChange(checkedValues = [],field) {
         let value= checkedValues.length ? [_.last(checkedValues)] : [];
-        this.props.self.handleChange(value, field)
+        this.props.handleChange(value, field)
     }
     render() {
 
-        let {isHidePrint,record,getFieldDecorator,dict,self,canEdit,isDocter } = this.props;
+        let {isHidePrint,record,getFieldDecorator,dict,self,canEdit,isDocter,personUserList=[],
+            handleChange=()=>{},
+            handleAutoSearch=()=>{},
+        } = this.props;
 
         return (
             <div className={isHidePrint ?  style.tabSelf : style.tabSelf +' '+style.showPrint}>
@@ -33,13 +49,20 @@ class AdmissionAssessment  extends Component {
                     <Descriptions.Item label="姓名">
                         <Fragment>
                             {
-                                (isHidePrint && canEdit && isDocter) ?  <Form.Item style={{ marginBottom: 0 }}>
+                                (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('personName', {
                                             initialValue: record.personName,...Static.rulesConfig.required
                                         })(
-                                            <Input
+                                            <AutoComplete
+                                                className="global-search"
+                                                style={{ width: '100%' }}
+                                                dataSource={personUserList.map(KFHLService.renderOption)}
+                                                onSearch={_.debounce((e)=>{handleAutoSearch(e)}, 1000)}
+                                                onChange={this.handleCompleteChange}
                                                 placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "personName")}}/>
+                                                optionLabelProp="text"
+                                            >
+                                            </AutoComplete>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.personName}</Fragment>
@@ -53,8 +76,8 @@ class AdmissionAssessment  extends Component {
                                         {getFieldDecorator('sex', {
                                             initialValue: record.sex ? record.sex : Static.myEnum.sex.man,...Static.rulesConfig.required
                                         })(
-                                            <Select onChange={(event)=> {self.handleChange(event, "sex")}}>
-                                                {Static.myDict.sex.map(res=><Option value={res.value}>{res.name}</Option>)}
+                                            <Select onChange={(event)=> {handleChange(event, "sex")}}>
+                                                {Static.myDict.sex.map(res=><Option key={res.value} value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
@@ -68,10 +91,11 @@ class AdmissionAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('birthDate', {
-                                            initialValue: record.birthDate && moment(record.birthDate),rules: [{required: false, message: '请输入'}]
+                                            initialValue: record.birthDate && moment(record.birthDate),
+                                            rules: [{required: false, message: '请输入'}]
                                         })(
                                             <DatePicker  format={Static.dateFormat}
-                                                         onChange={(date, dateString)=>  {self.handleChange(dateString, "birthDate")}}/>
+                                                         onChange={(date, dateString)=>  {handleChange(dateString, "birthDate")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.birthDate}</Fragment>
@@ -85,8 +109,8 @@ class AdmissionAssessment  extends Component {
                                         {getFieldDecorator('isMarried', {
                                             initialValue:record.isMarried,...Static.rulesConfig.required
                                         })(
-                                            <Select onChange={(event)=> {self.handleChange(event, "isMarried")}}>
-                                                {Static.myDict.hyzk.map(res=><Option value={res.value}>{res.name}</Option>)}
+                                            <Select onChange={(event)=> {handleChange(event, "isMarried")}}>
+                                                {Static.myDict.hyzk.map(res=><Option key={res.value} value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
@@ -104,7 +128,7 @@ class AdmissionAssessment  extends Component {
                                         })(
                                             <Input
                                                 placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "identityCard")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "identityCard")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.identityCard}</Fragment>
@@ -120,7 +144,7 @@ class AdmissionAssessment  extends Component {
                                         })(
                                             <Input
                                                 placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "tel")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "tel")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.tel}</Fragment>
@@ -136,7 +160,7 @@ class AdmissionAssessment  extends Component {
                                         })(
                                             <Input
                                                 placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "guardian")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "guardian")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.guardian}</Fragment>
@@ -150,8 +174,8 @@ class AdmissionAssessment  extends Component {
                                         {getFieldDecorator('relation', {
                                             initialValue:record.relation,...Static.rulesConfig.required
                                         })(
-                                            <Select onChange={(event)=> {self.handleChange(event, "relation")}}>
-                                                {Static.myDict.gx.map(res=><Option value={res.value}>{res.name}</Option>)}
+                                            <Select onChange={(event)=> {handleChange(event, "relation")}}>
+                                                {Static.myDict.gx.map(res=><Option key={res.value} value={res.value}>{res.name}</Option>)}
                                             </Select>
                                         )}
                                     </Form.Item>:
@@ -160,19 +184,19 @@ class AdmissionAssessment  extends Component {
                         </Fragment>
 
                     </Descriptions.Item>
-                    <Descriptions.Item label="监护人（家属）姓名">
+                    <Descriptions.Item label="住址">
                         <Fragment>
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
-                                        {getFieldDecorator('guardian', {
-                                            initialValue: record.guardian,...Static.rulesConfig.required
+                                        {getFieldDecorator('address', {
+                                            initialValue: record.address,...Static.rulesConfig.required
                                         })(
                                             <Input
                                                 placeholder="请输入"
-                                                onChange={(event)=> {self.handleChange(event.target.value, "guardian")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "address")}}/>
                                         )}
                                     </Form.Item>:
-                                    <Fragment>{record.guardian}</Fragment>
+                                    <Fragment>{record.address}</Fragment>
                             }
                         </Fragment>
                     </Descriptions.Item>
@@ -186,7 +210,7 @@ class AdmissionAssessment  extends Component {
                                     initialValue: record.yxjl,
                                 })(
                                     <TextArea className={style.noneBorder} rows={5}
-                                              onChange={(event)=> {self.handleChange(event.target.value, "yxjl")}}></TextArea>
+                                              onChange={(event)=> {handleChange(event.target.value, "yxjl")}}></TextArea>
                                 )}
                             </Form.Item>:
                             <div className={style.textArea}>{record.yxjl}</div>
@@ -201,7 +225,7 @@ class AdmissionAssessment  extends Component {
                                             initialValue: record.t,...Static.rulesConfig.required
                                         })(
                                             <Input
-                                                onChange={(event)=> {self.handleChange(event.target.value, "t")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "t")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.t}</Fragment>
@@ -217,7 +241,7 @@ class AdmissionAssessment  extends Component {
                                             initialValue: record.p,...Static.rulesConfig.required
                                         })(
                                             <Input
-                                                onChange={(event)=> {self.handleChange(event.target.value, "p")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "p")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.p}</Fragment>
@@ -233,7 +257,7 @@ class AdmissionAssessment  extends Component {
                                             initialValue: record.r,...Static.rulesConfig.required
                                         })(
                                             <Input
-                                                onChange={(event)=> {self.handleChange(event.target.value, "r")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "r")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.r}</Fragment>
@@ -251,7 +275,7 @@ class AdmissionAssessment  extends Component {
                                                 initialValue: record.bpfz,...Static.rulesConfig.required
                                             })(
                                                 <Input
-                                                    onChange={(event)=> {self.handleChange(event.target.value, "bpfz")}}/>
+                                                    onChange={(event)=> {handleChange(event.target.value, "bpfz")}}/>
                                             )}
                                         </Form.Item>
                                         <span>&nbsp;/&nbsp;</span>
@@ -260,7 +284,7 @@ class AdmissionAssessment  extends Component {
                                                 initialValue: record.bpfm,...Static.rulesConfig.required
                                             })(
                                                 <Input
-                                                    onChange={(event)=> {self.handleChange(event.target.value, "bpfm")}}/>
+                                                    onChange={(event)=> {handleChange(event.target.value, "bpfm")}}/>
                                             )}
                                         </Form.Item>
                                     </div>
@@ -275,10 +299,10 @@ class AdmissionAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('weight', {
-                                            initialValue: record.weight,...Static.rulesConfig.required
+                                            initialValue: record.weight
                                         })(
                                             <Input
-                                                onChange={(event)=> {self.handleChange(event.target.value, "weight")}}/>
+                                                onChange={(event)=> {handleChange(event.target.value, "weight")}}/>
                                         )}
                                     </Form.Item>:
                                     <Fragment>{record.weight}</Fragment>
@@ -326,8 +350,8 @@ class AdmissionAssessment  extends Component {
                                 onChange={(e)=>this.onCheckChange(e,"sl")}
                             />
                             <div className={style.upDownRight}>
-                                <div><label>左:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "slLeft")}}/></div>
-                                <div><label>右:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "slRight")}}/></div>
+                                <div><label>左:</label><Input onChange={(event)=> {handleChange(event.target.value, "slLeft")}}/></div>
+                                <div><label>右:</label><Input onChange={(event)=> {handleChange(event.target.value, "slRight")}}/></div>
                             </div>
                         </div>
                     </Descriptions.Item>
@@ -340,8 +364,8 @@ class AdmissionAssessment  extends Component {
                                 onChange={(e)=>this.onCheckChange(e,"tl")}
                             />
                             <div className={style.upDownRight}>
-                                <div><label>左:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "tlLeft")}}/></div>
-                                <div><label>右:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "tlRight")}}/></div>
+                                <div><label>左:</label><Input onChange={(event)=> {handleChange(event.target.value, "tlLeft")}}/></div>
+                                <div><label>右:</label><Input onChange={(event)=> {handleChange(event.target.value, "tlRight")}}/></div>
                             </div>
                         </div>
                     </Descriptions.Item>
@@ -451,15 +475,15 @@ class AdmissionAssessment  extends Component {
                             <div className={style.leftUpDownRight}>
                                 <div className={style.texts}>上</div>
                                 <div className={style.upDownRight}>
-                                    <div><label>左:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "jlsz")}}/></div>
-                                    <div><label>右:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "jlsy")}}/></div>
+                                    <div><label>左:</label><Input onChange={(event)=> {handleChange(event.target.value, "jlsz")}}/></div>
+                                    <div><label>右:</label><Input onChange={(event)=> {handleChange(event.target.value, "jlsy")}}/></div>
                                 </div>
                             </div>
                             <div className={style.leftUpDownRight}>
                                 <div className={style.texts}>下</div>
                                 <div className={style.upDownRight}>
-                                    <div><label>左:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "jlxz")}}/></div>
-                                    <div><label>右:</label><Input onChange={(event)=> {self.handleChange(event.target.value, "jlxy")}}/></div>
+                                    <div><label>左:</label><Input onChange={(event)=> {handleChange(event.target.value, "jlxz")}}/></div>
+                                    <div><label>右:</label><Input onChange={(event)=> {handleChange(event.target.value, "jlxy")}}/></div>
                                 </div>
                             </div>
                         </div>
@@ -538,16 +562,16 @@ class AdmissionAssessment  extends Component {
                         />
                         <div>
                             <span>部位：</span>
-                            <Input onChange={(event)=> {self.handleChange(event.target.value, "bw")}}/>
+                            <Input onChange={(event)=> {handleChange(event.target.value, "bw")}}/>
                         </div>
                         <div>
                             <span>大小：</span>
-                            <Input onChange={(event)=> {self.handleChange(event.target.value, "dx")}}/>
+                            <Input onChange={(event)=> {handleChange(event.target.value, "dx")}}/>
                             <div>cm</div>
                         </div>
                         <div>
                             <span>深度：</span>
-                            <Input onChange={(event)=> {self.handleChange(event.target.value, "sd")}}/>
+                            <Input onChange={(event)=> {handleChange(event.target.value, "sd")}}/>
                             <div>cm</div>
                         </div>
                         </div>
@@ -575,7 +599,7 @@ class AdmissionAssessment  extends Component {
                                     initialValue: record.sysChange,
                                 })(
                                     <TextArea className={style.noneBorder} rows={5}
-                                              onChange={(event)=> {self.handleChange(event.target.value, "sysChange")}}></TextArea>
+                                              onChange={(event)=> {handleChange(event.target.value, "sysChange")}}></TextArea>
                                 )}
                             </Form.Item>:
                             <div className={style.textArea}>{record.sysChange}</div>
@@ -589,7 +613,7 @@ class AdmissionAssessment  extends Component {
                                     initialValue: record.zkCase,
                                 })(
                                     <TextArea className={style.noneBorder} rows={5}
-                                              onChange={(event)=> {self.handleChange(event.target.value, "zkCase")}}></TextArea>
+                                              onChange={(event)=> {handleChange(event.target.value, "zkCase")}}></TextArea>
                                 )}
                             </Form.Item>:
                             <div className={style.textArea}>{record.zkCase}</div>
@@ -603,7 +627,7 @@ class AdmissionAssessment  extends Component {
                                     initialValue: record.assistCheck,
                                 })(
                                     <TextArea className={style.noneBorder} rows={5}
-                                              onChange={(event)=> {self.handleChange(event.target.value, "assistCheck")}}></TextArea>
+                                              onChange={(event)=> {handleChange(event.target.value, "assistCheck")}}></TextArea>
                                 )}
                             </Form.Item>:
                             <div className={style.textArea}>{record.assistCheck}</div>
@@ -617,7 +641,7 @@ class AdmissionAssessment  extends Component {
                                     initialValue: record.jbzd,
                                 })(
                                     <TextArea className={style.noneBorder}  rows={5}
-                                              onChange={(event)=> {self.handleChange(event.target.value, "jbzd")}}></TextArea>
+                                              onChange={(event)=> {handleChange(event.target.value, "jbzd")}}></TextArea>
                                 )}
                             </Form.Item>:
                             <div className={style.textArea}>{record.jbzd}</div>
@@ -638,7 +662,7 @@ class AdmissionAssessment  extends Component {
                                     initialValue: record.hlfa,
                                 })(
                                     <TextArea className={style.noneBorder}  rows={5}
-                                              onChange={(event)=> {self.handleChange(event.target.value, "hlfa")}}></TextArea>
+                                              onChange={(event)=> {handleChange(event.target.value, "hlfa")}}></TextArea>
                                 )}
                             </Form.Item>:
                             <div className={style.textArea}>{record.hlfa}</div>
@@ -648,7 +672,7 @@ class AdmissionAssessment  extends Component {
                               size="middle">
                     <Descriptions.Item label="评估小组长签字">
                         {
-                            (isHidePrint && canEdit && isDocter) ?  <Input defaultValue={record.doctorSign} onChange={(event)=> {self.handleChange(event.target.value, "doctorSign")}}/>:
+                            (isHidePrint && canEdit && isDocter) ?  <Input defaultValue={record.doctorSign} onChange={(event)=> {handleChange(event.target.value, "doctorSign")}}/>:
                                 <Fragment>{record.doctorSign}</Fragment>
                         }
                     </Descriptions.Item>
@@ -657,7 +681,7 @@ class AdmissionAssessment  extends Component {
                     </Descriptions.Item>
                 </Descriptions>
 
-                <Sign isHidePrint={isHidePrint} record={record} handleChange={self.handleChange}
+                <Sign isHidePrint={isHidePrint} record={record} handleChange={handleChange}
                         canEdit={canEdit} />
             </div>
         );

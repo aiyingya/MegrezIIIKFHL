@@ -5,6 +5,7 @@ import {Badge} from 'antd';
 import style from './common.less';
 import curUtil from "@/pages/Rehabilitation/Service/Util";
 import Static from "@components/KFHL/Utils/Static";
+import moment from "moment";
 
 export default (self)=>{
     const {initiate,state}=self.props;
@@ -40,7 +41,10 @@ export default (self)=>{
         },
         {
             title: '审核日期',
-            dataIndex:'auditDate'
+            dataIndex:'auditDate',
+            render:(text, record, index) =>{
+                moment(text,"YYYY-MM-DD")
+            }
         },
         {
             title: '状态',

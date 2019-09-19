@@ -11,13 +11,10 @@ import nursingUtils from '../../Service/Util';
 import Step from '@components/Step/Step';
 import {store, mapStateToProps, mapDispatchToProps} from '../Redux/Store';
 import style from '../common.less'
-import InHospApplication from '../../../Rehabilitation/Service/Layout/InHospApplication/InHospApplication';
-import InHospAssess from '../../../Rehabilitation/Service/Layout/InHospAssess/InHospAssess';
-import InHospBerg from '../../../Rehabilitation/Service/Layout/InHospBerg/InHospBerg';
 import StageAssessmentLayout from '../../Service/Layout/StageAssessment';
-import curUtil from "@/pages/Nursing/Service/Util";
 import Static from "@components/KFHL/Utils/Static";
-import KFHLService from "@components/KFHL/Utils/Service";
+import KFHLService from "@components/KFHL/Utils/Service";import RejectModal from './RejectModal';
+
 class StageAssessment extends Component {
     constructor(props) {
         super(props);
@@ -31,59 +28,64 @@ class StageAssessment extends Component {
         this.print = this.print.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.setPageTempObj = this.setPageTempObj.bind(this);
+        this.handleReject = this.handleReject.bind(this);
+        this.hideModal = this.hideModal.bind(this);
+        this.showReject = this.showReject.bind(this);
     }
 
-    componentDidMount() {
-        new Scrollbar(this.inside.current).show();
-        if(Global.isFrozen()) return;
+    componentWillMount(){
+        // 页面回退显示提交的数据，刷新页面
+        let isFrozenPaging =  Global.isFrozen() || (this.props.location.query ? this.props.location.query.frozenPaging : false);
+        if(isFrozenPaging) return;
         //机构和社保人员访问的待办流程页面
         let query = this.props.location.query ||{};
         const record = query.record ? query.record :{};
 
         if(!record.inHospTableId){console.error("页面必须有数据")}
         else{
+            let recordVal={};
+            let setStoreVal={};
             if ((record.flowStatus == nursingUtils.myStatic.flowStatus.agree || record.flowStatus == nursingUtils.myStatic.flowStatus.awaitAudit)) {
                 //已通过 或 待审核 不可做任何操作
-                this.setPageTempObj({canEdit: false});
+                setStoreVal={canEdit: false};
                 this.props.common.getInfo(this,{inHospTableId:record.inHospTableId},this.setPageTempObj);
             }else{
+                setStoreVal={canEdit: true};
                 switch (this.user.js_lx){
                     case Static.currentRole.medicalInstitution:
-                        this.props.common.getInfo(this,{inHospTableId:record.inHospTableId, recordVal:{hospSignDate:KFHLService.currentDay()}},this.setPageTempObj);
+                        recordVal={hospSignDate:KFHLService.currentDay()};
                         break;
                     case Static.currentRole.socialInsurance:
-                        this.props.common.getInfo(this,{inHospTableId:record.inHospTableId, recordVal:{sicSignDate:KFHLService.currentDay()}},this.setPageTempObj);
+                        recordVal={sicSignDate:KFHLService.currentDay()};
                         break;
                 }
-                this.setPageTempObj({canEdit: true});
             }
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.flowType.StageAssessment, recordVal,setStoreVal},this.setPageTempObj);
         }
+    }
+    componentDidMount() {
+        new Scrollbar(this.inside.current).show();
+
     }
 
     handleSubmit(isSubmit){
-        //是否提交 否则保存
+        // 只能提交不能保存
         // if(!this.props.state.btnRequest) return
         let {record} = this.props.state.pageTempObj;
         // console.log("record",this.props.state.pageTempObj.record)
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                let handleOperate =()=>{
-                    this.props.stageAssessment.handleOperate(record,()=>{
+                const handleOperate =()=>{
+                    this.props.common.handleCommit({...record,commitType:Static.commitType.hlStageAssessment},()=>{
                         KFHLService.goBackUrl(this,this.backUrl);
                     })
                 }
-                if(isSubmit){
-                    let title = `【${nursingUtils.myStatic.auditAgree.inHospDocter[0]}】已完成，确认要发送到下一步【${nursingUtils.myStatic.auditAgree.inHospDocter[1]}】`;
-                    Global.showConfirm({title,
-                        onConfirm:()=> {
-                            handleOperate();
-                        }
-                    });
-                }else{
-                    handleOperate();
-                }
-
-
+                let title = nursingUtils.getAuditAgreeTxt(this.user.js_lx,true);
+                Global.showConfirm({title,
+                    onConfirm:()=> {
+                        handleOperate();
+                    }
+                });
             }else{
                 message.error("请检查必选项！");
             }
@@ -96,7 +98,6 @@ class StageAssessment extends Component {
         // 表单变更立即触发的事件
         let {record ={}} = this.props.state.pageTempObj;
         record[field] = val;
-        console.log(record)
         this.setPageTempObj({record});
     }
 
@@ -110,10 +111,23 @@ class StageAssessment extends Component {
             this.setState({isHidePrint: true});
         }, 1000);
     }
+    handleReject(rejectContent){
+        let {record={}} = this.props.state.pageTempObj;
+        this.props.common.handleReject(this,{inHospTableId:record.inHospTableId,backCause:rejectContent,fun:()=>{
+                this.hideModal();
+            }});
+    }
+    hideReject(){
+        this.setPageTempObj({showRejectModal: false});
+    }
+    showReject(){
+        let rejectTxts = nursingUtils.getAuditRejectTxt(this.user.js_lx,false);
+        this.setPageTempObj({showRejectModal: true,rejectTxts});
+    }
     render() {
         const { isHidePrint } = this.state;
         const {dict} = this.props.state.staticStatus;
-        const {record={},monthList,canEdit} = this.props.state.pageTempObjStag;
+        const {record={},monthList,canEdit,showRejectModal,rejectTxts} = this.props.state.pageTempObjStag;
         const { getFieldDecorator } = this.props.form;
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
@@ -130,10 +144,12 @@ class StageAssessment extends Component {
                         </div>
                         <div className={style.buttons}>
                             <ReactToPrint trigger={() => <Button id="print-application" style={{display:'none'}}>打印</Button>} content={() => this.refs}/>
-                            <BasicGroupComponent {...KFHLService.getButton(this,{canEdit:canEdit,print:this.print,handleSubmit:this.handleSubmit})}/>
+                            <BasicGroupComponent {...KFHLService.getButton(this,{canEdit:canEdit,print:this.print,handleSubmit:this.handleSubmit,showReject:this.showReject})}/>
                         </div>
                     </Form>
                 </div>
+                {showRejectModal && <RejectModal isShow={showRejectModal} close={this.hideReject} rejectCallback={(context)=>{this.handleReject(context)}} confirmLoading={this.props.state.btnRequestLoading}
+                                                 rejectTxts={rejectTxts}/>}
             </div>
         );
     }

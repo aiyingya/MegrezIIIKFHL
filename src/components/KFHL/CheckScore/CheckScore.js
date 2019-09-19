@@ -12,13 +12,13 @@ class CheckScore extends Component {
         return (
             <Fragment>
             {data && data.map((item,index) => (
-                <div key={item.text}>
+                <div key={index}>
                     <title>{index+1}</title><title>{item.text}</title>
                     <div>{
                         canEdit ?
-                            <Select style={{ width: '100%' }} value={item.value} onChange={(val)=>{this.props.onChange(val,item.name)}}>
-                                {score.map(d => (
-                                    <Select.Option key={d.value}>{d.text}</Select.Option>
+                            <Select key={index} style={{ width: '100%' }} value={item.value} onChange={(val)=>{this.props.onChange(val,item.name)}}>
+                                {score.map((d,_index) => (
+                                    <Select.Option key={_index} value={d.value}>{d.text}</Select.Option>
                                 ))}
                             </Select> :
                         <div className={style.tRightScore}>{item.value}</div>

@@ -31,6 +31,20 @@ const myStatic = {
         awaitAudit:'2',//待审核
         awaitSubmit:'3'//待提交
     },
+    //提交类型 0=康复出入院，1=护理入院，2=护理阶段性评估，3=护理出院
+    commitType:{
+        kf:"0",
+        hlAdmissionAssessment:"1",
+        hlStageAssessment:"2",
+        hlDischargeAssessment:"3",
+    },
+    // 上传的文件用途 0=出院小结，1=死亡证明，2=用药记录，3=医院病历
+    fileUseType:{
+        cyxj:"0",
+        swjl:"1",
+        yyjl:"2",
+        yybl:"3",
+    },
     //上传文件默认值
     defaultUploadInfo: [{
         isTest:true,
@@ -95,6 +109,20 @@ const myStatic = {
             {
                 "name": "兄妹",
                 "value": "5"
+            }
+        ],
+        hlFlowType: [
+            {
+                "name": "护理入院评估",
+                "value": "0"
+            },
+            {
+                "name": "护理出院记录",
+                "value": "1"
+            },
+            {
+                "name": "护理阶段性评估",
+                "value": "2"
             }
         ],
     }

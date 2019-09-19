@@ -25,7 +25,8 @@ class ExTable extends Component {
         this.state = {
             loading: false,
             pagination: {
-                current: 10,
+                current: 1,
+                pageSize:10,
                 showSizeChanger: true,
                 showQuickJumper: true,
                 showTotal: (total, range) => `总共${total}条 显示${range[0]}-${range[1]}条`,

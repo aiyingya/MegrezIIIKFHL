@@ -20,8 +20,8 @@ const api = {
     in_hosp_apply_temp: '/KFHL/inHospApply/add',
     // 发起流程 - 康复出院评估 - 保存
     out_hosp_apply_temp: '/KFHL/inHospApply/assess',
-    // 发起流程/待办/查询 - 入院/出院 - 查看 //TODO 注意developde的时候这里要改名字
-    look_hosp_apply: '/KFHL/recoveryFlow/queryBut',
+    // 发起流程/待办/查询 - 入院/出院 - 查看 //TODO 注意developde的时候这里要改名字queryBut11
+    look_hosp_apply: '/KFHL/recoveryFlow/queryBut11',
     // 住院人员查询
     person_infos: '/KFHL/inHospApply/personInfo',
     // 文件上传

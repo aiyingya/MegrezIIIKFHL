@@ -26,11 +26,10 @@ export default (self)=>{
             )
         },{
             title: '节点',
-            dataIndex: 'c',
-            render: (texts, record) => {
-                let _node = state.staticStatus.node || [];
-                const objct = _node.find(res=>res.value == texts) || {};
-                return <span>{objct.name}</span>
+            dataIndex: 'node',
+            render: (text, record) => {
+                let name = _m.dictName(text,"KFHL_LC");
+                return <span>{name}</span>
             }
         }, {
             title: '发起人',
@@ -42,18 +41,15 @@ export default (self)=>{
         {
             title: '审核日期',
             dataIndex:'auditDate',
-            render:(text, record, index) =>{
-                moment(text,"YYYY-MM-DD")
-            }
+            render:(text, record, index) =>text && moment(text).format(Static.dateFormat)
         },
         {
             title: '状态',
             dataIndex:'flowStatus',
-            render:(texts, record, index) =>{
-                let _flowStatus = state.staticStatus.flowStatus || [];
-                const objct = _flowStatus.find(res=>res.value == texts) || {};
+            render:(text, record, index) =>{
+                let name = _m.dictName(text,"KFHL_ST");
                 let color = '';
-                switch (objct.value){
+                switch (text){
                     case Static.flowStatus.agree:
                         color ="green"
                         break;
@@ -70,17 +66,15 @@ export default (self)=>{
                         color ="error"
                         break;
                 }
-                return <span className={style[color]}>{objct.name}</span>
+                return <span className={style[color]}>{name}</span>
             }
         },
         {
             title: '类型',
-            dataIndex:'flowType',render:(texts, record, index) =>{
-                let _flowType = state.staticStatus.flowType || [];
-                const objct = _flowType.find(res=>res.value == texts) || {};
-                //KFHL_TB 内的字典
-                let badge = null;
-                switch (objct.value){
+            dataIndex:'flowType',render:(text, record, index) =>{
+                let name = _m.dictName(text,"KFHL_TB");
+                let badge = "error";
+                switch (text){
                     case curUtil.myStatic.flowType.inHosp:
                         badge ="processing"
                         break;
@@ -90,7 +84,7 @@ export default (self)=>{
                     default:
                         break;
                 }
-                return <span>{badge? <Badge status={badge} /> : ''}{objct.name}</span>
+                return <span>{badge? <Badge status={badge} /> : ''}{name}</span>
             }
         }
         ,

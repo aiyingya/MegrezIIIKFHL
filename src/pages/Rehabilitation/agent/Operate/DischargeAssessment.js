@@ -26,7 +26,6 @@ class DischargeAssessment extends Component {
             isHidePrint: true//true是隐藏所有Tabs, 打印时使用false
         }
         this.backUrl='/rehabilitation/agent';
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.currentDay = KFHLService.currentDay();
         this.handleChange = this.handleChange.bind(this);
@@ -54,7 +53,7 @@ class DischargeAssessment extends Component {
                 setStoreVal={canEdit: false};
             }else{
                 setStoreVal={canEdit: true};
-                switch (this.user.js_lx){
+                switch (_m.user.js_lx){
                     case Static.currentRole.medicalInstitution:
                         recordVal={hospSignDate:KFHLService.currentDay()};
                         break;
@@ -82,14 +81,14 @@ class DischargeAssessment extends Component {
                         KFHLService.goBackUrl(this,this.backUrl);
                     })
                 }
-                let title = curUtil.getAuditAgreeTxt(this.user.js_lx,false);
+                let title = curUtil.getAuditAgreeTxt(_m.user.js_lx,false);
                 Global.showConfirm({title,
                     onConfirm:()=> {
                         handleOperate();
                     }
                 });
             }else{
-                message.error("请检查必选项！");
+                message.error(Static.tipsTxt.inputError);
             }
         });
     }
@@ -126,7 +125,7 @@ class DischargeAssessment extends Component {
         }});
     }
     showReject(){
-        let rejectTxts = curUtil.getAuditRejectTxt(this.user.js_lx,false);
+        let rejectTxts = curUtil.getAuditRejectTxt(_m.user.js_lx,false);
         this.setPageTempObj({showRejectModal: true,rejectTxts});
     }
     hideReject(){
@@ -141,7 +140,7 @@ class DischargeAssessment extends Component {
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="康复" second="流程待办" third="出院评估" secondUrl={this.backUrl}/>
+                    <BreadcrumbCustom first="康复" second="流程待办" third="康复出院评估" secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>
@@ -186,5 +185,5 @@ class DischargeAssessment extends Component {
         );
     }
 }
-DischargeAssessment = Form.create({ name: 'ApplicationForAdmission' })(DischargeAssessment);
+DischargeAssessment = Form.create({ name: 'AgentDischargeAssessment' })(DischargeAssessment);
 export default ReduxWarpper(mapStateToProps, mapDispatchToProps, store, DischargeAssessment);

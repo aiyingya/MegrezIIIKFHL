@@ -17,7 +17,6 @@ import _ from "lodash";
 class DischargeAssessment  extends Component {
     constructor(props) {
         super(props);
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.handleCompleteChange = this.handleCompleteChange.bind(this);
     }
     handleCompleteChange(key) {
@@ -28,12 +27,12 @@ class DischargeAssessment  extends Component {
             handleChange && handleChange(finded.personName,"personName");
             handleChange && handleChange(finded.identityCard,"identityCard");
             return
-        }
+        }nrm
         handleChange && handleChange(key,"personName");
     }
 
     render() {
-        let {self,isHidePrint,record,getFieldDecorator,dict,canEdit,outHopsFileDataSource,pharmacyFileDataSource,personUserList=[],
+        let {self,isHidePrint,record,getFieldDecorator,canEdit,outHopsFileDataSource,pharmacyFileDataSource,personUserList=[],
             setOutHopsFile,setPharmacyFile,removeOutHopsFile,removePharmacyFile,isDocter,handleChange=()=>{}} = this.props;
 
         return (
@@ -167,7 +166,7 @@ class DischargeAssessment  extends Component {
                                         {getFieldDecorator('inHospDate', {
                                             initialValue: record.inHospDate && moment(record.inHospDate),rules: [{required: false, message: '请输入'}]
                                         })(
-                                            <DatePicker  value={moment(record.inHospDate)} format={Static.dateFormat}
+                                            <DatePicker  format={Static.dateFormat}
                                                          onChange={(date, dateString)=>  {handleChange(dateString, "inHospDate")}}/>
                                         )}
                                     </Form.Item>:

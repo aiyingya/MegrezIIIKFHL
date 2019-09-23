@@ -1,7 +1,7 @@
 import { createStore } from 'redux';
 import {reducer} from './Reducer';
 import moment from 'moment';
-import {loadingStart,loadingEnd,setDatas,search,getFormItems, setSearchObj,setStaticStatus, setTempSearchObj,setBtnRequestActive, setBtnRequestDisplay,
+import {loadingStart,loadingEnd,setDatas,search,getFormItems, setSearchObj, setTempSearchObj,setBtnRequestActive, setBtnRequestDisplay,
     setBtnLoadingActive,setBtnLoadingDisplay,setTypeDatas,pageTempObj,pageTempObjCY
 } from './Actions';
 import api from "@/api/NursingApi";
@@ -21,7 +21,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         common:{
             getInfo:async (_this,param={},fun)=>{
-                let {inHospTableId,tableType = nursingUtils.myStatic.flowType.AdmissionAssessment,recordVal ={},setStoreVal={}} = param;
+                let {inHospTableId,tableType = nursingUtils.myStatic.myEnum.flowType.AdmissionAssessment,recordVal ={},setStoreVal={}} = param;
                 Global.showLoading();
                 let result = await api.look({inHospTableId,tableType}).finally(() => {
                     Global.hideLoading();
@@ -30,27 +30,30 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 Global.alert(result,{
                     successFun:()=>{
                         let record = result.data || {};
-                        if(tableType == nursingUtils.myStatic.flowType.DischargeAssessment){
-                            // 出院小结内有文件上传
-                            let outHopsFiles=[];//出院小结
-                            let pharmacyFiles=[];//用药记录
-                            const  files = record.files;
-                            files && files.length>0 &&  files.map(file=>{
-                                //文件类型：0=出院小结，1=死亡证明，2=用药记录，3=医院病历
-                                if(record.outHospType === nursingUtils.myStatic.myEnum.yysw.swjl && file.fileType == Static.fileUseType.swjl){
-                                    // 死亡记录
-                                    outHopsFiles.push(file);
-                                }else if(record.outHospType === nursingUtils.myStatic.myEnum.yysw.cyxj && file.fileType == Static.fileUseType.cyxj){
-                                    // 默认出院小结
-                                    outHopsFiles.push(file);
-                                }
-                                if(file.fileType == Static.fileUseType.yyjl){
-                                    // 用药记录
-                                    pharmacyFiles.push(file);
-                                }
-                            });
-                            _this.props.dischargeAssessment.setPageTempObj(_this,{outHopsFiles,pharmacyFiles})
+                        switch (tableType) {
+                            case nursingUtils.myStatic.myEnum.flowType.DischargeAssessment:
+                                // 出院小结内有文件上传
+                                let outHopsFiles=[];//出院小结
+                                let pharmacyFiles=[];//用药记录
+                                const  files = record.files;
+                                files && files.length>0 &&  files.map(file=>{
+                                    //文件类型：0=出院小结，1=死亡证明，2=用药记录，3=医院病历
+                                    if(record.outHospType === nursingUtils.myStatic.myEnum.yysw.swjl && file.fileType == Static.fileUseType.swjl){
+                                        // 死亡记录
+                                        outHopsFiles.push(file);
+                                    }else if(record.outHospType === nursingUtils.myStatic.myEnum.yysw.cyxj && file.fileType == Static.fileUseType.cyxj){
+                                        // 默认出院小结
+                                        outHopsFiles.push(file);
+                                    }
+                                    if(file.fileType == Static.fileUseType.yyjl){
+                                        // 用药记录
+                                        pharmacyFiles.push(file);
+                                    }
+                                });
+                                _this.props.dischargeAssessment.setPageTempObj(_this,{outHopsFiles,pharmacyFiles})
+                                break;
                         }
+
                         fun && fun({
                             record:{...record,...recordVal},
                             ...setStoreVal
@@ -117,7 +120,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
             initSearch:async (searchVal)=>{
                 let toData = moment();
                 let fromData = moment().subtract(3, "months");
-                let _dict = await Uc.getDict();
+
                 // 初始化查询条件
                 let forms = [
                     {labelName: '标题', formType: Global.SelectEnum.INPUT, name: 'title'},
@@ -125,8 +128,8 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                     {labelName: '发起人', formType: Global.SelectEnum.INPUT, name: 'initPerson'},
                     {labelName: '发起时间', formType: Global.SelectEnum.RangePickerSplit, name: 'dataTimes', dateFormat:Static.dateFormat,outName:['initDateFrom','initDateTo'],outFormat:'YYYY-MM-DD',
                         initialValue:[moment(fromData,Static.dateFormat), moment(toData,Static.dateFormat)]},
-                    {labelName: '流程状态', formType: Global.SelectEnum.SELECT, name: 'flowStatus', children: _dict.KFHL_ST},
-                    {labelName: '流程类型', formType: Global.SelectEnum.SELECT, name: 'flowType', children: _dict.KFHL_TB},
+                    {labelName: '流程状态', formType: Global.SelectEnum.SELECT, name: 'flowStatus', children: _m.dicts.KFHL_ST},
+                    {labelName: '流程类型', formType: Global.SelectEnum.SELECT, name: 'flowType', children: nursingUtils.myStatic.myDict.flowType},
                 ]
                 // 为了冰冻页面 特殊处理 代表第一次初始化serach的时候，初始数据需要保存在临时对象中，用于页面切换页面时能显示临时数据使用
                 if(searchVal == false){
@@ -138,20 +141,36 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 }
                 // 写入查询Form，用于显示查询组件内容
                 dispatch(getFormItems(forms));
-                // 显示信息时使用
-                dispatch(setStaticStatus({flowStatus:_dict.KFHL_ST,flowType:_dict.KFHL_TB,node:_dict.KFHL_LC,dict:_dict}));
             },
             setTempSearchObj:(_this,searchObj={})=>{
                 dispatch(setTempSearchObj(searchObj));
             },
         },
         admissionAssessment:{
+            destroy:()=>{
+
+            },
             setPageTempObj:(_this,objs)=>{
                 let result = {..._this.props.state.pageTempObj,...objs};
                 dispatch(pageTempObj(result));
             },
         },
         dischargeAssessment:{
+            destroy:()=>{
+                let init_pageTempObjDischarge ={
+                    // 显示哪些数据
+                    record:{},
+                    // 上传的出院文件
+                    outHopsFiles:[],
+                    // 上传的用药文件
+                    pharmacyFiles:[],
+                    // 是否可以编辑页面
+                    canEdit:true,
+                    // 在院人员模糊用户信息列表
+                    personUserList:[],
+                }
+                dispatch(pageTempObjDischarge(init_pageTempObjDischarge));
+            },
             setPageTempObj:(_this,objs)=>{
                 let result = {..._this.props.state.pageTempObjDischarge,...objs};
                 dispatch(pageTempObjDischarge(result));

@@ -1,10 +1,11 @@
 import React from 'react';
 import style from '../common.less';
+import {Uc} from "winning-megreziii-utils";
 
 export default ({remove=()=>{}})=>{
 
-   const clickDownLoad=(url)=>{
-        window.location.href=url;
+   const clickDownLoad= (record={})=>{
+        Uc.post("file_upload",{filePath:record.fileUrl,fileName:record.fileName});
     }
     return [
         {
@@ -16,7 +17,7 @@ export default ({remove=()=>{}})=>{
             dataIndex: 'fileName',
         }, {
             title: '大小(KB)',
-            dataIndex: 'size'
+            dataIndex: 'fileSize'
         },{
             title: '上传时间',
             dataIndex: 'uploadDate'
@@ -30,7 +31,7 @@ export default ({remove=()=>{}})=>{
             render:(texts, record, index) =>{
                 if(record.isTest){return "";}
                 return <div>
-                    <span className={style.clickText} onClick={()=>{clickDownLoad(record.fileUrl)}}>下载</span>
+                    <span className={style.clickText} onClick={()=>{clickDownLoad(record)}}>下载</span>
                     <span className={style.clickText} onClick={()=>{remove(record)}}>删除</span></div>
             }
         }

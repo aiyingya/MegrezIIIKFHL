@@ -23,7 +23,6 @@ class ApplicationForAdmission extends Component {
             isHidePrint: true,//true是隐藏所有Tabs, 打印时使用false
         }
         this.backUrl='/rehabilitation/initiate';
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.currentDay = KFHLService.currentDay();
         this.handleChange = this.handleChange.bind(this);
@@ -45,7 +44,24 @@ class ApplicationForAdmission extends Component {
         const record = query.record ? query.record :{};
         if(!record.inHospTableId){
             record.doctorSignDate = KFHLService.currentDay();
-            this.setPageTempObj({canEdit: true,record:record});
+            this.setPageTempObj({canEdit: true,record:record,...{
+                    // 显示哪个tab页
+                    tabValue:'0',
+                    // 诊断依据的上端依据['0','1', '2', '3', '4']
+                    checkedOutsideList:[],
+                    // 诊断依据的下端骨科组选择依据 ['6', '7','8', '9', '10']
+                    checkedGroupList:[],
+                    // 诊断依据的下端骨科组选择依据 全选设置,默认不全选
+                    indeterminate:false,
+                    // 诊断依据的下端骨科组选择依据 是否显示全选['5']
+                    checkAll:false,
+                    // 上传的申请文件
+                    uploadApplyFiles:[],
+                    // 上传的评估文件
+                    uploadBergFiles:[],
+                    // 在院人员模糊用户信息列表
+                    personUserList:[],
+                }});
         }else{
             let recordVal={};
             let setStoreVal={};
@@ -80,7 +96,7 @@ class ApplicationForAdmission extends Component {
                     })
                 }
                 if(isSubmit){
-                    let title = curUtil.getAuditAgreeTxt(this.user.js_lx,true);
+                    let title = curUtil.getAuditAgreeTxt(_m.user.js_lx,true);
                     Global.showConfirm({title,
                         onConfirm:()=> {
                             handleOperate();
@@ -91,7 +107,7 @@ class ApplicationForAdmission extends Component {
                 }
 
             }else{
-                message.error("请检查必选项！");
+                message.error(Static.tipsTxt.inputError);
             }
         });
     }

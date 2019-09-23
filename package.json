@@ -6,7 +6,7 @@
   "scripts": {
     "start": "webpack",
     "serverstart": "set NODE_ENV=production && node --max_old_space_size=2048 node_modules/webpack/bin/webpack.js --config webpack.config.js",
-    "server": "webpack-dev-server --open  --hot"
+    "server": "webpack-dev-server --open  --hot --inline"
   },
   "babel": {},
   "repository": {
@@ -73,9 +73,9 @@
     "webpack": "4.8.1",
     "webpack-cli": "2.1.3",
     "webpack-dev-server": "3.1.4",
-    "winning-megreziii-basic-service": "^0.3.0",
-    "winning-megreziii-routers": "^0.3.0",
-    "winning-megreziii-utils": "^0.3.0",
+    "winning-megreziii-basic-service": "^0.3.1",
+    "winning-megreziii-routers": "^0.3.1",
+    "winning-megreziii-utils": "^0.3.1",
     "workbox-webpack-plugin": "3.6.3"
   },
   "devDependencies": {

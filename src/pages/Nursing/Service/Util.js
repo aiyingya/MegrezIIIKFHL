@@ -212,7 +212,29 @@ const myStatic = {
         yysw:{
             cyxj:"0",//出院小结
             swjl:"1"//死亡记录
-        }
+        },
+        //0=入院评估，1=出院评估，2 = 阶段性评估
+        flowType:{
+            AdmissionAssessment:"0",
+            DischargeAssessment:"1",
+            StageAssessment:"2",
+        },
+    },
+    myDict:{
+        flowType:[
+            {
+                "name": "护理入院评估",
+                "value": "0"
+            },
+            {
+                "name": "护理出院记录",
+                "value": "1"
+            },
+            {
+                "name": "护理阶段性评估",
+                "value": "2"
+            }
+        ]
     },
     yysw:[
         {label: '出院小结', value: '0'},
@@ -238,17 +260,7 @@ const myStatic = {
         // 社保中心提交
         socialInsurance:['社保中心审核','归档'],
     },
-    //0=入院评估，1=出院评估，2 = 阶段性评估
-    flowType:{
-        AdmissionAssessment:"0",
-        DischargeAssessment:"1",
-        StageAssessment:"2",
-    },
-    // 填报状态：对应数据字典中的 KFHL_TAB_S 属性
-    tableStatus:{
-        completed:"0", //已填
-        notFilledIn:"1" //未填
-    },
+
     type:{
         inHosp:"0", // 入院
         outHosp:"1" // 出院

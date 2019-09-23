@@ -1,6 +1,5 @@
 import React from 'react';
 import style from './common.less'
-import curUtil from '../Service/Util';
 
 export default ()=>{
     return [

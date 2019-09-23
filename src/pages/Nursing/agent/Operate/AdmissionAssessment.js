@@ -20,7 +20,6 @@ class AdmissionAssessment extends Component {
             isHidePrint: true,//true是隐藏所有Tabs, 打印时使用false
         }
         this.backUrl='/nursing/initiate';
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.handleChange = this.handleChange.bind(this)
         this.print = this.print.bind(this);
@@ -46,10 +45,9 @@ class AdmissionAssessment extends Component {
             if ((record.flowStatus == nursingUtils.myStatic.flowStatus.agree || record.flowStatus == nursingUtils.myStatic.flowStatus.awaitAudit)) {
                 //已通过 或 待审核 不可做任何操作
                 setStoreVal={canEdit: false};
-                this.props.common.getInfo(this,{inHospTableId:record.inHospTableId},this.setPageTempObj);
             }else{
                 setStoreVal={canEdit: true};
-                switch (this.user.js_lx){
+                switch (_m.user.js_lx){
                     case Static.currentRole.medicalInstitution:
                         recordVal={hospSignDate:KFHLService.currentDay()};
                         break;
@@ -58,7 +56,7 @@ class AdmissionAssessment extends Component {
                         break;
                 }
             }
-            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.flowType.AdmissionAssessment, recordVal,setStoreVal},this.setPageTempObj);
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.myEnum.flowType.AdmissionAssessment, recordVal,setStoreVal},this.setPageTempObj);
         }
     }
     componentDidMount() {
@@ -76,14 +74,14 @@ class AdmissionAssessment extends Component {
                         KFHLService.goBackUrl(this,this.backUrl);
                     })
                 }
-                let title = nursingUtils.getAuditAgreeTxt(this.user.js_lx,true);
+                let title = nursingUtils.getAuditAgreeTxt(_m.user.js_lx,true);
                 Global.showConfirm({title,
                     onConfirm:()=> {
                         handleOperate();
                     }
                 });
             }else{
-                message.error("请检查必选项！");
+                message.error(Static.tipsTxt.inputError);
             }
         });
     }
@@ -108,7 +106,7 @@ class AdmissionAssessment extends Component {
     }
     handleReject(rejectContent){
         let {record={}} = this.props.state.pageTempObj;
-        this.props.common.handleReject(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.flowType.AdmissionAssessment,backCause:rejectContent,fun:()=>{
+        this.props.common.handleReject(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.myEnum.flowType.AdmissionAssessment,backCause:rejectContent,fun:()=>{
                 this.hideReject();
             }});
     }
@@ -116,19 +114,19 @@ class AdmissionAssessment extends Component {
         this.setPageTempObj({showRejectModal: false});
     }
     showReject(){
-        let rejectTxts = nursingUtils.getAuditRejectTxt(this.user.js_lx,false);
+        let rejectTxts = nursingUtils.getAuditRejectTxt(_m.user.js_lx,false);
         this.setPageTempObj({showRejectModal: true,rejectTxts});
     }
     render() {
         const { isHidePrint } = this.state;
-        const {dict} = this.props.state.staticStatus;
+
         const {record={},showRejectModal,rejectTxts} = this.props.state.pageTempObj;
         const { getFieldDecorator } = this.props.form;
 
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请"  secondUrl={this.backUrl}/>
+                    <BreadcrumbCustom first="护理" second="流程待办" third="护理入院申请"  secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>
@@ -136,7 +134,7 @@ class AdmissionAssessment extends Component {
                     <Form onSubmit={this.handleSubmit}>
                         <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
                             <AdmissionAssessmentLayout self={this} record={record} getFieldDecorator={getFieldDecorator} isHidePrint={isHidePrint}
-                                                       canEdit={true} dict={dict}  isDocter={false}
+                                                       canEdit={true}   isDocter={false}
                                                        handleChange={this.handleChange} />
                         </div>
                         <div className={style.buttons}>

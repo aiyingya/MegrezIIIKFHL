@@ -15,7 +15,6 @@ import _ from "lodash";
 class AdmissionAssessment  extends Component {
     constructor(props) {
         super(props);
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.onCheckChange = this.onCheckChange.bind(this);
         this.handleCompleteChange = this.handleCompleteChange.bind(this);
     }
@@ -36,7 +35,7 @@ class AdmissionAssessment  extends Component {
     }
     render() {
 
-        let {isHidePrint,record,getFieldDecorator,dict,self,canEdit,isDocter,personUserList=[],
+        let {isHidePrint,record,getFieldDecorator,self,canEdit,isDocter,personUserList=[],
             handleChange=()=>{},
             handleAutoSearch=()=>{},
         } = this.props;
@@ -222,7 +221,7 @@ class AdmissionAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('t', {
-                                            initialValue: record.t,...Static.rulesConfig.required
+                                            initialValue: record.t
                                         })(
                                             <Input
                                                 onChange={(event)=> {handleChange(event.target.value, "t")}}/>
@@ -238,7 +237,7 @@ class AdmissionAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('p', {
-                                            initialValue: record.p,...Static.rulesConfig.required
+                                            initialValue: record.p
                                         })(
                                             <Input
                                                 onChange={(event)=> {handleChange(event.target.value, "p")}}/>
@@ -254,7 +253,7 @@ class AdmissionAssessment  extends Component {
                             {
                                 (isHidePrint && canEdit && isDocter) ? <Form.Item style={{ marginBottom: 0 }}>
                                         {getFieldDecorator('r', {
-                                            initialValue: record.r,...Static.rulesConfig.required
+                                            initialValue: record.r
                                         })(
                                             <Input
                                                 onChange={(event)=> {handleChange(event.target.value, "r")}}/>
@@ -272,7 +271,7 @@ class AdmissionAssessment  extends Component {
                                     <div className={style.bp}>
                                         <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('bpfz', {
-                                                initialValue: record.bpfz,...Static.rulesConfig.required
+                                                initialValue: record.bpfz
                                             })(
                                                 <Input
                                                     onChange={(event)=> {handleChange(event.target.value, "bpfz")}}/>
@@ -281,7 +280,7 @@ class AdmissionAssessment  extends Component {
                                         <span>&nbsp;/&nbsp;</span>
                                         <Form.Item style={{ marginBottom: 0 }}>
                                             {getFieldDecorator('bpfm', {
-                                                initialValue: record.bpfm,...Static.rulesConfig.required
+                                                initialValue: record.bpfm
                                             })(
                                                 <Input
                                                     onChange={(event)=> {handleChange(event.target.value, "bpfm")}}/>
@@ -435,6 +434,7 @@ class AdmissionAssessment  extends Component {
 
                     <Descriptions.Item></Descriptions.Item>
                 </Descriptions>
+
                 <Descriptions column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }} bordered className={style.descriptions} size="middle">
                     <Descriptions.Item label="咀嚼困难">
                         <div className={style.leftRight}>
@@ -470,7 +470,7 @@ class AdmissionAssessment  extends Component {
                     <Descriptions.Item label="肌力">
                         <div className={style.leftUpDown}>
                             <div className={style.leftUpDownLeft}>
-                                {nursingUtils.myStatic.radios.jl.map(res=><span className={style.jl}>{res.label}</span>)}
+                                {nursingUtils.myStatic.radios.jl.map((res,index)=><span key={index} className={style.jl}>{res.label}</span>)}
                             </div>
                             <div className={style.leftUpDownRight}>
                                 <div className={style.texts}>上</div>
@@ -553,6 +553,7 @@ class AdmissionAssessment  extends Component {
                     </Descriptions.Item>
                     <Descriptions.Item></Descriptions.Item>
                 </Descriptions>
+
                 <footer className={style.footer}><title className={style.tRight}>褥疮</title>
                         <div  className={style.rc}>
                         <CheckboxGroup

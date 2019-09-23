@@ -7,7 +7,6 @@ import {Global,Uc} from 'winning-megreziii-utils';
 class Header extends Component {
     constructor(props) {
         super(props);
-        this.user =   Global.localStorage.get(Global.localStorage.key.userInfo) ||{};
     }
     async logout () {
         confirm({
@@ -23,7 +22,7 @@ class Header extends Component {
 
         return (
             <div className='admin' >
-                {this.user.yh_mc || 'admin'}，<span className='logout' onClick={this.logout}>退出<Icon type="logout" /></span>
+                {_m.user.yh_mc || 'admin'}，<span className='logout' onClick={this.logout}>退出<Icon type="logout" /></span>
             </div>
         );
     }

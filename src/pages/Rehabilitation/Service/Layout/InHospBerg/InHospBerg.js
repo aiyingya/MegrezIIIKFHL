@@ -11,7 +11,7 @@ import Static from "@components/KFHL/Utils/Static";
 import moment from 'moment';
 import KFHLService from "@/components/KFHL/Utils/Service";
 import {Global} from "winning-megreziii-utils";
-import nursingUtils from "@/pages/Nursing/Service/Util";
+
 import _ from "lodash";
 class InHospBerg  extends Component {
     constructor(props) {
@@ -34,13 +34,9 @@ class InHospBerg  extends Component {
         let {self,record={},canEdit,isDocter,getFieldDecorator,isHidePrint,uploadBergFileDataSource,removeBergFile,setBergFile,
             personUserList=[],
             handleAutoSearch=()=>{},
-            handleChange=()=>{}} = this.props;
+            handleChange=()=>{},
+            sumScore} = this.props;
         let newCheckTitle = Global.setFormsValue(curUtil.myStatic.checkTitle,record);
-        let sumScore = 0;
-        //平衡量表总分数
-        newCheckTitle.map(res=>{
-            sumScore +=  Number(res.value);
-        })
         return (
             <div className={isHidePrint ?  style.tabSelf : style.tabSelf +' '+style.showPrint}>
                 <Descriptions title="Berg平衡量表" column={2} bordered className={style.descriptions}
@@ -157,10 +153,10 @@ class InHospBerg  extends Component {
                                         {getFieldDecorator('fbrq', {
                                             initialValue: record.fbrq && moment(record.fbrq),
                                             rules: [{required: true,  message: '请输入'}]
-                                        })(
-                                            <DatePicker  format={Static.dateFormat}
-                                                         onChange={(date, dateString)=>{handleChange(dateString, "fbrq")}}/>
-                                        )}
+                                    })(
+                            <DatePicker  format={Static.dateFormat}
+                                         onChange={(date, dateString)=>{handleChange(dateString, "fbrq")}}/>
+                            )}
                                     </Form.Item>:
                                     <Fragment>{record.fbrq}</Fragment>
                             }

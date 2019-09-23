@@ -1,7 +1,7 @@
 import { createStore } from 'redux';
 import {reducer} from './Reducer';
 import moment from 'moment';
-import {loadingStart,loadingEnd,setDatas,search,getFormItems, setSearchObj,setStaticStatus, setTempSearchObj,setBtnRequestActive, setBtnRequestDisplay,
+import {loadingStart,loadingEnd,setDatas,search,getFormItems, setSearchObj, setTempSearchObj,setBtnRequestActive, setBtnRequestDisplay,
     setBtnLoadingActive,setBtnLoadingDisplay,setTypeDatas,pageTempObj,pageTempObjCY
 } from './Actions';
 import api from "@/api/RehabilitationApi";
@@ -44,7 +44,15 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                                     uploadBergFiles.push(file);
                                 }
                             });
-                            _this.applicationForAdmission.setPageTempObj(_this,{uploadBergFiles})
+
+                            //初始化分数
+                            let newCheckTitle = Global.setFormsValue(curUtil.myStatic.checkTitle,record);
+                            let sumScore = 0;
+                            //平衡量表总分数
+                            newCheckTitle.forEach((res,index)=>{
+                                sumScore +=  Number(res.value);
+                            })
+                            _this.applicationForAdmission.setPageTempObj(_this,{uploadBergFiles,sumScore});
                         }else{
                             // 初始化入院上传文件
                             let uploadApplyFiles=[];// 入院申请的 医院病历
@@ -61,6 +69,8 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                             });
                             _this.props.dischargeAssessment.setPageTempObj(_this,{uploadApplyFiles,uploadBergFiles})
                         }
+
+
                         fun && fun({
                             record:{...record,...recordVal},
                             checkedOutsideList,
@@ -96,7 +106,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                     successFun:()=>{
                         result.onChange = (_page, _pageSize)=>{
                             // 绑定分页按钮点击事件
-                            _this.props.dict.initTable(_this,{value:_this.props.state.searchObj,page:_page, pageSize:_pageSize})
+                            _this.props.search.initTable(_this,{value:_this.props.state.searchObj,page:_page, pageSize:_pageSize})
                         }
                         // 写入查询条件，在上方[看上方代码]分页点击时传入查询条件_this.props.state.searchObj
                         dispatch(setSearchObj(searchObj));
@@ -111,7 +121,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
             initSearch:async (searchVal)=>{
                 let toData = moment();
                 let fromData = moment().subtract(3, "months");
-                let _dict = await Uc.getDict();
+
                 // 初始化查询条件
                 let forms = [
                     {labelName: '个人编号', formType: Global.SelectEnum.INPUT, name: 'personId'},
@@ -121,7 +131,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                     {labelName: '入院日期', formType: Global.SelectEnum.RangePickerSplit, name: 'dataTimes', dateFormat:Static.dateFormat,outName:['inHospDateFrom','inHospDateTo'],outFormat:'YYYY-MM-DD',
                         initialValue:[moment(fromData,Static.dateFormat), moment(toData,Static.dateFormat)]},
                     {labelName: '发起人', formType: Global.SelectEnum.INPUT, name: 'initPerson'},
-                    {labelName: '审核状态', formType: Global.SelectEnum.SELECT, name: 'auditStatus', children: _dict.KFHL_ST},
+                    {labelName: '审核状态', formType: Global.SelectEnum.SELECT, name: 'auditStatus', children: _m.dicts.KFHL_ST},
                     {labelName: '填报状态', formType: Global.SelectEnum.INPUT, name: 'fillStatus'}
                 ]
                 // 为了冰冻页面 特殊处理 代表第一次初始化serach的时候，初始数据需要保存在临时对象中，用于页面切换页面时能显示临时数据使用
@@ -134,8 +144,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 }
                 // 写入查询Form，用于显示查询组件内容
                 dispatch(getFormItems(forms));
-                // 显示信息时使用
-                dispatch(setStaticStatus({flowStatus:_dict.KFHL_ST,tableStatus:_dict.KFHL_TAB_S}));
             },
             setTempSearchObj:(_this,searchObj={})=>{
                 dispatch(setTempSearchObj(searchObj));

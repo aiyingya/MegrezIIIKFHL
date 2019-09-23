@@ -17,7 +17,6 @@ import KFHLService from "@/components/KFHL/Utils/Service";
 class StageAssessment  extends Component {
     constructor(props) {
         super(props);
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.handleCompleteChange = this.handleCompleteChange.bind(this);
     }
     handleCompleteChange(key) {
@@ -33,7 +32,7 @@ class StageAssessment  extends Component {
     }
     render() {
 
-        let {isHidePrint,record,getFieldDecorator,dict,self,canEdit,handleChange=()=>{},handleAutoSearch,monthList=[],isDocter,personUserList=[] } = this.props;
+        let {isHidePrint,record,getFieldDecorator,self,canEdit,handleChange=()=>{},handleAutoSearch,monthList=[],isDocter,personUserList=[] } = this.props;
 
         return (
             <div className={isHidePrint ?  style.tabSelf : style.tabSelf +' '+style.showPrint}>
@@ -166,7 +165,7 @@ class StageAssessment  extends Component {
                                         {getFieldDecorator('inHospDate', {
                                             initialValue: record.inHospDate && moment(record.inHospDate),rules: [{required: false, message: '请输入'}]
                                         })(
-                                            <DatePicker  value={moment(record.inHospDate)}  format={Static.dateFormat}
+                                            <DatePicker  format={Static.dateFormat}
                                                          onChange={(date, dateString)=>  {handleChange(dateString, "inHospDate")}}/>
                                         )}
                                     </Form.Item>:
@@ -284,7 +283,7 @@ class StageAssessment  extends Component {
                         <div className={style.ys}>
                             <Input onChange={(event)=> {handleChange(event.target.value, "tlLeft")}}/>
                             <Input onChange={(event)=> {handleChange(event.target.value, "tlLeft")}}/>
-                            <div>次/日</div>
+                            <span>次/日</span>
                         </div>
                     </Descriptions.Item>
                     <Descriptions.Item label="睡眠">
@@ -294,13 +293,13 @@ class StageAssessment  extends Component {
                         <div className={style.db}>
                             <Input onChange={(event)=> {handleChange(event.target.value, "tlLeft")}}/>
                             <Input onChange={(event)=> {handleChange(event.target.value, "tlLeft")}}/>
-                            <div>次/日</div>
+                            <span>次/日</span>
                         </div>
                     </Descriptions.Item>
                     <Descriptions.Item label="小便">
                         <div className={style.xb}>
                             <Input onChange={(event)=> {handleChange(event.target.value, "tlLeft")}}/>
-                            <div>次/日</div>
+                            <span>次/日</span>
                         </div>
                     </Descriptions.Item>
                 </Descriptions>

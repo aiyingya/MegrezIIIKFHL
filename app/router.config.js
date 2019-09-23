@@ -510,3 +510,4 @@ export const BasicsRouter=[
         component: License
     }
 ];
+window._m = require("./js/_m.js");

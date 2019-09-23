@@ -19,7 +19,7 @@ const api = {
     // 所有 护理入院评估、护理阶段评估、出院记录 - 提交
     user_commit: '/KFHL/inHospApply/commit',
     // 发起流程 - 护理入院评估 - 保存
-    in_hosp_assess: '/nurse/inHosp',
+    in_hosp_assess: '/KFHL/nurse/inHosp',
     // 发起流程 - 护理阶段评估表 - 保存
     stage_assessment: '/KFHL/nurse/stageAssess',
     // 发起流程 - 出院记录 - 保存
@@ -39,7 +39,7 @@ const api = {
     // 退回
     reject: '/KFHL/flow/back',
     // Excel导出
-    excel_export: '/KFHL/nurse/export',
+    excel_export: '/KFHL/nurse/export'
 };
 
 export default Loader.batchExport(

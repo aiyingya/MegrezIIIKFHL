@@ -9,7 +9,6 @@ import Static from '@components/KFHL/Utils/Static';
 class Sign extends Component {
     constructor(props) {
         super(props);
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
     }
 
     render() {
@@ -19,7 +18,7 @@ class Sign extends Component {
             <div className={isHidePrint ?  '' : '' +' '+style.showPrint}>
                 <div className={style.rowStyle}>
                     医疗机构意见：<br/>
-                    { (isHidePrint && canEdit && this.user.js_lx == Static.currentRole.medicalInstitution) ?
+                    { (isHidePrint && canEdit && _m.user.js_lx == Static.currentRole.medicalInstitution) ?
                         <TextArea className={style.noneBorder} rows={5}
                                   onChange={(event)=> {handleChange(event.target.value, "hospRemark")}}></TextArea>:
                         <div className={style.textArea}>{record.hospRemark}</div>
@@ -28,7 +27,7 @@ class Sign extends Component {
                 <Descriptions column={2} bordered className={style.descriptions} size="middle">
                     <Descriptions.Item label="医疗机构签字">
                         {
-                            (isHidePrint && canEdit && this.user.js_lx == Static.currentRole.medicalInstitution) ?  <Input defaultValue={record.hospSign} onChange={(event)=> {handleChange(event.target.value, "hospSign")}}/>:
+                            (isHidePrint && canEdit && _m.user.js_lx == Static.currentRole.medicalInstitution) ?  <Input defaultValue={record.hospSign} onChange={(event)=> {handleChange(event.target.value, "hospSign")}}/>:
                             <Fragment>{record.hospSign}</Fragment>
                         }
                     </Descriptions.Item>
@@ -38,7 +37,7 @@ class Sign extends Component {
                 </Descriptions>
                 <div className={style.rowStyle}>
                     社保中心人员意见：<br/>
-                    { (isHidePrint && canEdit && this.user.js_lx == Static.currentRole.socialInsurance) ?
+                    { (isHidePrint && canEdit && _m.user.js_lx == Static.currentRole.socialInsurance) ?
                         <TextArea className={style.noneBorder} rows={5}
                                   onChange={(event)=> {handleChange(event.target.value, "sicRemark")}}></TextArea>:
                         <div className={style.textArea}>{record.sicRemark}</div>
@@ -48,7 +47,7 @@ class Sign extends Component {
                               size="middle">
                     <Descriptions.Item label="社保中心签字">
                         {
-                            (isHidePrint && canEdit && this.user.js_lx == Static.currentRole.socialInsurance) ?  <Input defaultValue={record.sicSign} onChange={(event)=> {handleChange(event.target.value, "sicSign")}}/>:
+                            (isHidePrint && canEdit && _m.user.js_lx == Static.currentRole.socialInsurance) ?  <Input defaultValue={record.sicSign} onChange={(event)=> {handleChange(event.target.value, "sicSign")}}/>:
                                 <Fragment>{record.sicSign}</Fragment>
                         }
                     </Descriptions.Item>

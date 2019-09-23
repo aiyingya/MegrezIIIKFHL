@@ -25,7 +25,6 @@ class ApplicationForAdmission extends Component {
             isHidePrint: true,//true是隐藏所有Tabs, 打印时使用false
         }
         this.backUrl='/rehabilitation/agent';
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.currentDay = KFHLService.currentDay();
         this.handleChange = this.handleChange.bind(this);
@@ -53,7 +52,7 @@ class ApplicationForAdmission extends Component {
                 setStoreVal={canEdit: false};
             }else{
                 setStoreVal={canEdit: true};
-                switch (this.user.js_lx){
+                switch (_m.user.js_lx){
                     case Static.currentRole.medicalInstitution:
                         recordVal={hospSignDate:KFHLService.currentDay()};
                         break;
@@ -80,7 +79,7 @@ class ApplicationForAdmission extends Component {
                         KFHLService.goBackUrl(this,this.backUrl);
                     })
                 }
-                let title = curUtil.getAuditAgreeTxt(this.user.js_lx,true);
+                let title = curUtil.getAuditAgreeTxt(_m.user.js_lx,true);
                 Global.showConfirm({title,
                     onConfirm:()=> {
                         handleOperate();
@@ -88,7 +87,7 @@ class ApplicationForAdmission extends Component {
                 });
 
             }else{
-                message.error("请检查必选项！");
+                message.error(Static.tipsTxt.inputError);
             }
         });
     }
@@ -129,7 +128,7 @@ class ApplicationForAdmission extends Component {
             }});
     }
     showReject(){
-        let rejectTxts = curUtil.getAuditRejectTxt(this.user.js_lx,true);
+        let rejectTxts = curUtil.getAuditRejectTxt(_m.user.js_lx,true);
         this.setPageTempObj({showRejectModal: true,rejectTxts});
     }
     hideReject(){
@@ -145,7 +144,7 @@ class ApplicationForAdmission extends Component {
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="康复" second="流程待办" third="入院评估" secondUrl={this.backUrl}/>
+                    <BreadcrumbCustom first="康复" second="流程待办" third="康复入院申请" secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>
@@ -199,5 +198,5 @@ class ApplicationForAdmission extends Component {
         );
     }
 }
-ApplicationForAdmission = Form.create({ name: 'ApplicationForAdmission' })(ApplicationForAdmission);
+ApplicationForAdmission = Form.create({ name: 'AgentApplicationForAdmission' })(ApplicationForAdmission);
 export default ReduxWarpper(mapStateToProps, mapDispatchToProps, store, ApplicationForAdmission);

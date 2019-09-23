@@ -108,10 +108,10 @@ let option = {
             {
                 test: /(\.jsx|\.js)$/,
                 use: "babel-loader",
-                // include: [/app/, /node_modules\/winning-megreziii-basic-service/, /src/]
+                include: [/app/, /node_modules\/winning-megreziii-basic-service/, /src/]
                 // include: [/app/, /node_modules\/winning-megreziii-basic-service/,/node_modules\/winning-megreziii-utils/, /src/]
                 // include: [/app/, /node_modules\/winning-megreziii-basic-service/,/node_modules\/winning-megreziii-routers/, /src/]
-                include: [/app/, /node_modules\/winning-megreziii-basic-service/,/node_modules\/winning-megreziii-utils/,/node_modules\/winning-megreziii-routers/, /src/]
+                // include: [/app/, /node_modules\/winning-megreziii-basic-service/,/node_modules\/winning-megreziii-utils/,/node_modules\/winning-megreziii-routers/, /src/]
 
             },
             {

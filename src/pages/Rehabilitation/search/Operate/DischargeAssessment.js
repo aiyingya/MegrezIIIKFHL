@@ -26,7 +26,6 @@ class DischargeAssessment extends Component {
             isHidePrint: true//true是隐藏所有Tabs, 打印时使用false
         }
         this.backUrl='/rehabilitation/search';
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.currentDay = KFHLService.currentDay();
         this.handleChange = this.handleChange.bind(this);
@@ -90,7 +89,7 @@ class DischargeAssessment extends Component {
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
 
-                    <BreadcrumbCustom first="康复" second="发起流程" third="康复出院查看" secondUrl={this.backUrl}/>
+                    <BreadcrumbCustom first="康复" second="查询" third="康复出院查看" secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>
@@ -136,5 +135,5 @@ class DischargeAssessment extends Component {
         );
     }
 }
-DischargeAssessment = Form.create({ name: 'ApplicationForAdmission' })(DischargeAssessment);
+DischargeAssessment = Form.create({ name: 'SearchDischargeAssessment' })(DischargeAssessment);
 export default ReduxWarpper(mapStateToProps, mapDispatchToProps, store, DischargeAssessment);

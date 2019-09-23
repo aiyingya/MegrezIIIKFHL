@@ -24,7 +24,6 @@ class StageAssessment extends Component {
             isHidePrint: true,//true是隐藏所有Tabs, 打印时使用false
         }
         this.backUrl='/nursing/initiate';
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.print = this.print.bind(this);
         this.setPageTempObj = this.setPageTempObj.bind(this);
@@ -38,7 +37,7 @@ class StageAssessment extends Component {
         const record = query.record ? query.record :{};
         if(!record.inHospTableId){console.error("页面必须有数据")}
         else{
-            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.flowType.StageAssessment},this.setPageTempObj);
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.myEnum.flowType.StageAssessment},this.setPageTempObj);
         }
     }
     componentDidMount() {
@@ -60,13 +59,13 @@ class StageAssessment extends Component {
     }
     render() {
         const { isHidePrint } = this.state;
-        const {dict} = this.props.state.staticStatus;
+
         const {record={},monthList} = this.props.state.pageTempObjStag;
         const { getFieldDecorator } = this.props.form;
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请"  secondUrl={this.backUrl}/>
+                    <BreadcrumbCustom first="护理" second="查询" third="护理阶段性评估"  secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>
@@ -74,7 +73,7 @@ class StageAssessment extends Component {
                     <Form>
                         <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
                             <StageAssessmentLayout self={this} record={record} getFieldDecorator={getFieldDecorator} isHidePrint={isHidePrint}
-                                                 canEdit={false} dict={dict} monthList={monthList} isDocter={false}/>
+                                                 canEdit={false}  monthList={monthList} isDocter={false}/>
                         </div>
                         <div className={style.buttons}>
                             <ReactToPrint trigger={() => <Button id="print-application" style={{display:'none'}}>打印</Button>} content={() => this.refs}/>

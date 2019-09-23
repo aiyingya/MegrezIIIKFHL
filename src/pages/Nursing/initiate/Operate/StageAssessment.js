@@ -21,7 +21,6 @@ class StageAssessment extends Component {
             isHidePrint: true,//true是隐藏所有Tabs, 打印时使用false
         }
         this.backUrl='/nursing/initiate';
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.handleChange = this.handleChange.bind(this)
         this.print = this.print.bind(this);
@@ -38,7 +37,12 @@ class StageAssessment extends Component {
         //只有医护人员访问的发起流程页面
         if(!record.inHospTableId){
             record.doctorSignDate = KFHLService.currentDay();
-            this.setPageTempObj({canEdit: true,record:record});
+            this.setPageTempObj({canEdit: true,record:record,...{
+                // 评估月份
+                monthList:[],
+                // 在院人员模糊用户信息列表
+                personUserList:[],
+            }});
         }else{
             let recordVal={};
             let setStoreVal={};
@@ -49,7 +53,7 @@ class StageAssessment extends Component {
                 setStoreVal={canEdit: true};
                 recordVal={doctorSignDate:KFHLService.currentDay()};
             }
-            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.flowType.StageAssessment,recordVal,setStoreVal},this.setPageTempObj);
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.myEnum.flowType.StageAssessment,recordVal,setStoreVal},this.setPageTempObj);
         }
     }
     componentDidMount() {
@@ -72,7 +76,7 @@ class StageAssessment extends Component {
                 }
 
                 if(isSubmit){
-                    let title = nursingUtils.getAuditAgreeTxt(this.user.js_lx,true);
+                    let title = nursingUtils.getAuditAgreeTxt(_m.user.js_lx,true);
                     Global.showConfirm({title,
                         onConfirm:()=> {
                             handleOperate();
@@ -83,7 +87,7 @@ class StageAssessment extends Component {
                 }
 
             }else{
-                message.error("请检查必选项！");
+                message.error(Static.tipsTxt.inputError);
             }
         });
     }
@@ -109,13 +113,13 @@ class StageAssessment extends Component {
     }
     render() {
         const { isHidePrint } = this.state;
-        const {dict} = this.props.state.staticStatus;
+
         const {record={},monthList,canEdit} = this.props.state.pageTempObjStag;
         const { getFieldDecorator } = this.props.form;
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请"  secondUrl={this.backUrl}/>
+                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院阶段评估"  secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>
@@ -123,7 +127,7 @@ class StageAssessment extends Component {
                     <Form onSubmit={this.handleSubmit}>
                         <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
                             <StageAssessmentLayout self={this} record={record} getFieldDecorator={getFieldDecorator} isHidePrint={isHidePrint}
-                                                 canEdit={canEdit} dict={dict} handleChange={this.handleChange} monthList={monthList} isDocter={true}/>
+                                                 canEdit={canEdit}  handleChange={this.handleChange} monthList={monthList} isDocter={true}/>
                         </div>
                         <div className={style.buttons}>
                             <ReactToPrint trigger={() => <Button id="print-application" style={{display:'none'}}>打印</Button>} content={() => this.refs}/>

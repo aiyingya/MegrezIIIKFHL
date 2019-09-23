@@ -18,6 +18,9 @@ const myStatic = {
         }
     },
     dateFormat : 'YYYY-MM-DD',
+    tipsTxt:{
+        inputError:'请检查输入选项是否正确！'
+    },
     // 对应数据字典中的 KFHL_JS 属性
     currentRole:{
         docter: "0",//医护人员
@@ -63,7 +66,11 @@ const myStatic = {
         hyzk:{
             yes: "0",//是
             no: "1",//否
-        }
+        },
+        tableStatus:{
+            completed:"0", //已填
+            notFilledIn:"1" //未填
+        },
     },
     myDict:{
         sex: [

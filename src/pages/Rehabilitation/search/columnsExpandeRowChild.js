@@ -1,7 +1,7 @@
 import React from 'react';
 import style from './common.less'
-import curUtil from '../Service/Util';
-import Static from "@components/KFHL/Utils/Static";
+import nursingUtils from "@/pages/Nursing/Service/Util";
+import Static from "@/components/KFHL/Utils/Static";
 
 export default (self)=>{
     const {state}=self.props;
@@ -9,15 +9,14 @@ export default (self)=>{
         { title: '表单名称', dataIndex: 'tableName'
         },
         { title: '审核状态', dataIndex: 'auditStatus', render:(text, record, index) =>{
-                let _flowStatus = state.staticStatus.flowStatus || [];
-                const objct = _flowStatus.find(res=>res.value == text) || {};
-                return <div>{objct.name}</div>
+                let name = _m.dictName(text,"KFHL_ST");
+                return <div>{name}</div>
             }
         },
         {
             title: '填报状态',
             dataIndex: 'tableStatus', render:(text, record, index) =>{
-                if(curUtil.myStatic.tableStatus.completed == text){
+                if(Static.myEnum.tableStatus.completed  == text){
                     return <span >已填</span>
                 }
                 return <span className={style.textColor}>未填</span>
@@ -34,10 +33,10 @@ export default (self)=>{
         {
             title: '查看',
             dataIndex: 'operation', render:(text, record, index) =>{
-                if(curUtil.myStatic.tableStatus.completed == record.tableStatus){
+                if(Static.myEnum.tableStatus.completed == record.tableStatus){
                     return <div onClick={()=>{self.goLook(record)}} className={style.jumpSelect}>查看</div>
                 }
-                return ''
+                return '';
             }
         },
     ]

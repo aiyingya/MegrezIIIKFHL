@@ -14,14 +14,13 @@ import style from '../common.less'
 import AdmissionAssessmentLayout from '../../Service/Layout/AdmissionAssessment';
 import Static from "@components/KFHL/Utils/Static";
 import KFHLService from "@components/KFHL/Utils/Service";
-class AdmissionAssessment extends Component {
+class DischargeAssessment extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isHidePrint: true,//true是隐藏所有Tabs, 打印时使用false
         }
         this.backUrl='/nursing/initiate';
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.handleChange = this.handleChange.bind(this)
         this.print = this.print.bind(this);
@@ -38,7 +37,7 @@ class AdmissionAssessment extends Component {
         //只有医护人员访问的发起流程页面
         if(!record.inHospTableId){
             record.doctorSignDate = KFHLService.currentDay();
-            this.setPageTempObj({canEdit: true,record:record});
+            this.setPageTempObj({canEdit: true,record:record,personUserList:[]});
         }else{
             let recordVal={};
             let setStoreVal={};
@@ -49,7 +48,7 @@ class AdmissionAssessment extends Component {
                 setStoreVal={canEdit: true}
                 recordVal={doctorSignDate:KFHLService.currentDay()};
             }
-            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.flowType.AdmissionAssessment,recordVal,setStoreVal},this.setPageTempObj);
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.myEnum.flowType.AdmissionAssessment,recordVal,setStoreVal},this.setPageTempObj);
         }
     }
     componentDidMount() {
@@ -73,7 +72,7 @@ class AdmissionAssessment extends Component {
                 }
 
                 if(isSubmit){
-                    let title = nursingUtils.getAuditAgreeTxt(this.user.js_lx,true);
+                    let title = nursingUtils.getAuditAgreeTxt(_m.user.js_lx,true);
                     Global.showConfirm({title,
                         onConfirm:()=> {
                             handleOperate();
@@ -83,7 +82,7 @@ class AdmissionAssessment extends Component {
                     handleOperate();
                 }
             }else{
-                message.error("请检查必选项！");
+                message.error(Static.tipsTxt.inputError);
             }
         });
     }
@@ -95,9 +94,6 @@ class AdmissionAssessment extends Component {
         let {record ={}} = this.props.state.pageTempObj;
         record[field] = val;
         this.setPageTempObj({record});
-    }
-    clickDownLoad(url){
-        window.location.href=url;
     }
     print() {
         // 打印
@@ -112,7 +108,7 @@ class AdmissionAssessment extends Component {
 
     render() {
         const { isHidePrint } = this.state;
-        const {dict} = this.props.state.staticStatus;
+
         const {record={},canEdit} = this.props.state.pageTempObj;
         const { getFieldDecorator } = this.props.form;
 
@@ -127,7 +123,7 @@ class AdmissionAssessment extends Component {
                     <Form onSubmit={this.handleSubmit}>
                         <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
                                 <AdmissionAssessmentLayout self={this} record={record} getFieldDecorator={getFieldDecorator} isHidePrint={isHidePrint}
-                                                     canEdit={canEdit} dict={dict} isDocter={true}  handleChange={this.handleChange}
+                                                     canEdit={canEdit}  isDocter={true}  handleChange={this.handleChange}
                                                     handleAutoSearch={this.handleAutoSearch}
                                 />
                         </div>
@@ -141,5 +137,5 @@ class AdmissionAssessment extends Component {
         );
     }
 }
-AdmissionAssessment = Form.create({ name: 'NursingApplicationForAdmission' })(AdmissionAssessment);
-export default ReduxWarpper(mapStateToProps, mapDispatchToProps, store, AdmissionAssessment);
+DischargeAssessment = Form.create({ name: 'NursingDischargeAssessment' })(DischargeAssessment);
+export default ReduxWarpper(mapStateToProps, mapDispatchToProps, store, DischargeAssessment);

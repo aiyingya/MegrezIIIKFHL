@@ -75,11 +75,6 @@ const myStatic = {
         inHosp: "0",// 入院评估
         outHosp: "1",// 出院评估
     },
-    // 填报状态：对应数据字典中的 KFHL_TAB_S 属性
-    tableStatus:{
-        completed:"0", //已填
-        notFilledIn:"1" //未填
-    },
     type:{
         inHosp:"0", // 入院
         outHosp:"1" // 出院

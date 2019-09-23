@@ -11,11 +11,7 @@ import nursingUtils from '../../Service/Util';
 import Step from '@components/Step/Step';
 import {store, mapStateToProps, mapDispatchToProps} from '../Redux/Store';
 import style from '../common.less'
-import InHospApplication from '../../../Rehabilitation/Service/Layout/InHospApplication/InHospApplication';
-import InHospAssess from '../../../Rehabilitation/Service/Layout/InHospAssess/InHospAssess';
-import InHospBerg from '../../../Rehabilitation/Service/Layout/InHospBerg/InHospBerg';
 import DischargeAssessmentLayout from '../../Service/Layout/DischargeAssessment';
-import curUtil from "@/pages/Nursing/Service/Util";
 import Static from "@components/KFHL/Utils/Static";
 import KFHLService from "@components/KFHL/Utils/Service";
 
@@ -26,7 +22,6 @@ class DischargeAssessment extends Component {
             isHidePrint: true,//true是隐藏所有Tabs, 打印时使用false
         }
         this.backUrl='/nursing/initiate';
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.handleChange = this.handleChange.bind(this)
         this.print = this.print.bind(this);
@@ -43,7 +38,14 @@ class DischargeAssessment extends Component {
         //只有医护人员访问的发起流程页面
         if(!record.inHospTableId){
             record.doctorSignDate = KFHLService.currentDay();
-            this.setPageTempObj({canEdit: true,record:record});
+            this.setPageTempObj({canEdit: true,record:record,...{
+                    // 上传的出院文件
+                    outHopsFiles:[],
+                    // 上传的用药文件
+                    pharmacyFiles:[],
+                    // 在院人员模糊用户信息列表
+                    personUserList:[],
+                }});
         }else{
             let recordVal={};
             let setStoreVal={};
@@ -54,7 +56,7 @@ class DischargeAssessment extends Component {
                 setStoreVal={canEdit: true};
                 recordVal={doctorSignDate:KFHLService.currentDay()};
             }
-            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.flowType.DischargeAssessment,recordVal,setStoreVal},this.setPageTempObj);
+            this.props.common.getInfo(this,{inHospTableId:record.inHospTableId,tableType:nursingUtils.myStatic.myEnum.flowType.DischargeAssessment,recordVal,setStoreVal},this.setPageTempObj);
         }
     }
     componentDidMount() {
@@ -78,7 +80,7 @@ class DischargeAssessment extends Component {
                 }
 
                 if(isSubmit){
-                    let title = nursingUtils.getAuditAgreeTxt(this.user.js_lx,true);
+                    let title = nursingUtils.getAuditAgreeTxt(_m.user.js_lx,true);
                     Global.showConfirm({title,
                         onConfirm:()=> {
                             handleOperate();
@@ -91,7 +93,7 @@ class DischargeAssessment extends Component {
 
 
             }else{
-                message.error("请检查必选项！");
+                message.error(Static.tipsTxt.inputError);
             }
         });
     }
@@ -117,16 +119,15 @@ class DischargeAssessment extends Component {
     }
     render() {
         const { isHidePrint } = this.state;
-        const {dict} = this.props.state.staticStatus;
         const {record={},outHopsFiles,pharmacyFiles,canEdit} = this.props.state.pageTempObjDischarge;
         const { getFieldDecorator } = this.props.form;
-        const { removeOutHopsFile,removePharmacyFile,setOutHopsFile,setPharmacyFile } = self.props.dischargeAssessment;
+        const { removeOutHopsFile,removePharmacyFile,setOutHopsFile,setPharmacyFile } = this.props.dischargeAssessment;
         const outHopsFileDataSource = (outHopsFiles && outHopsFiles.length>0 ? outHopsFiles : Static.defaultUploadInfo);
         const pharmacyFileDataSource = (pharmacyFiles && pharmacyFiles.length>0 ? pharmacyFiles : Static.defaultUploadInfo);
         return (
             <div className={`winning-body ${style.winningBody}`} ref={this.inside}>
                 <div className='winning-content'>
-                    <BreadcrumbCustom first="护理" second="发起流程" third="护理入院申请"  secondUrl={this.backUrl}/>
+                    <BreadcrumbCustom first="护理" second="发起流程" third="护理出院申请"  secondUrl={this.backUrl}/>
                     <Divider/>
                     <Step isShow={false} node={record.node}></Step>
                     <Divider/>
@@ -134,7 +135,7 @@ class DischargeAssessment extends Component {
                     <Form onSubmit={this.handleSubmit}>
                         <div className={isHidePrint ?  style.tabContent : style.tabContent +' '+style.showPrint} ref={(el) => {this.refs = el}} >
                             <DischargeAssessmentLayout self={this} record={record} getFieldDecorator={getFieldDecorator} isHidePrint={isHidePrint}
-                                 canEdit={canEdit} dict={dict}
+                                 canEdit={canEdit}
                                  outHopsFileDataSource ={outHopsFileDataSource}
                                  removeOutHopsFile ={removeOutHopsFile}
                                  pharmacyFileDataSource = {pharmacyFileDataSource}

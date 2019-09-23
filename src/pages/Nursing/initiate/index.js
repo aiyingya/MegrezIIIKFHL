@@ -64,11 +64,11 @@ class Initiate extends Component {
 
     goLook(record){
         record.inHospTableId = record.id;
-        if(record.flowType == nursingUtils.myStatic.flowType.StageAssessment){
+        if(record.flowType == nursingUtils.myStatic.myEnum.flowType.StageAssessment){
             this.goStageAssessment(record);
             return
         }
-        if(record.flowType == nursingUtils.myStatic.flowType.DischargeAssessment){
+        if(record.flowType == nursingUtils.myStatic.myEnum.flowType.DischargeAssessment){
             this.goDischargeRecord(record);
             return
         }

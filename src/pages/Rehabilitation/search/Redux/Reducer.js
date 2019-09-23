@@ -17,10 +17,6 @@ let initialState = {
     formItems:{},
     btnRequestLoading:false,
     btnRequest:true,
-    staticStatus:{
-        flowStatus:[],//流程状态
-        tableStatus:[], //填报状态
-    },
     tempSearchObj:{},
     // 康复入院申请
     pageTempObj:{
@@ -46,6 +42,8 @@ let initialState = {
         isHideTabValue:true,
         // 在院人员模糊用户信息列表
         personUserList:[],
+        newCheckTitle:[],
+        sumScore:0
     },
     // 康复出院申请
     pageTempObjCY:{
@@ -85,7 +83,6 @@ actions[types.SET_BTN_DLOADING_DISPLAY]=(state)=>({...state,btnRequestLoading:fa
 actions[types.BTN_REQUEST_ACTIVE]=(state)=>({...state,btnRequest:true});
 actions[types.BTN_REQUEST_DISPLAY]=(state)=>({...state,btnRequest:false});
 actions[types.SET_TYPE_DATAS]=(state,action)=>({...state,typeDatas:action.payload || []});
-actions[types.SET_STATIC_STATUS]=(state,action)=>({...state,staticStatus:action.payload || {}});
 actions[types.SET_TEMP_SEARCH_OBJ]=(state,action)=>({...state,tempSearchObj:action.payload || {}});
 actions[types.PAGE_TEMP_OBJ]=(state,action)=>({...state,pageTempObj:action.payload || {}});
 actions[types.PAGE_TEMP_OBJ_CY]=(state,action)=>({...state,pageTempObjCY:action.payload || {}});

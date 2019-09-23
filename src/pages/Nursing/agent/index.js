@@ -3,42 +3,56 @@ import { Table, Badge, Menu, Dropdown, Icon,Divider } from 'antd';
 import {Global,Utils,ReduxWarpper,BasicFormComponent, BasicGroupComponent,AuthComponent,Scrollbar} from 'winning-megreziii-utils';
 import {store, mapStateToProps, mapDispatchToProps} from './Redux/Store';
 import Columns from './columns';
-import curUtil from "@/pages/Rehabilitation/Service/Util";
+import nursingUtils from "@/pages/Nursing/Service/Util";
 
 class Initiate extends Component {
     constructor(props) {
         super(props);
         this.state={};
-        this.goApplicationForAdmission = this.goApplicationForAdmission.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.goAdmissionAssessment = this.goAdmissionAssessment.bind(this);
+        this.goDischargeRecord = this.goDischargeRecord.bind(this);
+        this.goStageAssessment = this.goStageAssessment.bind(this);
         this.inside = React.createRef();
     }
 
     goLook(record){
-        if(record.flowType == curUtil.myStatic.flowType.outHosp){
-            this.goDischargeAssessment(record);
+        record.inHospTableId = record.id;
+        if(record.flowType == nursingUtils.myStatic.myEnum.flowType.StageAssessment){
+            this.goStageAssessment(record);
             return
         }
-        this.goApplicationForAdmission(record);
+        if(record.flowType == nursingUtils.myStatic.myEnum.flowType.DischargeAssessment){
+            this.goDischargeRecord(record);
+            return
+        }
+        this.goAdmissionAssessment(record);
     }
-    goApplicationForAdmission(record){
+    goAdmissionAssessment(record){
         this.props.history.push({
-            pathname: '/rehabilitation/agent/applicationForAdmission',
+            pathname: '/nursing/initiate/admissionAssessment',
             query: {
                 record: record
             }
         })
     }
-    goDischargeAssessment(record){
+    goDischargeRecord(record){
         this.props.history.push({
-            pathname: '/rehabilitation/agent/dischargeAssessment',
+            pathname: '/nursing/initiate/dischargeRecord',
             query: {
                 record: record
             }
         })
     }
-
+    goStageAssessment(record){
+        this.props.history.push({
+            pathname: '/nursing/initiate/stageAssessment',
+            query: {
+                record: record
+            }
+        })
+    }
     handleSearch(value){
         this.props.agent.initTable(this,{value});
     }

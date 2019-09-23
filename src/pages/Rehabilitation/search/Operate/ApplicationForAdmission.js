@@ -5,9 +5,7 @@ import {message} from "antd/lib/index";
 import { Input, Button, Divider, Icon, Checkbox, Radio, Descriptions, Table, Select,Form,DatePicker} from 'antd';
 const CheckboxGroup = Checkbox.Group;
 const {TextArea} = Input;
-import ReactToPrint from 'react-to-print'
 import {Global, ReduxWarpper, BasicGroupComponent, Scrollbar, BreadcrumbCustom} from 'winning-megreziii-utils';
-import curUtil from '../../Service/Util';
 import Step from '@components/Step/Step';
 import {store, mapStateToProps, mapDispatchToProps} from '../Redux/Store';
 import style from '../common.less'
@@ -16,7 +14,6 @@ import InHospAssess from '../../Service/Layout/InHospAssess/InHospAssess';
 import InHospBerg from '../../Service/Layout/InHospBerg/InHospBerg';
 import Static from "@components/KFHL/Utils/Static";
 import KFHLService from "@components/KFHL/Utils/Service";
-import nursingUtils from "@/pages/Nursing/Service/Util";
 
 class ApplicationForAdmission extends Component {
     constructor(props) {
@@ -25,7 +22,6 @@ class ApplicationForAdmission extends Component {
             isHidePrint: true,//打印时使用false
         }
         this.backUrl='/rehabilitation/search',
-        this.user = Global.localStorage.get(Global.localStorage.key.userInfo) || {};
         this.inside = React.createRef();
         this.currentDay = KFHLService.currentDay();
         this.print = this.print.bind(this);
@@ -63,7 +59,7 @@ class ApplicationForAdmission extends Component {
     }
 
     render() {
-        let {tabValue="0",uploadBergFiles,uploadApplyFiles,record={}} = this.props.state.pageTempObj;
+        let {tabValue="0",uploadBergFiles,uploadApplyFiles,record={},sumScore} = this.props.state.pageTempObj;
         const { isHidePrint } = this.state;
         const { getFieldDecorator } = this.props.form;
         const uploadBergFileDataSource = (uploadBergFiles && uploadBergFiles.length>0 ? uploadBergFiles : Static.defaultUploadInfo);
@@ -104,6 +100,7 @@ class ApplicationForAdmission extends Component {
                                             isHidePrint ={isHidePrint}
                                             uploadBergFileDataSource ={uploadBergFileDataSource}
                                             record={record}
+                                            sumScore={sumScore}
                                 />
                             </div>
                         </div>
@@ -118,5 +115,5 @@ class ApplicationForAdmission extends Component {
         );
     }
 }
-ApplicationForAdmission = Form.create({ name: 'ApplicationForAdmission' })(ApplicationForAdmission);
+ApplicationForAdmission = Form.create({ name: 'SearchApplicationForAdmission' })(ApplicationForAdmission);
 export default ReduxWarpper(mapStateToProps, mapDispatchToProps, store, ApplicationForAdmission);

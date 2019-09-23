@@ -32,8 +32,7 @@ class OutHospBerg  extends Component {
     }
 
     render() {
-        let {self,isDocter,canEdit,getFieldDecorator,isHidePrint,record={}} = this.props;
-        let {personUserList=[],removeBergFile,setBergFile,uploadBergFileDataSource} = self.props.state.pageTempObjCY;
+        let {self,isDocter,canEdit,getFieldDecorator,isHidePrint,record={},personUserList=[],removeBergFile,setBergFile,uploadBergFileDataSource} = this.props;
         let newCheckTitle = Global.setFormsValue(curUtil.myStatic.checkTitle,record);
         let sumScore = 0;
         //平衡量表总分数

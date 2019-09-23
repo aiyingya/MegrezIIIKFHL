@@ -17,20 +17,11 @@ let initialState = {
     formItems:{},
     btnRequestLoading:false,
     btnRequest:true,
-    staticStatus:{
-        flowStatus:[],//流程状态
-        flowType:[], //流程类型
-        node:[]
-    },
     tempSearchObj:{},
     // 1
     pageTempObj:{
         // 显示哪些数据
         record:{},
-        // 上传的出院小结或死亡记录的文件
-        outHopsFiles:[],
-        // 上传的用药记录文件
-        pharmacyFiles:[],
         // 是否可以编辑页面
         canEdit:true,
         // 在院人员模糊用户信息列表
@@ -84,7 +75,6 @@ actions[types.SET_BTN_DLOADING_DISPLAY]=(state)=>({...state,btnRequestLoading:fa
 actions[types.BTN_REQUEST_ACTIVE]=(state)=>({...state,btnRequest:true});
 actions[types.BTN_REQUEST_DISPLAY]=(state)=>({...state,btnRequest:false});
 actions[types.SET_TYPE_DATAS]=(state,action)=>({...state,typeDatas:action.payload || []});
-actions[types.SET_STATIC_STATUS]=(state,action)=>({...state,staticStatus:action.payload || {}});
 actions[types.SET_TEMP_SEARCH_OBJ]=(state,action)=>({...state,tempSearchObj:action.payload || {}});
 actions[types.PAGE_TEMP_OBJ]=(state,action)=>({...state,pageTempObj:action.payload || {}});
 actions[types.PAGE_TEMP_OBJ_CY]=(state,action)=>({...state,pageTempObjCY:action.payload || {}});

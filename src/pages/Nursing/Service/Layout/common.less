@@ -400,18 +400,34 @@
     }
   }
   .ybqk{
+    height: 50px;
+    display: flex;
+    align-items: center;
     padding-left: 15px;
     font-size:12px;
     font-family:MicrosoftYaHei;
     font-weight:bold;
     color:rgba(21,164,250,1);
     line-height:16px;
+    border-bottom: @border-line-color;
   }
-  .ys,.db.xb{
+  .ys,.db,.xb{
     display: flex;
+    align-items: center;
+    input{
+      margin-right: 4px;
+    }
+    input:last-child{
+      width: 50px;
+    }
+    span{
+      display: inline-block;
+      width: 80px;
+    }
   }
   .cysw{
     display: flex;
+    padding-left: 16px;
     height: 46px;
     line-height: 46px;
     border-bottom: @border-line-color;

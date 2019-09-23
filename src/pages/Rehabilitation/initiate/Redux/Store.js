@@ -1,7 +1,7 @@
 import { createStore } from 'redux';
 import {reducer} from './Reducer';
 import moment from 'moment';
-import {loadingStart,loadingEnd,setDatas,search,getFormItems, setSearchObj,setStaticStatus, setTempSearchObj,setBtnRequestActive, setBtnRequestDisplay,
+import {loadingStart,loadingEnd,setDatas,search,getFormItems, setSearchObj, setTempSearchObj,setBtnRequestActive, setBtnRequestDisplay,
     setBtnLoadingActive,setBtnLoadingDisplay,setTypeDatas,pageTempObj,pageTempObjCY
 } from './Actions';
 import api from "@/api/RehabilitationApi";
@@ -107,7 +107,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                     successFun:()=>{
                         result.onChange = (_page, _pageSize)=>{
                             // 绑定分页按钮点击事件
-                            _this.props.dict.initTable(_this,{value:_this.props.state.searchObj,page:_page, pageSize:_pageSize})
+                            _this.props.initiate.initTable(_this,{value:_this.props.state.searchObj,page:_page, pageSize:_pageSize})
                         }
                         // 写入查询条件，在上方[看上方代码]分页点击时传入查询条件_this.props.state.searchObj
                         dispatch(setSearchObj(searchObj));
@@ -126,7 +126,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
             initSearch:async (searchVal={})=>{
                 let toData = moment();
                 let fromData = moment().subtract(3, "months");
-                let _dict = await Uc.getDict();
 
                 // 初始化查询条件
                 let forms = [
@@ -135,8 +134,8 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                     {labelName: '发起人', formType: Global.SelectEnum.INPUT, name: 'initPerson'},
                     {labelName: '发起时间', formType: Global.SelectEnum.RangePickerSplit, name: 'dataTimes', dateFormat:Static.dateFormat,outName:['initDateFrom','initDateTo'],outFormat:'YYYY-MM-DD',
                         initialValue:[moment(fromData,Static.dateFormat), moment(toData,Static.dateFormat)]},
-                    {labelName: '流程状态', formType: Global.SelectEnum.SELECT, name: 'flowStatus', children: _dict.KFHL_ST},
-                    {labelName: '流程类型', formType: Global.SelectEnum.SELECT, name: 'flowType', children:_dict.KFHL_TB},
+                    {labelName: '流程状态', formType: Global.SelectEnum.SELECT, name: 'flowStatus', children: _m.dicts.KFHL_ST},
+                    {labelName: '流程类型', formType: Global.SelectEnum.SELECT, name: 'flowType', children:_m.dicts.KFHL_TB},
                 ]
                 // 为了冰冻页面 特殊处理 代表第一次初始化serach的时候，初始数据需要保存在临时对象中，用于页面切换页面时能显示临时数据使用
                 if(searchVal == false){
@@ -149,8 +148,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 }
                 // 写入查询Form，用于显示查询组件内容
                 dispatch(getFormItems(forms));
-                // 显示信息时使用
-                dispatch(setStaticStatus({flowStatus:_dict.KFHL_ST,flowType:_dict.KFHL_TB,node:_dict.KFHL_LC,dict:_dict}));
             },
             setTempSearchObj:(_this,searchObj={})=>{
                 dispatch(setTempSearchObj(searchObj));
@@ -238,7 +235,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
                 setPageTempObj(_this,{uploadBergFiles});
             },
             removeBergFile:(_this,fileRecord)=>{
-                let {setPageTempObj} = _this.props.applicationForAdmission;
+                let {setPageTempObj} = _this.props.dischargeAssessment;
                 let {uploadBergFiles} = _this.props.state.pageTempObjCY;
                 let array = uploadBergFiles.filter(res=>res.fileId != fileRecord.fileId);
                 setPageTempObj(_this,{uploadBergFiles:array});

@@ -3,9 +3,9 @@ import { Modal, Button } from 'antd';
 import {Global,Uc} from 'winning-megreziii-utils';
 import {Badge} from 'antd';
 import style from './common.less';
-import curUtil from "../Service/Util";
 import Static from "@components/KFHL/Utils/Static";
 import moment from "moment";
+import nursingUtils from "@/pages/Nursing/Service/Util";
 
 export default (self)=>{
     const {initiate,state}=self.props;
@@ -27,10 +27,9 @@ export default (self)=>{
         },{
             title: '节点',
             dataIndex: 'node',
-            render: (texts, record) => {
-                let _node = state.staticStatus.node || [];
-                const objct = _node.find(res=>res.value == texts) || {};
-                return <span>{objct.name}</span>
+            render: (text, record) => {
+                let name = _m.dictName(text,"KFHL_LC");
+                return <span>{name}</span>
             }
         }, {
             title: '发起人',
@@ -42,18 +41,15 @@ export default (self)=>{
         {
             title: '审核日期',
             dataIndex:'auditDate',
-            render:(text, record, index) =>{
-                moment(text,"YYYY-MM-DD")
-            }
+            render:(text, record, index) =>text && moment(text).format(Static.dateFormat)
         },
         {
             title: '状态',
             dataIndex:'flowStatus',
-            render:(texts, record, index) =>{
-                let _flowStatus = state.staticStatus.flowStatus || [];
-                const objct = _flowStatus.find(res=>res.value == texts) || {};
+            render:(text, record, index) =>{
+                let name = _m.dictName(text,"KFHL_ST");
                 let color = '';
-                switch (objct.value){
+                switch (text){
                     case Static.flowStatus.agree:
                         color ="green"
                         break;
@@ -70,30 +66,24 @@ export default (self)=>{
                         color ="error"
                         break;
                 }
-                return <span className={style[color]}>{objct.name}</span>
+                return <span className={style[color]}>{name}</span>
             }
         },
         {
             title: '类型',
-            dataIndex:'flowType',render:(texts, record, index) =>{
-                /* // TODO:护理显示的类型flowType?????
-               let _flowType = state.staticStatus.flowType || [];
-               const objct = _flowType.find(res=>res.value == text) || {};*/
-                let objct={}
-                // KFHL_TB 内的字典
-                let badge = null;
+            dataIndex:'flowType',render:(text, record, index) =>{
+                let _flowType = nursingUtils.myStatic.myDict.flowType || [];
+                const objct = _flowType.find(res=>res.value == text) || {};
+                let badge = "error";
                 switch (text){
-                    case curUtil.myStatic.flowType.AdmissionAssessment:
+                    case nursingUtils.myStatic.myEnum.flowType.AdmissionAssessment:
                         badge ="processing";
-                        objct.name="护理入院评估";
                         break;
-                    case curUtil.myStatic.flowType.DischargeAssessment:
+                    case nursingUtils.myStatic.myEnum.flowType.DischargeAssessment:
                         badge ="success";
-                        objct.name="护理出院记录";
                         break;
-                    case curUtil.myStatic.flowType.StageAssessment:
+                    case nursingUtils.myStatic.myEnum.flowType.StageAssessment:
                         badge ="success";
-                        objct.name="护理阶段性评估";
                         break;
                     default:
                         break;

@@ -45,7 +45,7 @@
     "file-loader": "1.1.11",
     "html-loader": "0.5.5",
     "html-webpack-plugin": "3.2.0",
-    "jquery": "3.3.1",
+    "jquery": "3.4.1",
     "less": "^3.8.1",
     "less-loader": "^4.1.0",
     "lite-uploader": "^5.0.3",
